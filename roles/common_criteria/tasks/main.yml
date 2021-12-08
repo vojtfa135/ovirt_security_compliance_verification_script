@@ -1,0 +1,10 @@
+---
+# tasks file for common_criteria
+- name: Common Criteria Compliance Evaluation
+  debug:
+    msg: "{{ item }}"
+  loop:
+    - "Evaluating Common Criteria Compliance"
+    - "Score: 0/100"
+    - "Not implented :)"
+  

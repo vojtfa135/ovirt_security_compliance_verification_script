@@ -1,0 +1,10 @@
+---
+# tasks file for fips_140_2
+- name: FIPS 140-2 Compliance Evaluation
+  debug:
+    msg: "{{ item }}"
+  loop:
+    - "Evaluating FIPS 140-2 Compliance"
+    - "Score: 0/100"
+    - "Not implented :)"
+  
