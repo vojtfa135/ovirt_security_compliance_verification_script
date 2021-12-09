@@ -1,6 +1,8 @@
 ---
 - name: Compliance Verification Script v0.1
   hosts: localhost
+  vars:
+    api_retrieved_hosts: []
   vars_files:
     - var_files/engine.yml
     - var_files/hosts.yml
@@ -22,14 +24,10 @@
         auth: "{{ ovirt_auth }}"
       register: api_data
 
-    - name: API data
-      debug:
-        msg: "{{ result }}"
-
     - name: Print product type
       debug:
         msg: "{{ api_data.ovirt_api['product_info']['name'] }}"
-  
+
     - name: Register product type
       set_fact:
         prod_type: "{{ api_data.ovirt_api['product_info']['name'] }}"
@@ -42,22 +40,20 @@
       set_fact:
         prod_version: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
 
+    - name: Add retrieved OS information from oVirt API to list
+      set_fact:
+        api_retrieved_hosts: "{{ api_retrieved_hosts + [ { 'os': item['os']['type'] } ] }}"
+      loop: "{{ result.ovirt_hosts }}"
+
     - name: Print retrieved OS information from oVirt API
       debug:
-        msg: "{{ item }}"
-      loop:
-        - "{{ result.ovirt_hosts[0]['os']['type'] }}"
-        - "{{ result.ovirt_hosts[1]['os']['type'] }}"
-        - "{{ result.ovirt_hosts[2]['os']['type'] }}"
-      
+        var: item.os
+      loop: "{{ api_retrieved_hosts }}"
     - name: Add hosts to the inventory
       add_host:
-        name: "{{ item }}"
+        name: "{{ item['address'] }}"
         groups: hosts
-      loop:
-        - "{{ result.ovirt_hosts[0]['address'] }}"
-        - "{{ result.ovirt_hosts[1]['address'] }}"
-        - "{{ result.ovirt_hosts[2]['address'] }}"
+      loop: "{{ result.ovirt_hosts }}"
 
     - name: Get OS release of the hosts
       shell: cat /etc/*elease
@@ -65,13 +61,13 @@
       delegate_to: "{{ item }}"
       loop: "{{ groups['hosts'] }}"
       become_user: root
-    
+
     - name: Parse retrieved OS release information
       set_fact:
         parsed_os_release: "{{ os_release['results'][0]['stdout_lines'] | last }}"
       delegate_to: "{{ item }}"
       loop: "{{ groups['hosts'] }}"
-  
+
     - name: Print retrieved OS releases
       debug:
         msg: "{{ parsed_os_release }}"
