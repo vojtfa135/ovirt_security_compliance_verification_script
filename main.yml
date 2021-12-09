@@ -1,16 +1,10 @@
 ---
 - name: Compliance Verification Script v0.1
-  hosts: engine
-  remote_user: root
-
+  hosts: localhost
+  vars_files:
+    - var_files/engine.yml
+    - var_files/hosts.yml
   tasks:
-    - name: Include configuration variables
-      include_vars:
-        file: "host_vars/{{ item }}.yml"
-      loop:
-        - engine
-        - hosts
-      
     - name: Authenticate against oVirt engine
       ovirt.ovirt.ovirt_auth:
         url: "{{ engine_url }}"
@@ -27,6 +21,10 @@
       ovirt.ovirt.ovirt_api_info:
         auth: "{{ ovirt_auth }}"
       register: api_data
+
+    - name: API data
+      debug:
+        msg: "{{ result }}"
 
     - name: Print product type
       debug:
@@ -66,6 +64,7 @@
       register: os_release
       delegate_to: "{{ item }}"
       loop: "{{ groups['hosts'] }}"
+      become_user: root
     
     - name: Parse retrieved OS release information
       set_fact:
