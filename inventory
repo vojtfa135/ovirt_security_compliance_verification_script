@@ -1,2 +1,2 @@
-# Paste engine's fqdn here
-[engine]
+[localhost]
+localhost ansible_connection=local

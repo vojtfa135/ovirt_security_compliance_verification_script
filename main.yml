@@ -1,8 +1,6 @@
 ---
 - name: Compliance Verification Script v0.1
   hosts: localhost
-  vars:
-    api_retrieved_hosts: []
   vars_files:
     - var_files/engine.yml
     - var_files/hosts.yml
@@ -24,6 +22,10 @@
         auth: "{{ ovirt_auth }}"
       register: api_data
 
+    - name: API data
+      debug:
+        msg: "{{ result }}"
+
     - name: Print product type
       debug:
         msg: "{{ api_data.ovirt_api['product_info']['name'] }}"
@@ -40,20 +42,22 @@
       set_fact:
         prod_version: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
 
-    - name: Add retrieved OS information from oVirt API to list
-      set_fact:
-        api_retrieved_hosts: "{{ api_retrieved_hosts + [ { 'os': item['os']['type'] } ] }}"
-      loop: "{{ result.ovirt_hosts }}"
-
     - name: Print retrieved OS information from oVirt API
       debug:
-        var: item.os
-      loop: "{{ api_retrieved_hosts }}"
+        msg: "{{ item }}"
+      loop:
+        - "{{ result.ovirt_hosts[0]['os']['type'] }}"
+        - "{{ result.ovirt_hosts[1]['os']['type'] }}"
+        - "{{ result.ovirt_hosts[2]['os']['type'] }}"
+
     - name: Add hosts to the inventory
       add_host:
-        name: "{{ item['address'] }}"
+        name: "{{ item }}"
         groups: hosts
-      loop: "{{ result.ovirt_hosts }}"
+      loop:
+        - "{{ result.ovirt_hosts[0]['address'] }}"
+        - "{{ result.ovirt_hosts[1]['address'] }}"
+        - "{{ result.ovirt_hosts[2]['address'] }}"
 
     - name: Get OS release of the hosts
       shell: cat /etc/*elease
