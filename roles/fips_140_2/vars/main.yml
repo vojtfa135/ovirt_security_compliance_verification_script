@@ -1,2 +1,43 @@
 ---
 # vars file for fips_140_2
+fips_binaries_flat:
+  - openssl-libs
+  - libgcrypt
+  - kernel
+  - libkcapi-hmaccalc
+  - gnutls
+  - gmp
+  - nettle
+  - nss-softokn
+  - nss-softokn-freebl
+
+fips_binaries:
+  openssl:
+    - name: openssl-libs
+      version: 1.1.1c-15
+  libgcrypt:
+    - name: libgcrypt
+      version: 1.8.3-4
+  Kernel Cryptographic API:
+    - name: kernel
+      version: 4.18.0-193
+    - name: libkcapi-hmaccalc
+      version: 1.1.1-16_1
+  gnutls:
+    - name: gnutls
+      version: 3.6.8-9
+    - name: gmp
+      version: 6.1.2-10
+    - name: nettle
+      version: 3.4.1-1
+  NSS:
+    - name: nss-softokn
+      version: 3.44.0-8
+    - name: nss-softokn-freebl
+      version: 3.44.0-8
+
+fips_kernel_param: crypto.fips_enabled
+
+fips_required_prod: Red Hat Virtualization Manager
+fips_ovirt_prod: oVirt
+fips_required_os: Red Hat Enterprise Linux release 8.5 (Ootpa)

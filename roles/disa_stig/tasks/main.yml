@@ -2,8 +2,4 @@
 # tasks file for disa_stig
 - name: DISA STIG Compliance Evaluation
   debug:
-    msg: "{{ item }}"
-  loop:
-    - "Evaluating DISA STIG Compliance"
-    - "Score: 0/100"
-    - "Not implented :)"
+    msg: "Implement me!"

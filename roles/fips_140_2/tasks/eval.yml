@@ -1,0 +1,42 @@
+---
+- name: Installed infrastructure is compliant with FIPS 140-2
+  debug:
+    msg: "true"
+  when:
+    - prod_type_is_rhv
+    - os_type_is_rhel
+    - host_fips_crypto_policy_enabled
+    - hosts_fips_kernel_param_enabled
+    - hosts_fips_binaries_versions_compatible
+
+- name: Installed infrastructure is compliant with FIPS 140-2
+  debug:
+    msg: "false"
+  when:
+    - not prod_type_is_rhv or
+      not os_type_is_rhel or
+      not host_fips_crypto_policy_enabled or
+      not hosts_fips_kernel_param_enabled or
+      not hosts_fips_binaries_versions_compatible
+
+- name: Installed infrastructure is only compatible with FIPS 140-2
+  debug:
+    msg: "true"
+  when:
+    - not prod_type_is_rhv
+    - prod_type_is_ovirt
+    - os_type_is_rhel
+    - host_fips_crypto_policy_enabled
+    - hosts_fips_kernel_param_enabled
+    - hosts_fips_binaries_versions_compatible
+
+- name: Installed infrastructure is only compatible with FIPS 140-2
+  debug:
+    msg: "false"
+  when:
+    - not prod_type_is_rhv
+    - not prod_type_is_ovirt
+    - not os_type_is_rhel or
+      not host_fips_crypto_policy_enabled or
+      not hosts_fips_kernel_param_enabled or
+      not hosts_fips_binaries_versions_compatible

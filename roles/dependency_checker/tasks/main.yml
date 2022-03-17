@@ -1,0 +1,28 @@
+---
+# tasks file for dependency_checker
+- name: Resolve dependencies
+  block:
+    - name: Install oVirt repository
+      yum:
+        name: "{{ ovirt_repo }}"
+        state: present
+
+    - name: Ensure that all dependencies are met in order to install {{ ovirt_sdk }}
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ local_machine_dependencies_rh }}"
+
+    - name: Intall oVirt SDK
+      yum:
+        name: "{{ ovirt_sdk }}"
+        state: present
+  when: os_flavor == "RedHat"
+
+# - name: Install {{ pip_deps }} into the virtualenv
+#   pip:
+#     name: "{{ pip_deps }}"
+#     virtualenv: "{{ virtualenv_path }}"
+#   # TODO:
+#   # for now just ignore the errors
+#   ignore_errors: yes

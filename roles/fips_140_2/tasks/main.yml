@@ -1,10 +1,108 @@
 ---
 # tasks file for fips_140_2
 - name: FIPS 140-2 Compliance Evaluation
-  debug:
-    msg: "{{ item }}"
-  loop:
-    - "Evaluating FIPS 140-2 Compliance"
-    - "Score: 0/100"
-    - "Not implented :)"
+  block:
+    - name: Evaluate product type (RHV)
+      set_fact:
+        prod_type_is_rhv: "{{ (fips_prod_type == fips_required_prod) | ternary(true, false) }}"
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Evaluate product type (oVirt)
+      set_fact:
+        prod_type_is_ovirt: "{{ (fips_prod_type == fips_ovirt_prod) | ternary(true, false) }}"
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Debug eval prod type
+      debug:
+        msg: "{{ prod_type_is_rhv }}"
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Evaluate OS type on the hosts
+      set_fact:
+        os_type_is_rhel: "{{ (fips_parsed_os_release == fips_required_os) | ternary(true, false) }}"
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Debug eval os type
+      debug:
+        msg: "{{ os_type_is_rhel }}"
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Check if FIPS system-wide crypto policy is enabled on the hosts
+      shell: fips-mode-setup --is-enabled
+      register: is_fips_crypto_policy_enabled
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Parse the output of the FIPS crypto policy check
+      set_fact:
+        host_fips_crypto_policy_enabled: "{{ (is_fips_crypto_policy_enabled['results'][item|int].rc == 0) | ternary(true, false) }}"
+      with_sequence: start=0 count={{ fips_num_hosts }}
+
+    - name: Debug policy check
+      debug:
+        msg: "{{ host_fips_crypto_policy_enabled }}"
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Check if {{ fips_kernel_param }} kernel parameter is set on the hosts
+      shell: sysctl -n crypto.fips_enabled
+      register: is_fips_kernel_param_enabled
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
   
+    - name: Parse the output of the {{ fips_kernel_param }} kernel parameter check
+      set_fact:
+        hosts_fips_kernel_param_enabled: "{{ (is_fips_kernel_param_enabled['results'][item|int].stdout|int == 1) | ternary(true, false) }}"
+      with_sequence: start=0 count={{ fips_num_hosts }}
+    
+    - name: Debug kernel param check
+      debug:
+        msg: "{{ hosts_fips_kernel_param_enabled }}"
+      delegate_to: "{{ item }}"
+      loop: "{{ fips_groups }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Check versions of the FIPS binaries
+      shell: rpm -qa "{{ item.1 }}"
+      register: extracted_binaries_versions
+      delegate_to: "{{ item.0 }}"
+      with_nested:
+        - "{{ fips_groups }}"
+        - "{{ fips_binaries_flat }}"
+      become_user: "{{ fips_host_username }}"
+    
+    - name: Debug binaries version check
+      debug:
+        msg: "{{ extracted_binaries_versions }}"
+
+    - name: Parse binaries version check
+      set_fact:
+        parsed_extracted_binaries_versions: "{{ fips_groups|fips_extract_versions(extracted_binaries_versions['results']) }}"
+
+    - name: Debug binaries parsing
+      debug:
+        msg: "{{ parsed_extracted_binaries_versions }}"
+
+    - name: Check if versions of FIPS binaries are correct
+      set_fact:
+        hosts_fips_binaries_versions_compatible: "{{ fips_groups|fips_match_versions(parsed_extracted_binaries_versions, fips_binaries) }}"
+
+    - name: Debug correctness check
+      debug:
+        msg: "{{ hosts_fips_binaries_versions_compatible }}"
+
+    - name: FIPS final evaluation
+      include_tasks: eval.yml

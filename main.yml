@@ -1,96 +1,41 @@
 ---
-- name: Compliance Verification Script v0.1
+- name: Compliance Verification Script v0.3
   hosts: localhost
   vars_files:
-    - var_files/engine.yml
-    - var_files/hosts.yml
-  tasks:
+    - vars_files/engine.yml
+    - vars_files/hosts.yml
+
+  pre_tasks:
+    - name: Ensure dependencies are met
+      include_role:
+        name: dependency_checker
+      vars:
+        os_flavor: ansible_facts["ansible_distribution_file_variety"]
+
     - name: Authenticate against oVirt engine
       ovirt.ovirt.ovirt_auth:
-        url: "{{ engine_url }}"
+        url: "{{ engine_url }}/ovirt-engine/api"
         username: "{{ engine_username }}"
         password: "{{ engine_password }}"
         insecure: yes
 
-    - name: Extract relevant information about hosts
-      ovirt.ovirt.ovirt_host_info:
-        auth: "{{ ovirt_auth }}"
-      register: result
-
-    - name: Retrieve oVirt API data
-      ovirt.ovirt.ovirt_api_info:
-        auth: "{{ ovirt_auth }}"
-      register: api_data
-
-    - name: API data
-      debug:
-        msg: "{{ result }}"
-
-    - name: Print product type
-      debug:
-        msg: "{{ api_data.ovirt_api['product_info']['name'] }}"
-
-    - name: Register product type
-      set_fact:
-        prod_type: "{{ api_data.ovirt_api['product_info']['name'] }}"
-
-    - name: Print product's version
-      debug:
-        msg: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
-
-    - name: Register product's version
-      set_fact:
-        prod_version: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
-
-    - name: Print retrieved OS information from oVirt API
-      debug:
-        msg: "{{ item }}"
-      loop:
-        - "{{ result.ovirt_hosts[0]['os']['type'] }}"
-        - "{{ result.ovirt_hosts[1]['os']['type'] }}"
-        - "{{ result.ovirt_hosts[2]['os']['type'] }}"
-
-    - name: Add hosts to the inventory
-      add_host:
-        name: "{{ item }}"
-        groups: hosts
-      loop:
-        - "{{ result.ovirt_hosts[0]['address'] }}"
-        - "{{ result.ovirt_hosts[1]['address'] }}"
-        - "{{ result.ovirt_hosts[2]['address'] }}"
-
-    - name: Get OS release of the hosts
-      shell: cat /etc/*elease
-      register: os_release
-      delegate_to: "{{ item }}"
-      loop: "{{ groups['hosts'] }}"
-      become_user: root
-
-    - name: Parse retrieved OS release information
-      set_fact:
-        parsed_os_release: "{{ os_release['results'][0]['stdout_lines'] | last }}"
-      delegate_to: "{{ item }}"
-      loop: "{{ groups['hosts'] }}"
-
-    - name: Print retrieved OS releases
-      debug:
-        msg: "{{ parsed_os_release }}"
-      delegate_to: "{{ item }}"
-      loop: "{{ groups['hosts'] }}"
-
-    - include_role:
-        name: "{{ eval_role }}"
-      loop:
-        - fips_140_2
-        - disa_stig
-        - common_criteria
-      loop_control:
-        loop_var: eval_role
+  roles:
+    - role: base_info
+    - role: fips_140_2
+      fips_prod_type: "{{ hostvars[inventory_hostname]['prod_type'] }}"
+      fips_parsed_os_release: "{{ hostvars[inventory_hostname]['parsed_os_release'] }}"
+      fips_groups: "{{ hostvars[inventory_hostname]['groups']['hosts'] }}"
+      fips_host_username: "{{ host_username }}"
+      fips_num_hosts: |
+        {{ num_hosts }}
+      when: check_fips|default(false)
+    - role: disa_stig
+      when: check_disa_stig|default(false)
+    - role: common_criteria
+      when: check_common_criteria|default(false)
 
   post_tasks:
     - name: Revoke SSO token
       ovirt.ovirt.ovirt_auth:
         ovirt_auth: "{{ ovirt_auth }}"
         state: absent
-      delegate_to: "{{ item }}"
-      loop: "{{ groups['engine'] }}"
