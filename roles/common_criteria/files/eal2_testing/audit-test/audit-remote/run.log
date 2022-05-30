@@ -1,0 +1,1396 @@
+
+Started:                         Tue Jun  8 16:19:40 CEST 2021
+Kernel:                          3.10.0-1127.8.2.el7.x86_64
+Architecture:                    x86_64
+Mode:                            64
+Hostname:                        rhv.atsec.com
+Profile:                         capp
+selinux-policy version:          selinux-policy-3.13.1-266.el7.noarch
+
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31
+
+Log file started Tue Jun  8 16:19:40 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[0] remote_system server_basic immediate                                                                ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.H8L5eym2fK
+++++ mktemp
++++ tmp1=/tmp/tmp.4ALoEWQ5WR
+++++ mktemp
++++ tmp2=/tmp/tmp.AwvBkefvqT
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=server_basic
+++ mode=immediate
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=immediate
+++ '[' server_basic == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z server_basic ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.4ALoEWQ5WR /tmp/tmp.AwvBkefvqT /usr/local/eal4_testing/audit-test/tmp.H8L5eym2fK
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[1] remote_system server_basic forward                                                                  ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.yXIcyjUATC
+++++ mktemp
++++ tmp1=/tmp/tmp.sLnbn0lkIu
+++++ mktemp
++++ tmp2=/tmp/tmp.f5ykqtRo9k
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=server_basic
+++ mode=forward
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=forward
+++ '[' server_basic == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z server_basic ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.sLnbn0lkIu /tmp/tmp.f5ykqtRo9k /usr/local/eal4_testing/audit-test/tmp.yXIcyjUATC
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[2] remote_system server_msg_sequence immediate                                                         ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.OKED2abYCq
+++++ mktemp
++++ tmp1=/tmp/tmp.5I6aavxHEV
+++++ mktemp
++++ tmp2=/tmp/tmp.HdyqrUwOG6
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=server_msg_sequence
+++ mode=immediate
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=immediate
+++ '[' server_msg_sequence == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z server_msg_sequence ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.5I6aavxHEV /tmp/tmp.HdyqrUwOG6 /usr/local/eal4_testing/audit-test/tmp.OKED2abYCq
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[3] remote_system server_msg_sequence forward                                                           ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.3GHUCedmwL
+++++ mktemp
++++ tmp1=/tmp/tmp.6B3hjPSl4y
+++++ mktemp
++++ tmp2=/tmp/tmp.J1MIRg650w
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=server_msg_sequence
+++ mode=forward
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=forward
+++ '[' server_msg_sequence == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z server_msg_sequence ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.6B3hjPSl4y /tmp/tmp.J1MIRg650w /usr/local/eal4_testing/audit-test/tmp.3GHUCedmwL
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[4] remote_system client_basic immediate                                                                ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.3mtcD09XjO
+++++ mktemp
++++ tmp1=/tmp/tmp.sUbdEReBDd
+++++ mktemp
++++ tmp2=/tmp/tmp.dSxQWVTmkg
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=client_basic
+++ mode=immediate
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=immediate
+++ '[' client_basic == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z client_basic ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.sUbdEReBDd /tmp/tmp.dSxQWVTmkg /usr/local/eal4_testing/audit-test/tmp.3mtcD09XjO
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[5] remote_system client_basic forward                                                                  ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.VqlxH3PejO
+++++ mktemp
++++ tmp1=/tmp/tmp.16F78Ic4vF
+++++ mktemp
++++ tmp2=/tmp/tmp.75dbU6vOzX
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=client_basic
+++ mode=forward
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=forward
+++ '[' client_basic == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z client_basic ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.16F78Ic4vF /tmp/tmp.75dbU6vOzX /usr/local/eal4_testing/audit-test/tmp.VqlxH3PejO
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[6] remote_system client_disk_full immediate                                                            ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.4jJVXkEH6V
+++++ mktemp
++++ tmp1=/tmp/tmp.No8pdZjHti
+++++ mktemp
++++ tmp2=/tmp/tmp.Mbkwi2lCBR
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=client_disk_full
+++ mode=immediate
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=immediate
+++ '[' client_disk_full == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z client_disk_full ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.No8pdZjHti /tmp/tmp.Mbkwi2lCBR /usr/local/eal4_testing/audit-test/tmp.4jJVXkEH6V
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[7] remote_system client_disk_full forward                                                              ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.0rwklk5g9c
+++++ mktemp
++++ tmp1=/tmp/tmp.ye4LC0wXVd
+++++ mktemp
++++ tmp2=/tmp/tmp.axIuIaY6rz
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=client_disk_full
+++ mode=forward
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=forward
+++ '[' client_disk_full == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z client_disk_full ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.ye4LC0wXVd /tmp/tmp.axIuIaY6rz /usr/local/eal4_testing/audit-test/tmp.0rwklk5g9c
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[8] remote_system client_disk_error immediate                                                           ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.S7jpIBEhJw
+++++ mktemp
++++ tmp1=/tmp/tmp.1qoWf0yd71
+++++ mktemp
++++ tmp2=/tmp/tmp.h35jP3Imf6
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=client_disk_error
+++ mode=immediate
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=immediate
+++ '[' client_disk_error == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z client_disk_error ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.1qoWf0yd71 /tmp/tmp.h35jP3Imf6 /usr/local/eal4_testing/audit-test/tmp.S7jpIBEhJw
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[9] remote_system client_disk_error forward                                                             ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.eXgLbSPIm3
+++++ mktemp
++++ tmp1=/tmp/tmp.HkaH2tytoT
+++++ mktemp
++++ tmp2=/tmp/tmp.FFzEUVcz51
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=client_disk_error
+++ mode=forward
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=forward
+++ '[' client_disk_error == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z client_disk_error ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.HkaH2tytoT /tmp/tmp.FFzEUVcz51 /usr/local/eal4_testing/audit-test/tmp.eXgLbSPIm3
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[10] audisp-remote_connection noaction immediate                                                        ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[11] audisp-remote_connection noaction forward                                                          ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[12] audisp-remote_record_storage_configuration immediate                                               ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[13] audisp-remote_record_storage_configuration forward                                                 ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[14] audisp-remote_disk_low_action syslog immediate                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[15] audisp-remote_disk_low_action syslog forward                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[16] audisp-remote_disk_low_action suspend immediate                                                    ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+rotate_audit_logs: Seems that USR1 is not supported
+Stopping logging: [FAILED]
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[17] audisp-remote_disk_low_action suspend forward                                                      ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[18] audisp-remote_disk_low_action stop immediate                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[19] audisp-remote_disk_low_action stop forward                                                         ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[20] audisp-remote_disk_low_action halt immediate                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[21] audisp-remote_disk_low_action halt forward                                                         ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[22] audisp-remote_disk_low_action single immediate                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[23] audisp-remote_disk_low_action single forward                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[24] audisp-remote_disk_low_action exec immediate                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[25] audisp-remote_disk_low_action exec forward                                                         ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[26] audisp-remote_disk_full_action syslog immediate                                                    ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[27] audisp-remote_disk_full_action syslog forward                                                      ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[28] audisp-remote_disk_full_action suspend immediate                                                   ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[29] audisp-remote_disk_full_action suspend forward                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[30] audisp-remote_disk_full_action stop immediate                                                      ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[31] audisp-remote_disk_full_action stop forward                                                        ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[32] audisp-remote_disk_full_action halt immediate                                                      ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[33] audisp-remote_disk_full_action halt forward                                                        ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[34] audisp-remote_disk_full_action single immediate                                                    ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[35] audisp-remote_disk_full_action single forward                                                      ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[36] audisp-remote_disk_full_action exec immediate                                                      ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[37] audisp-remote_disk_full_action exec forward                                                        ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[38] audisp-remote_disk_error_action syslog immediate                                                   ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[39] audisp-remote_disk_error_action syslog forward                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[40] audisp-remote_disk_error_action suspend immediate                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[41] audisp-remote_disk_error_action suspend forward                                                    ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[42] audisp-remote_disk_error_action stop immediate                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[43] audisp-remote_disk_error_action stop forward                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[44] audisp-remote_disk_error_action halt immediate                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[45] audisp-remote_disk_error_action halt forward                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[46] audisp-remote_disk_error_action single immediate                                                   ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[47] audisp-remote_disk_error_action single forward                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start.
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[48] audisp-remote_disk_error_action exec immediate                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[49] audisp-remote_disk_error_action exec forward                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[50] audisp-remote_remote_ending_action reconnect immediate                                             ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[51] audisp-remote_remote_ending_action reconnect forward                                               ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[52] audisp-remote_remote_ending_action syslog immediate                                                ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+rotate_audit_logs: Seems that USR1 is not supported
+Stopping logging: [FAILED]
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[53] audisp-remote_remote_ending_action syslog forward                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[54] audisp-remote_remote_ending_action suspend immediate                                               ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[55] audisp-remote_remote_ending_action suspend forward                                                 ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[56] audisp-remote_remote_ending_action stop immediate                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[57] audisp-remote_remote_ending_action stop forward                                                    ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[58] audisp-remote_remote_ending_action halt immediate                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[59] audisp-remote_remote_ending_action halt forward                                                    ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[60] audisp-remote_remote_ending_action single immediate                                                ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[61] audisp-remote_remote_ending_action single forward                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[62] audisp-remote_remote_ending_action exec immediate                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[63] audisp-remote_remote_ending_action exec forward                                                    ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[64] audisp-remote_network_failure_action syslog immediate                                              ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[65] audisp-remote_network_failure_action syslog forward                                                ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[66] audisp-remote_network_failure_action suspend immediate                                             ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[67] audisp-remote_network_failure_action suspend forward                                               ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[68] audisp-remote_network_failure_action stop immediate                                                ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[69] audisp-remote_network_failure_action stop forward                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[70] audisp-remote_network_failure_action halt immediate                                                ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[71] audisp-remote_network_failure_action halt forward                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[72] audisp-remote_network_failure_action single immediate                                              ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[73] audisp-remote_network_failure_action single forward                                                ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[74] audisp-remote_network_failure_action exec immediate                                                ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[75] audisp-remote_network_failure_action exec forward                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[76] cap_audit_control                                                                                  ERROR (2)
+--- begin output -----------------------------------------------------------
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+
+
+
+   0 pass (0%)
+   0 fail (0%)
+  77 error (100%)
+------------------
+  77 total
+Killing all processes for testuser
+Removing user testuser
+Removing group testuser
+Killing all processes for testadmin
+Removing user testadmin
+Removing group testadmin

@@ -1,0 +1,117 @@
+Log file started Thu Jun 24 13:14:52 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                                                 Result
+--------                                                                                                                 ------
+[0] sshd                                                                                                                  PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source tp_ssh_functions.bash
+++ source functions.bash
++++ [[ -z 1 ]]
++++ return 0
+++ BFOLDER=/tmp
+++ RND=11685
+++ TIMEOUT=600
++ disable_ssh_strong_rng
++ MPROFILE=/etc/profile
++ SSHDCONF=/etc/sysconfig/sshd
++ CCCONF=/etc/profile.d/cc-configuration.sh
++ '[' -e /etc/profile ']'
++ backup /etc/profile
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.XXXXXX
++ b=/etc/profile.K3HbTf
++ cp -a /etc/profile /etc/profile.K3HbTf
++ prepend_cleanup 'mv -f '\''/etc/profile.K3HbTf'\'' '\''/etc/profile'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/profile.K3HbTf'\'' '\''/etc/profile'\''
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+    }'
++ '[' -e /etc/sysconfig/sshd ']'
++ backup /etc/sysconfig/sshd
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/sysconfig/sshd.XXXXXX
++ b=/etc/sysconfig/sshd.Icc2RG
++ cp -a /etc/sysconfig/sshd /etc/sysconfig/sshd.Icc2RG
++ prepend_cleanup 'mv -f '\''/etc/sysconfig/sshd.Icc2RG'\'' '\''/etc/sysconfig/sshd'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/sysconfig/sshd.Icc2RG'\'' '\''/etc/sysconfig/sshd'\''
+	    mv -f '\''/etc/profile.K3HbTf'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp"
+    }'
++ '[' -e /etc/profile.d/cc-configuration.sh ']'
++ ssh_remove_screen /etc/profile
++ '[' x/etc/profile = x ']'
++ '[' -f /etc/profile ']'
++ sed -i 's/.*sleep [0-9]\+.*//g; s/.*exec.*SCREENEXEC.*//g' /etc/profile
++ ssh_restart_daemon
++ '[' capp = lspp ']'
++ service sshd restart
+Redirecting to /bin/systemctl restart sshd.service
++ ssh_remove_strong_rng_env
++ export -n SSH_USE_STRONG_RNG
++ prepend_cleanup 'export SSH_USE_STRONG_RNG=12; readonly SSH_USE_STRONG_RNG'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	export SSH_USE_STRONG_RNG=12; readonly SSH_USE_STRONG_RNG
+	    mv -f '\''/etc/sysconfig/sshd.Icc2RG'\'' '\''/etc/sysconfig/sshd'\'';
+    mv -f '\''/etc/profile.K3HbTf'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp"
+    }'
++ ssh_remove_strong_rng /etc/sysconfig/sshd
++ '[' x/etc/sysconfig/sshd = x ']'
++ '[' -f /etc/sysconfig/sshd ']'
++ sed -i 's/.*SSH_USE_STRONG_RNG.*//g' /etc/sysconfig/sshd
++ ssh_remove_strong_rng /etc/profile.d/cc-configuration.sh
++ '[' x/etc/profile.d/cc-configuration.sh = x ']'
++ '[' -f /etc/profile.d/cc-configuration.sh ']'
++ return
++ ssh_restart_daemon
++ '[' capp = lspp ']'
++ service sshd restart
+Redirecting to /bin/systemctl restart sshd.service
++ expect -c '
+    spawn ssh testuser@localhost
+    expect {
+        {continue} {send yes\r; exp_continue}
+        {assword} {send 2manySecre+S-23615\r}
+    }
+    expect {testuser} {send exit\r}
+    expect eof
+    exit 0'
+spawn ssh testuser@localhost
+testuser@localhost's password: 
+Last failed login: Thu Jun 24 13:12:58 CEST 2021 from localhost on ssh:notty
+There were 344 failed login attempts since the last successful login.
+nodectl must be run as root!
+nodectl must be run as root!
+]0;testuser@rhv:~[?1034h[testuser@rhv ~]$ exit
+logout
+Connection to localhost closed.
++ msg_1='acct="*testuser"*[ :]* exe=.*/usr/sbin/sshd.*terminal=ssh res=success.*'
++ augrok -q type=CRED_REFR 'msg_1=~PAM:*setcred.* acct="*testuser"*[ :]* exe=.*/usr/sbin/sshd.*terminal=ssh res=success.*'
++ augrok -q type=CRED_ACQ 'msg_1=~PAM:*setcred.* acct="*testuser"*[ :]* exe=.*/usr/sbin/sshd.*terminal=ssh res=success.*'
++ augrok -q type=USER_ACCT 'msg_1=~PAM:*accounting.* acct="*testuser"*[ :]* exe=.*/usr/sbin/sshd.*terminal=ssh res=success.*'
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ export SSH_USE_STRONG_RNG=12
++ SSH_USE_STRONG_RNG=12
++ readonly SSH_USE_STRONG_RNG
++ mv -f /etc/sysconfig/sshd.Icc2RG /etc/sysconfig/sshd
++ mv -f /etc/profile.K3HbTf /etc/profile
++ rm -f /tmp/tmp.voPY3lz8Rs /tmp/tmp.Hpan5R7kYl /usr/local/eal4_testing/audit-test/tmp.whJH9ehKFw
++ exit
+--- end output -------------------------------------------------------------
+

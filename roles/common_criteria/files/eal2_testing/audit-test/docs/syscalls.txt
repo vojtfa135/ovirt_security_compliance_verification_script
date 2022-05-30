@@ -1,0 +1,1198 @@
+# This file contains a description of the test cases used to verify
+# auditing of security relevant syscalls.  The information was pulled
+# from the comment headers in each of the syscall test cases.
+
+FILE:
+test_access.c
+
+PURPOSE:
+Verify audit of attempts to check file access permissions.
+
+SYSCALLS:
+access()
+
+TESTCASE: successful
+Check read access permissions on a file with read permissions.
+
+TESTCASE: unsuccessful
+Attempt to check write access permissions on a file with read-only
+permissions.
+
+ ---
+
+FILE:
+test_adjtimex.c
+
+PURPOSE:
+Verify audit of attempts to tune kernel clock.
+
+SYSCALLS:
+adjtimex()
+
+TESTCASE: successful
+Noop as root user.
+
+TESTCASE: unsuccessful
+Attempt to set timex mode as test user.
+
+ ---
+
+FILE:
+test_bind.c
+
+PURPOSE:
+Verify audit of attempts to bind a name to a socket.
+
+SYSCALLS:
+bind()
+
+TESTCASE: successful
+Bind to a privileged port as the super user.
+
+TESTCASE: unsuccessful
+Attempt to bind to a privileged port as a non-privileged user.
+
+ ---
+
+FILE:
+test_capset.c
+
+PURPOSE:
+Verify audit of attempts to set process capabilities.
+
+SYSCALLS:
+capset()
+
+TESTCASE: successful
+Set capabilities as obtained from capget().
+
+TESTCASE: unsuccessful
+Attempt to set a capability in the effective set that is not in
+the permitted set.
+
+ ---
+
+FILE:
+test_chdir.c
+
+PURPOSE:
+Verify audit of attempts to change working directory.
+
+SYSCALLS:
+chdir()
+
+TESTCASE: successful
+Change working directory to one for which user has access
+permissions.
+
+TESTCASE: unsuccessful
+Attempt to change working directory to one for which user does not
+have access permissions.
+
+ ---
+
+FILE:
+test_chmod.c
+
+PURPOSE:
+Verify audit of attempts to change file access permissions.
+
+SYSCALLS:
+chmod()
+
+TESTCASE: successful
+Modify file access permissions for a file for which user has
+appropriate permissions to do so.
+
+TESTCASE: unsuccessful
+Attempt to modify file access permissions for a file for which
+user does not have appropriate permissions to do so.
+
+ ---
+
+FILE:
+test_chown.c
+
+PURPOSE:
+Verify audit of attempts to change file owner and group.
+
+SYSCALLS:
+chown(), chown32()
+
+TESTCASE: successful
+Change a file's owner and group as the superuser.
+
+TESTCASE: unsuccessful
+Attempt to change a file's owner and group as regular user.
+
+ ---
+
+FILE:
+test_clock_settime.c
+
+PURPOSE:
+Verify audit of attempts to change system time.
+
+SYSCALLS:
+clock_settime()
+
+TESTCASE: successful
+Set system time as root user.
+
+TESTCASE: unsuccessful
+Attempt to set system time as test user.
+
+ ---
+
+FILE:
+test_clone.c
+
+PURPOSE:
+Verify audit of attempts to create child processes.
+
+SYSCALLS:
+clone(), clone2
+
+TESTCASE: successful
+Create a child process with CLONE_NEWNS as root user.
+
+TESTCASE: unsuccessful
+Attempt to create a child process with CLONE_NEWNS as test user.
+
+ ---
+
+FILE:
+test_creat.c
+
+PURPOSE:
+Verify audit of attempts to create files.
+
+SYSCALLS:
+creat()
+
+TESTCASE: successful
+Create a file in a directory for which user has appropriate
+permissions.
+
+TESTCASE: unsuccessful
+Attempt to create a file in a directory for which user does not
+have appropriate permissions.
+
+ ---
+
+FILE:
+test_delete_module.c
+
+PURPOSE:
+Verify audit of attempts to delete kernel module entries.
+SYSCALLS:
+delete_module()
+
+TESTCASE: successful
+Delete module entry as root user.
+
+TESTCASE: unsuccessful
+Attempt to delete module entry as test user.
+
+ ---
+
+FILE:
+test_execve.c
+
+PURPOSE:
+Verify audit of attempts to execute a program.
+
+SYSCALLS:
+execve()
+
+TESTCASE: successful
+Execute /bin/true.
+
+TESTCASE: unsuccessful
+Attempt to execute a file which does have execute access
+permission.
+
+ ---
+
+FILE:
+test_fchmod.c
+
+PURPOSE:
+Verify audit of attempts to change file access permissions.
+
+SYSCALLS:
+fchmod()
+
+TESTCASE: successful
+Modify file access permissions for a file for which user has
+appropriate permissions to do so.
+
+TESTCASE: unsuccessful
+Attempt to modify file access permissions for a file for which
+user does not have appropriate permissions to do so.
+
+ ---
+
+FILE:
+test_fchown.c
+
+PURPOSE:
+Verify audit of attempts to change file owner and group.
+
+SYSCALLS:
+fchown(), fchown32()
+
+TESTCASE: successful
+Change a file's owner and group as the superuser.
+
+TESTCASE: unsuccessful
+Attempt to change a file's owner and group as regular user.
+
+ ---
+
+FILE:
+test_fork.c
+
+PURPOSE:
+Verify audit of attempts to create a child process.
+
+SYSCALLS:
+fork(), vfork()
+
+TESTCASE: successful
+Create a child process as root user.
+
+TESTCASE: unsuccessful
+With RLIMIT_NPROC set to 1, attempt to create a child process as
+the test user.
+
+ ---
+
+FILE:
+test_fremovexattr.c
+
+PURPOSE:
+Verify audit of attempts to remove extended attributes via a file
+descriptor.
+
+SYSCALLS:
+fremovexattr()
+
+TESTCASE: successful
+Remove an extended attribute for a file for which user has
+appropriate permissions.
+
+TESTCASE: unsuccessful
+Attempt to remove an extended attribute for a file for which
+user does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_fsetxattr.c
+
+PURPOSE:
+Verify audit of attempts to set extended attribute values via a
+file descriptor.
+
+SYSCALLS:
+fsetxattr()
+
+TESTCASE: successful
+Set an extended attribute value for a file for which user has
+appropriate permissions.
+
+TESTCASE: unsuccessful
+Attempt to set an extended attribute value for a file for which
+user does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_init_module.c
+
+PURPOSE:
+Verify audit of attempts to initialize loadable kernel modules.
+SYSCALLS:
+init_module()
+
+TESTCASE: successful
+Load kernel module as root user.
+
+TESTCASE: unsuccessful
+Attempt to load kernel module as test user.
+
+ ---
+
+FILE:
+test_ioctl.c
+
+PURPOSE:
+Verify audit of device control operations.
+
+SYSCALLS:
+ioctl()
+
+TESTCASE: successful
+Get tty attributes of DEFAULT_DEVICE_FILE.
+
+TESTCASE: unsuccessful
+Attempt to get tty attributes for invalid descriptor.
+
+ ---
+
+FILE:
+test_ioperm.c
+
+PURPOSE:
+Verify audit of changes to port input/output permissions.
+
+SYSCALLS:
+ioperm()
+
+TESTCASE: successful
+Set port permissions as root user.
+
+TESTCASE: unsuccessful
+Attempt to set port permissions as test user.
+
+ ---
+
+FILE:
+test_iopl.c
+
+PURPOSE:
+Verify audit of changes to process I/O privilege level.
+
+SYSCALLS:
+iopl()
+
+TESTCASE: successful
+Set I/O privilege level as root user.
+
+TESTCASE: unsuccessful
+Attempt to set I/O privilege level as test user.
+
+ ---
+
+FILE:
+test_lchown.c
+
+PURPOSE:
+Verify audit of attempts to change file owner and group.
+
+SYSCALLS:
+lchown(), lchown32()
+
+TESTCASE: file successful
+Change a file's owner and group as the superuser.
+
+TESTCASE: file unsuccessful
+Attempt to change a file's owner and group as regular user.
+
+TESTCASE: symlink successful
+Change a symlink's owner and group as the superuser.
+
+TESTCASE: symlink unsuccessful
+Attempt to change a symlink's owner and group as regular user.
+
+ ---
+
+FILE:
+test_link.c
+
+PURPOSE:
+Verify audit of attempts to create hard links.
+
+SYSCALLS:
+link()
+
+TESTCASE: successful
+Create a hard link in a directory for which user has appropriate
+permissions.
+
+TESTCASE: unsuccessful
+Attempt to create a hard link in a directory for which user does
+not have appropriate permissions.
+
+ ---
+
+FILE:
+test_lremovexattr.c
+
+PURPOSE:
+Verify audit of attempts to remove extended attributes.
+
+SYSCALLS:
+lremovexattr()
+
+TESTCASE: file successful
+Remove an extended attribute for a file for which user has
+appropriate permissions.
+
+TESTCASE: file unsuccessful
+Attempt to remove an extended attribute for a file for which
+user does not have appropriate permissions.
+
+TESTCASE: symlink successful
+Remove an extended attribute for a symlink for which user has
+appropriate permissions.
+
+TESTCASE: symlink unsuccessful
+Attempt to remove an extended attribute for a symlink for which
+user does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_lsetxattr.c
+
+PURPOSE:
+Verify audit of attempts to set extended attribute values.
+
+SYSCALLS:
+lsetxattr()
+
+TESTCASE: file successful
+Set an extended attribute value for a file for which user has
+appropriate permissions.
+
+TESTCASE: file unsuccessful
+Attempt to set an extended attribute value for a file for which
+user does not have appropriate permissions.
+
+TESTCASE: symlink successful
+Set an extended attribute value for a symlink for which user has
+appropriate permissions.
+
+TESTCASE: symlink unsuccessful
+Attempt to set an extended attribute value for a symlink for which
+user does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_mkdir.c
+
+PURPOSE:
+Verify audit of attempts to create directories.
+
+SYSCALLS:
+mkdir()
+
+TESTCASE: successful
+Create a directory within a directory for which user has
+appropriate permissions.
+
+TESTCASE: unsuccessful
+Attempt to create a directory within a directory for which user
+does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_mknod.c
+
+PURPOSE:
+Verify audit of attempts to create special files.
+
+SYSCALLS:
+mknod()
+
+TESTCASE: successful
+Create a special file in a directory for which user has
+appropriate permissions.
+
+TESTCASE: unsuccessful
+Attempt to create a special file in a directory for which user
+does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_mount.c
+
+PURPOSE:
+Verify audit of attempts to mount filesystems.
+
+SYSCALLS:
+mount()
+
+TESTCASE: successful
+Mount a filesystem at a directory for which user has appropriate
+permissions.
+
+TESTCASE: unsuccessful
+Attempt to mount a filesystem at a directory for which user
+does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_msgctl.c
+
+PURPOSE:
+Verify audit of attempts perform message control operations.
+
+SYSCALLS:
+msgctl()
+
+TESTCASE: remove successful
+Remove a message queue.
+
+TESTCASE: remove unsuccessful
+Attempt to remove a message queue with insufficient access
+permissions.
+
+TESTCASE: setperms successful
+Change message queue permissions.
+
+TESTCASE: setperms unsuccessful
+Attempt to change message queue permissions, while having
+insufficient access permissions.
+
+ ---
+
+FILE:
+test_msgget.c
+
+PURPOSE:
+Verify audit of attempts to create/get message queue identifiers.
+
+SYSCALLS:
+msgget()
+
+TESTCASE: successful
+Get identifier for an existing message queue.
+
+TESTCASE: unsuccessful
+Attempt to create a new message queue with the key of an existing
+message queue (specifying IPC_EXCL).
+
+ ---
+
+FILE:
+test_msgrcv.c
+
+PURPOSE:
+Verify audit of attempts to read messages from a message queue.
+
+SYSCALLS:
+msgrcv()
+
+TESTCASE: successful
+Read a message from a message queue.
+
+TESTCASE: unsuccessful
+Attempt to read a message from a message queue with
+insufficient access permissions.
+
+ ---
+
+FILE:
+test_msgsnd.c
+
+PURPOSE:
+Verify audit of attempts to append messages to a message queue.
+
+SYSCALLS:
+msgsnd()
+
+TESTCASE: successful
+Append a message to a message queue.
+
+TESTCASE: unsuccessful
+Attempt to append a message to a message queue with insufficient
+access permissions.
+
+ ---
+
+FILE:
+test_open.c
+
+PURPOSE:
+Verify audit of attempts to open files.
+
+SYSCALLS:
+open()
+
+TESTCASE: successful
+Open a file for which user has access permissions.
+
+TESTCASE: unsuccessful
+Attempt to open a file for which user does not have access
+permissions.
+
+ ---
+
+FILE:
+test_ptrace.c
+
+PURPOSE:
+Verify audit of attempts to trace a process.
+
+SYSCALLS:
+ptrace()
+
+TESTCASE: successful
+Perform a PTRACE_ATTACH to a new child process.
+
+TESTCASE: unsuccessful
+Attempt to PTRACE_ATTACH to the init process.
+
+ ---
+
+FILE:
+test_removexattr.c
+
+PURPOSE:
+Verify audit of attempts to remove extended attributes.
+
+SYSCALLS:
+removexattr()
+
+TESTCASE: file successful
+Remove an extended attribute for a file for which user has
+appropriate permissions.
+
+TESTCASE: file unsuccessful
+Attempt to remove an extended attribute for a file for which
+user does not have appropriate permissions.
+
+TESTCASE: symlink successful
+Remove an extended attribute for a symlink for which user has
+appropriate permissions.
+
+TESTCASE: symlink unsuccessful
+Attempt to remove an extended attribute for a symlink for which
+user does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_rename.c
+
+PURPOSE:
+Verify audit of attempts change the name or location of a file.
+
+SYSCALLS:
+rename()
+
+TESTCASE: successful
+Rename a file to the name of an existing file.
+
+TESTCASE: unsuccessful
+Attempt to rename a file to the name of an existing file for which
+user does not have appropriate permissions to modify.
+
+ ---
+
+FILE:
+test_rmdir.c
+
+PURPOSE:
+Verify audit of attempts to remove a directory.
+
+SYSCALLS:
+rmdir()
+
+TESTCASE: successful
+Remove a directory for which user has appropriate permissions.
+
+TESTCASE: unsuccessful
+Attempt to remove a directory for which user does not
+have appropriate permissions.
+
+ ---
+
+FILE:
+test_semctl.c
+
+PURPOSE:
+Verify audit of attempts to perform semaphore control operations.
+
+SYSCALLS:
+semctl()
+
+TESTCASE: remove successful
+Remove a semaphore set.
+
+TESTCASE: remove unsuccessful
+Attempt to remove a semaphore set with insufficient access
+permissions.
+
+TESTCASE: setperms successful
+Change semaphore set permissions.
+
+TESTCASE: setperms unsuccessful
+Attempt to change semaphore set permissions, while having
+insufficient access permissions.
+
+ ---
+
+FILE:
+test_semget.c
+
+PURPOSE:
+Verify audit of attempts to create/get semaphore set identifiers.
+
+SYSCALLS:
+semget()
+
+TESTCASE: successful
+Get identifier for an existing semaphore set.
+
+TESTCASE: unsuccessful
+Attempt to create a new semaphore set with the key of an existing
+semaphore set (specifying IPC_EXCL).
+
+ ---
+
+FILE:
+test_semops.c
+
+PURPOSE:
+Verify audit of attempts to perform semaphore operations.
+
+SYSCALLS:
+semop(), semtimedop()
+
+TESTCASE: successful
+Perform a semaphore operation.
+
+TESTCASE: unsuccessful
+Attempt to perform a semaphore operation with insufficient access
+permissions to the set.
+
+ ---
+
+FILE:
+test_setfsgid.c
+
+PURPOSE:
+Verify audit of attempts to set filesystem group identity.
+
+SYSCALLS:
+setfsgid(), setfsgid32()
+
+TESTCASE: modify successful
+As root, attempt to set fsgid to test user's gid.
+
+TESTCASE: nomodify successful
+As test user with test user gids, attempt to set fsgid to root's gid.
+
+NOTES:
+A process's fsgid is equivalent to its egid, unless 
+explicitly set by setfsgid().
+
+setfsgid() fails when the caller's euid is not root, and the
+specified fsgid does not match the caller's current real gid,
+egid, sgid or fsgid.
+
+The setfsgid() syscalls do not return any error codes.
+
+ ---
+
+FILE:
+test_setfsuid.c
+
+PURPOSE:
+Verify audit of attempts to set filesystem user identity.
+
+SYSCALLS:
+setfsuid(), setfsuid32()
+
+TESTCASE: modify successful
+As root, attempt to set fsuid to test user's uid.
+
+TESTCASE: nomodify successful
+As test user attempt to set fsuid to test user's uid+1;
+
+NOTES:
+A process's fsuid is equivalent to its euid, unless 
+explicitly set by setfsuid().
+
+setfsuid() fails when the caller's euid is not root, and the
+specified fsuid does not match the caller's current real uid,
+euid, suid or fsuid.
+
+The setfsuid() syscalls do not return any error codes.
+
+ ---
+
+FILE:
+test_setgid.c
+
+PURPOSE:
+Verify audit of attempts to set effective group identity.
+
+SYSCALLS:
+setgid(), setgid32()
+
+TESTCASE: successful 
+As root, attempt to set egid to test user's gid.
+
+TESTCASE: unsuccessful
+As test user with test user gids, attempt to set egid to root's gid.
+
+ ---
+
+FILE:
+test_setgroups.c
+
+PURPOSE:
+Verify audit of attempts to set a process's list of supplementary
+group IDs.
+
+SYSCALLS:
+setgroups(), setgroups32()
+
+TESTCASE: successful
+As root, set the list of supplementary group IDs to the values in
+the list returned by getgroups().
+
+TESTCASE: unsuccessful
+As test user, attempt to set the list of supplementary group IDs
+to the list obtained as root user.
+
+ ---
+
+FILE:
+test_setregid.c
+
+PURPOSE:
+Verify audit of attempts to set real group identity.
+
+SYSCALLS:
+setregid(), setregid32()
+
+TESTCASE: successful 
+As root, attempt to set rgid to the test user's gid.  
+Effective gid is left unchanged.
+
+TESTCASE: unsuccessful
+As test user with test user gids, attempt to set rgid to root's
+gid.  Effective gid is left unchanged.
+
+ ---
+
+FILE:
+test_setresgid.c
+
+PURPOSE:
+Verify audit of attempts to set saved group identity.
+
+SYSCALLS:
+setresgid(), setresgid32()
+
+TESTCASE: successful 
+As root, attempt to set saved gid to test user's gid.  Real and
+effective gids are left unchanged.
+
+TESTCASE: unsuccessful
+AS test user with test user gids, attempt to set saved gid to
+root's gid.  Real and effective gids are left unchanged.
+
+ ---
+
+FILE:
+test_setresuid.c
+
+PURPOSE:
+Verify audit of attempts to set saved user identity.
+
+SYSCALLS:
+setresuid(), setresuid32()
+
+TESTCASE: successful 
+As root, attempt to set saved uid to test user's uid.  Real and
+effective uids are left unchanged.
+
+TESTCASE: unsuccessful
+AS test user, attempt to set saved uid to test user's uid+1;
+Real and effective uids are left unchanged.
+
+ ---
+
+FILE:
+test_setreuid.c
+
+PURPOSE:
+Verify audit of attempts to set real user identity.
+
+SYSCALLS:
+setreuid(), setreuid32()
+
+TESTCASE: successful 
+As root, attempt to set real uid to test user's uid.  
+Effective uid is left unchanged.
+
+TESTCASE: unsuccessful
+As test user, attempt to set real uid to test user's uid+1;
+Effective uid is left unchanged.
+
+ ---
+
+FILE:
+test_settimeofday.c
+
+PURPOSE:
+Verify audit of attempts to change system time.
+
+SYSCALLS:
+settimeofday()
+
+TESTCASE: successful
+Set system time as root user.
+
+TESTCASE: unsuccessful
+Attempt to set system time as test user.
+
+ ---
+
+FILE:
+test_setuid.c
+
+PURPOSE:
+Verify audit of attempts to set effective user identity.
+
+SYSCALLS:
+setuid(), setuid32()
+
+TESTCASE: successful 
+As root, attempt to set euid to root uid.  Dropping priveleges
+with setuid() would result in not being able to resume priveleges
+to search the audit log for the resulting record.
+
+TESTCASE: unsuccessful
+As test user, attempt to set euid to test user's uid+1;
+
+ ---
+
+FILE:
+test_setxattr.c
+
+PURPOSE:
+Verify audit of attempts to set extended attribute values.
+
+SYSCALLS:
+setxattr()
+
+TESTCASE: file successful
+Set an extended attribute value for a file for which user has
+appropriate permissions.
+
+TESTCASE: file unsuccessful
+Attempt to set an extended attribute value for a file for which
+user does not have appropriate permissions.
+
+TESTCASE: symlink successful
+Set an extended attribute value for a symlink for which user has
+appropriate permissions.
+
+TESTCASE: symlink unsuccessful
+Attempt to set an extended attribute value for a symlink for which
+user does not have appropriate permissions.
+
+ ---
+
+FILE:
+test_shmat.c
+
+PURPOSE:
+Verify audit of attempts to attach to a shared memory segment.
+
+SYSCALLS:
+shmat()
+
+TESTCASE: remove successful
+Attach to an existing shared memory segment.
+
+TESTCASE: remove unsuccessful
+Attempt to attach to an existing shared memory segment with
+insufficient access permissions.
+
+ ---
+
+FILE:
+test_shmctl.c
+
+PURPOSE:
+Verify audit of attempts to perform shared memory control operations.
+
+SYSCALLS:
+shmctl()
+
+TESTCASE: remove successful
+Mark a shared memory segment as destroyed.
+
+TESTCASE: remove unsuccessful
+Attempt to mark a shared memory segment as destroyed with
+insufficient access permissions.
+
+TESTCASE: setperms successful
+Change shared memory segment permissions.
+
+TESTCASE: setperms unsuccessful
+Attempt to change shared memory segment permissions, while having
+insufficient access permissions.
+
+ ---
+
+FILE:
+test_shmget.c
+
+PURPOSE:
+Verify audit of attempts to create/get identifiers for shared
+memory segments.
+
+SYSCALLS:
+shmget()
+
+TESTCASE: successful
+Get identifier for an existing shared memory segment.
+
+TESTCASE: unsuccessful
+Attempt to create a new shared memory segment with the key of an
+existing shared memory segment (specifying IPC_EXCL).
+
+ ---
+
+FILE:
+test_stime.c
+
+PURPOSE:
+Verify audit of attempts to change system time.
+
+SYSCALLS:
+stime()
+
+TESTCASE: successful
+Set system time as root user.
+
+TESTCASE: unsuccessful
+Attempt to set system time as test user.
+
+ ---
+
+FILE:
+test_swapon.c
+
+PURPOSE:
+Verify audit of attempts to start swapping to a file/device.
+
+SYSCALLS:
+swapon()
+
+TESTCASE: successful
+Start swapping to a file as the super user.
+
+TESTCASE: unsuccessful
+Attempt to start swapping to a file as an unprivileged user.
+
+
+ ---
+
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of version 2 the GNU General Public License as
+published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Implementation written by HP, based on original code from IBM.
+
+FILE:
+test_symlink.c
+
+PURPOSE:
+Verify audit of attempts to create symbolic links.
+
+SYSCALLS:
+symlink()
+
+TESTCASE: successful
+Create a symlink in a directory for which user has appropriate
+permissions.
+
+TESTCASE: unsuccessful
+Attempt to create a symlink in a directory for which user does
+not have appropriate permissions.
+
+ ---
+
+FILE:
+test_truncate.c
+
+PURPOSE:
+Verify audit of attempts to truncate a file to a specified length.
+
+SYSCALLS:
+truncate(), truncate64()
+
+TESTCASE: successful
+Trucate a file for which user has appropriate permissions.
+
+TESTCASE: unsuccessful
+Attempt to truncate a file for which user does not have
+appropriate permissions.
+
+ ---
+
+FILE:
+test_umask.c
+
+PURPOSE:
+Verify audit of changes to file creation mask.
+
+SYSCALLS:
+umask()
+
+TESTCASE: successful
+Set umask to current umask value.
+
+NOTES:
+umask() always succeeds.
+
+ ---
+
+FILE:
+test_unlink.c
+
+PURPOSE:
+Verify audit of attempts to remove a name from the filesystem.
+
+SYSCALLS:
+unlink()
+
+TESTCASE: successful
+Remove a name for which user has appropriate permissions.
+
+TESTCASE: unsuccessful
+Attempt to remove a name for which user does not have appropriate
+permissions.
+
+ ---
+
+FILE:
+test_utime.c
+
+PURPOSE:
+Verify audit of attempts to change file access/modification times.
+
+SYSCALLS:
+utime(), utimes()
+
+TESTCASE: successful
+Change file access and modification times for a file for which
+user has appropriate permissions.
+
+TESTCASE: unsuccessful
+Attempt to change file access and modification times for a file
+for which user does not have appropriate permissions.

@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[68] audisp-remote_network_failure_action stop immediate                                                ERROR (2)

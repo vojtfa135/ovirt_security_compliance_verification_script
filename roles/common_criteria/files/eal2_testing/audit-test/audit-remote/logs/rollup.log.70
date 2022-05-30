@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[70] audisp-remote_network_failure_action halt immediate                                                ERROR (2)

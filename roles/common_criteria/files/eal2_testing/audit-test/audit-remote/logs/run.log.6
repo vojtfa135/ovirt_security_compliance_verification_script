@@ -1,0 +1,66 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[6] remote_system client_disk_full immediate                                                            ERROR (2)
+        Please, define LBLNET_SVR_IPV4
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source audisp-remote_functions.bash
+++ source testcase.bash
++++ source functions.bash
+++++ [[ -z '' ]]
+++++ _FUNCTIONS_BASH=1
+++++ shopt -s extglob
+++++ unset auditd_conf audit_log
+++++ auditd_conf=/etc/audit/auditd.conf
+++++ audit_log=/var/log/audit/audit.log
+++++ unset zero
+++++ zero=test_remote_system.bash
+++++ [[ capp == lspp ]]
++++ [[ -n '' ]]
+++++ mktemp -p /usr/local/eal4_testing/audit-test
++++ localtmp=/usr/local/eal4_testing/audit-test/tmp.4jJVXkEH6V
+++++ mktemp
++++ tmp1=/tmp/tmp.No8pdZjHti
+++++ mktemp
++++ tmp2=/tmp/tmp.Mbkwi2lCBR
++++ trap 'test_cleanup; exit' 0 1 2 15
+++ debug=
+++ test_suite_path=/usr/local/eal4_testing/audit-test
++++ sed -n 's/^root:[ \t]*\([^,]*\).*/\1/p' /etc/aliases
+++ ralias=
+++ '[' -z ']'
+++ ralias=root
+++ eal_mail=/var/mail/root
+++ unset ralias
+++ syslog_file=/var/log/messages
+++ syslog_mark=0
+++ action=client_disk_full
+++ mode=immediate
+++ total_written=0
+++ local_audit_server_ip=
+++ auditd_conf=/etc/audit/auditd.conf
+++ audisp_remote_conf=/etc/audisp/audisp-remote.conf
+++ au_remote_conf=/etc/audisp/plugins.d/au-remote.conf
+++ audispd_conf=/etc/audisp/audispd.conf
+++ audit_log=/var/log/audit/audit.log
+++ remote_loggig_mode=immediate
+++ '[' client_disk_full == exec ']'
+++ max_audit_log_dump_seq=100
+++ remote_client_test_string='Client record for audit remote logging test'
+++ '[' -z client_disk_full ']'
++ '[' -z '' ']'
++ exit_error 'Please, define LBLNET_SVR_IPV4'
++ declare status
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ [[ Please, define LBLNET_SVR_IPV4 != *[!0-9]* ]]
++ status=2
++ [[ -n Please, define LBLNET_SVR_IPV4 ]]
++ printf '\nexit_error: %s\n' 'Please, define LBLNET_SVR_IPV4'
+
+exit_error: Please, define LBLNET_SVR_IPV4
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.No8pdZjHti /tmp/tmp.Mbkwi2lCBR /usr/local/eal4_testing/audit-test/tmp.4jJVXkEH6V
++ exit
+--- end output -------------------------------------------------------------
+

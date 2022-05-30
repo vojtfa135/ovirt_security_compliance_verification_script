@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[67] audisp-remote_network_failure_action suspend forward                                               ERROR (2)

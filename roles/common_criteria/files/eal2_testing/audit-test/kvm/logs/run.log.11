@@ -1,0 +1,35 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[11] test_network_export_other_source_ip.exp                                                   PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+spawn ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@192.168.129.129
+Warning: Permanently added '192.168.129.129' (ECDSA) to the list of known hosts.
+root@192.168.129.129's password: 
+]0;root@localhost:~[?1034h[root@localhost ~]# ping -c 5 -I 192.168.128.128 192.168.129.1
+bind: Cannot assign requested address
+]0;root@localhost:~[root@localhost ~]# echo $?
+2
+]0;root@localhost:~[root@localhost ~]# ping -c 5 -I 192.168.129.129 192.168.129.1
+PING 192.168.129.1 (192.168.129.1) from 192.168.129.129 : 56(84) bytes of data.
+64 bytes from 192.168.129.1: icmp_seq=1 ttl=64 time=0.144 ms
+64 bytes from 192.168.129.1: icmp_seq=2 ttl=64 time=0.164 ms
+64 bytes from 192.168.129.1: icmp_seq=3 ttl=64 time=0.096 ms
+64 bytes from 192.168.129.1: icmp_seq=4 ttl=64 time=0.099 ms
+64 bytes from 192.168.129.1: icmp_seq=5 ttl=64 time=0.105 ms
+
+--- 192.168.129.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4000ms
+rtt min/avg/max/mdev = 0.096/0.121/0.164/0.029 ms
+]0;root@localhost:~[root@localhost ~]# echo $?
+0
+]0;root@localhost:~[root@localhost ~]# 
+--- end output -------------------------------------------------------------
+

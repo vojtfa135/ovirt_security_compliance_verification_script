@@ -1,0 +1,11 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[15] audisp-remote_disk_low_action syslog forward                                                       ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
+To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
+--- end output -------------------------------------------------------------
+

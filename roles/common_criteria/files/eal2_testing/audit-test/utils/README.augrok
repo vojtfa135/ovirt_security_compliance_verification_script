@@ -1,0 +1,150 @@
+NAME
+    augrok - audit.log search tool
+
+SYNOPSIS
+    augrok [*-chqvV*] [*--ausearch --count --help --interpret --quiet --raw
+    --version*] [*-f logfile | --file logfile*] [*--seek offset*]
+    expression...
+
+    augrok *--resolve k=v*
+
+    augrok *--ausearch options...*
+
+DESCRIPTION
+    This tool provides a command-line interface for searching audit logs,
+    similar to ausearch but slower and possibly more flexible.
+
+  EXPRESSIONS
+    The primitive expression syntax is <key><op><value>, where <key> is one
+    of the keys from audit.log, <op> is an operator (==, !=, <, >, <=, >=,
+    =~) and <value> is the value against which to compare. There should be
+    no whitespace between the key, operator and value. The value should not
+    be quoted beyond the quoting required by the shell. For example,
+    "type=~SYSCALL" is valid but "type=~'SYSCALL'" is not. In particular,
+    make sure to quote any primitive expression containing < or >, otherwise
+    you're redirecting stdin/stdout, which is probably not what you
+    intended.
+
+    Complex expressions can be constructed using a combination of primitive
+    expressions and logical operators (not, and, or, and parentheses). Note
+    that parentheses may need to be quoted to escape interpretation by the
+    shell, for example: '(' type=~SYSCALL ')'
+
+    In addition to the keys in audit.log, two special keys are provided:
+    msg_time and msg_seq. These are the time and sequence values extracted
+    from the msg entry. In particular, msg_time is special because augrok
+    will automatically parse the comparison value into the
+    seconds-since-epoch format used by augrok, for example, the following
+    will find all messages that occurred during the specified half-hour:
+    'msg_time>=14:00' 'msg_time<14:30'
+
+  TAGGED EXPRESSIONS
+    As of augrok-2.0, a new syntax is provided to support queries against
+    the auxiliary records that make up a complete audit record. For example,
+    consider an AVC record with multiple PATH auxiliary records:
+
+        type=AVC msg=audit(1124137373.408:565): ...
+        type=SYSCALL msg=audit(1124137373.408:565): ...
+        type=PATH msg=audit(1124137373.408:565): subj=foo obj=bar ...
+        type=PATH msg=audit(1124137373.408:565): subj=baz obj=qux ...
+
+    In this case, an ordinary augrok query for subj==foo obj==qux would
+    match this record, since both these key/value pairs are present. However
+    the query really wants to know if these appear in the same auxiliary
+    record. To make this query work as intended, add a tag after the key to
+    indicate they should be on the same line: subj#a==foo obj#a==qux. This
+    would not be fooled by the above record.
+
+    The above query only uses one tag 'a'. Augrok will accept any number of
+    tags, but note that augrok will automatically discard any records for
+    which there are fewer lines than tags in the expression.
+
+    If a number is given in place of a tag, it's assumed to be referring to
+    that particular line, where the lines are numbered starting with 0. For
+    example the above query would match type#1=SYSCALL because of the second
+    line's type=SYSCALL.
+
+OPTIONS
+    --ausearch
+        If this is found anywhere on the command-line, all of the other
+        options are interpeted in ausearch mode. For the usage, try
+        --ausearch -h or read ausearch(8). Another way of invoking ausearch
+        mode is to run augrok through a symbolic link called ausearch.
+
+    -c --count
+        Suppress normal output; instead print a count of matching lines.
+
+    -f *logfile* --file *logfile*
+        Search a logfile other than /var/log/audit/audit.log
+
+    -h --help
+        Show usage information
+
+        -item -i --interpret
+
+        When possible, augrok will interpret values to human-readable. For
+        example, user ids are interpreted to user names, syscall numbers are
+        interpreted to syscall names, etc. Note that this option is not
+        required for the query to be interpreted: augrok always tries to
+        interpret query values so that, for example, uid=root is always
+        translated to uid=0, and syscall=creat is always translated to the
+        appropriate syscall number for the architecture.
+
+        The list of fields augrok attempts to interpret can be obtained with
+        --help-interpret
+
+    --nosync
+        Don't wait for auditd backlog to reach zero, as reported by auditctl
+        -s
+
+    -q --quiet
+        Quiet; do not write anything to standard output. Exit immediately
+        with zero status if any match is found, otherwise exit with non-zero
+        status.
+
+    --raw
+        Output the raw lines related to the search, rather than the lines
+        processed by augrok. Note this means that the search expression
+        differ from the output that appears, since the search expression
+        always operates on the processed format.
+
+    --resolve *key=value*
+        Resolve the value according to augrok's interpretation rules for
+        key. If value is non-numeric, reverse interpretation is attempted.
+        If key= is omitted, syscall= is assumed for backward compatibility.
+
+    --seek *offset*
+        Start the search at the first line at or after offset (bytes).
+
+    -V --version
+        Show version information.
+
+EXAMPLES
+    To count the number of records containing an auxiliary record with
+    type=SYSCALL:
+
+        $ augrok -c type==SYSCALL
+        537
+
+    To find a specific record:
+
+        $ augrok msg=='audit(1124137373.408:565):'
+        type=SYSCALL,FS_WATCH,FS_INODE,CWD,PATH msg=audit(1124137373.408:565):
+        arch=c0000032 syscall=1210 success=yes exit=0 a0=6000000000006388
+        a1=6000000000006390 a2=c00000000000048c a3=2000000000244238 items=1
+        pid=28239 auid=1001 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0
+        comm=chmod exe=/bin/chmod watch_inode=573461 watch=foo perm_mask=1
+        filterkey= perm=1 inode_dev=08:06 inode_gid=0 inode=573461 inode_uid=0
+        inode_rdev=00:00 cwd=/tmp rdev=00:00 ouid=0 dev=08:06 flags=1 mode=0100777
+        name=foo/a ogid=0 inode_1=573504
+
+    or equally, use just the sequence number:
+
+        $ augrok msg_seq==565
+        (same output as above)
+
+ENVIRONMENT VARIABLES
+    AUDIT_SEEK
+        If --seek is not specified and AUDIT_SEEK is set in the environemnt,
+        its value will be used as the default offset.
+

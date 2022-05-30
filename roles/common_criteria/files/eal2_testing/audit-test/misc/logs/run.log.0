@@ -1,0 +1,12 @@
+Log file started Thu Jun 17 16:17:11 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[0] objreuse objreuse-brk                                                                                      PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+--- end output -------------------------------------------------------------
+

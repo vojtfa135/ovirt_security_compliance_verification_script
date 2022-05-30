@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[44] audisp-remote_disk_error_action halt immediate                                                     ERROR (2)

@@ -1,0 +1,16 @@
+Log file started Tue Jun 29 11:13:06 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                      Result
+--------                                                                                      ------
+[0] auditd_restart                                                                             PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+Stopping logging: [  OK  ]
+Redirecting start to /bin/systemctl start auditd.service
+type=DAEMON_END msg=audit(1624957987.792:4047): op=terminate auid=1002 pid=7855 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 res=success
+type=DAEMON_START msg=audit(1624957988.935:4576): op=start ver=2.8.5 format=raw kernel=3.10.0-1127.8.2.el7.x86_64 auid=4294967295 pid=7872 uid=0 ses=4294967295 subj=system_u:system_r:auditd_t:s0 res=success
+--- end output -------------------------------------------------------------
+

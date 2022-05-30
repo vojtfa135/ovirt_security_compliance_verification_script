@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[26] audisp-remote_disk_full_action syslog immediate                                                    ERROR (2)

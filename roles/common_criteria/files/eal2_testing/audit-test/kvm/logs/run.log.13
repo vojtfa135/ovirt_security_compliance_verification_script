@@ -1,0 +1,177 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[13] test_selinux_ipc_signals.bash                                                             PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ echo '11105
+11177
+28455'
+++ wc -l
++ pids_count=3
+++ mktemp test_selinux_ipc_signals_killXXXXXX
++ kill_file=test_selinux_ipc_signals_killeBdbQA
++ append_cleanup 'rm -f test_selinux_ipc_signals_killeBdbQA'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	rm -f test_selinux_ipc_signals_killeBdbQA
+    }'
++ rm -f test_selinux_ipc_signals_killeBdbQA
++ cp -p /bin/kill test_selinux_ipc_signals_killeBdbQA
++ chcon -t qemu_exec_t test_selinux_ipc_signals_killeBdbQA
++ for pid in '$pids'
+++ stat -c %s /var/log/audit/audit.log
++ offset=350472
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killeBdbQA -9 11105
+test_selinux_ipc_signals_killeBdbQA: sending signal to 11105 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 350472 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 54: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==9 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 350472 type==SYSCALL and syscall==62 and success==no and a1==9 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 60: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killeBdbQA -19 11105
+test_selinux_ipc_signals_killeBdbQA: sending signal to 11105 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 350472 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+2 -lt 2 ]]
+./test_selinux_ipc_signals.bash: line 72: [[: HHHHHHHHHHHHHHHHHHHH 
+2: syntax error in expression (error token is "2")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==13 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 350472 type==SYSCALL and syscall==62 and success==no and a1==13 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 78: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ for pid in '$pids'
+++ stat -c %s /var/log/audit/audit.log
++ offset=352116
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killeBdbQA -9 11177
+test_selinux_ipc_signals_killeBdbQA: sending signal to 11177 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 352116 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 54: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==9 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 352116 type==SYSCALL and syscall==62 and success==no and a1==9 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 60: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killeBdbQA -19 11177
+test_selinux_ipc_signals_killeBdbQA: sending signal to 11177 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 352116 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+2 -lt 2 ]]
+./test_selinux_ipc_signals.bash: line 72: [[: HHHHHHHHHHHHHHHHHHHH 
+2: syntax error in expression (error token is "2")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==13 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 352116 type==SYSCALL and syscall==62 and success==no and a1==13 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 78: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ for pid in '$pids'
+++ stat -c %s /var/log/audit/audit.log
++ offset=353760
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killeBdbQA -9 28455
+test_selinux_ipc_signals_killeBdbQA: sending signal to 28455 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 353760 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 54: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==9 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 353760 type==SYSCALL and syscall==62 and success==no and a1==9 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 60: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killeBdbQA -19 28455
+test_selinux_ipc_signals_killeBdbQA: sending signal to 28455 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 353760 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+2 -lt 2 ]]
+./test_selinux_ipc_signals.bash: line 72: [[: HHHHHHHHHHHHHHHHHHHH 
+2: syntax error in expression (error token is "2")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==13 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 353760 type==SYSCALL and syscall==62 and success==no and a1==13 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 78: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
+++ ps -C qemu-kvm -o pid=
+++ wc -l
++ _pids_count=3
++ [[ 3 -ne 3 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.JI7ypohXkA /tmp/tmp.IzS5zPJFOH /usr/local/eal2_testing/audit-test/tmp.taYnMNbT7N
++ rm -f test_selinux_ipc_signals_killeBdbQA
++ exit
+--- end output -------------------------------------------------------------
+

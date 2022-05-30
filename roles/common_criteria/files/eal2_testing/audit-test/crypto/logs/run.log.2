@@ -1,0 +1,63 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[2] ssh_dsa                                                                                             ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ setsebool ssh_sysadm_login=1
++ append_cleanup 'setsebool ssh_sysadm_login=0'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.XXXXXX
++ b=/etc/profile.RTJNKz
++ cp -a /etc/profile /etc/profile.RTJNKz
++ prepend_cleanup 'mv -f '\''/etc/profile.RTJNKz'\'' '\''/etc/profile'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/profile.RTJNKz'\'' '\''/etc/profile'\''
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/sysconfig/sshd
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/sysconfig/sshd.XXXXXX
++ b=/etc/sysconfig/sshd.NBzP2Y
++ cp -a /etc/sysconfig/sshd /etc/sysconfig/sshd.NBzP2Y
++ prepend_cleanup 'mv -f '\''/etc/sysconfig/sshd.NBzP2Y'\'' '\''/etc/sysconfig/sshd'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/sysconfig/sshd.NBzP2Y'\'' '\''/etc/sysconfig/sshd'\''
+	    mv -f '\''/etc/profile.RTJNKz'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile.d/cc-configuration.sh
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.d/cc-configuration.sh.XXXXXX
++ b=/etc/profile.d/cc-configuration.sh.W0S7V0
++ cp -a /etc/profile.d/cc-configuration.sh /etc/profile.d/cc-configuration.sh.W0S7V0
+cp: cannot stat '/etc/profile.d/cc-configuration.sh': No such file or directory
++ exit_error
++ declare status
++ [[ -n '' ]]
++ status=2
++ [[ -n '' ]]
++ exit 2
++ test_cleanup
++ mv -f /etc/sysconfig/sshd.NBzP2Y /etc/sysconfig/sshd
++ mv -f /etc/profile.RTJNKz /etc/profile
++ rm -f /tmp/tmp.4Zu5REFPGm /tmp/tmp.GU41VnDjZP /usr/local/eal4_testing/audit-test/tmp.h5cIOX0HN2
++ setsebool ssh_sysadm_login=0
++ exit
+--- end output -------------------------------------------------------------
+

@@ -1,5 +1,12 @@
 ---
 # tasks file for base_info
+- name: Authenticate against oVirt engine
+  ovirt.ovirt.ovirt_auth:
+    url: "{{ engine_url }}/ovirt-engine/api"
+    username: "{{ engine_username_full }}"
+    password: "{{ engine_password }}"
+    insecure: yes
+
 - name: Extract relevant information about hosts
   ovirt.ovirt.ovirt_host_info:
     auth: "{{ ovirt_auth }}"
@@ -13,10 +20,6 @@
 - name: Get the number of oVirt hosts
   set_fact:
     num_hosts: "{{ result['ovirt_hosts']|length }}"
-
-- name: API data
-  debug:
-    msg: "{{ result }}"
 
 - name: Print product type
   debug:
@@ -34,32 +37,27 @@
   set_fact:
     prod_version: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
 
-- name: Print retrieved OS information from oVirt API
-  debug:
-    msg: "{{ result.ovirt_hosts[item|int]['os']['type'] }}"
-  with_sequence: start=0 count={{ num_hosts }}
-
 - name: Add hosts to the inventory
   add_host:
     name: "{{ result.ovirt_hosts[item|int]['address'] }}"
-    groups: hosts
+    groups: ovirt_hosts
   with_sequence: start=0 count={{ num_hosts }}
 
-- name: Get OS release of the hosts
-  shell: cat /etc/*elease
-  register: os_release
-  delegate_to: "{{ item }}"
-  loop: "{{ groups['hosts'] }}"
-  become_user: root
+# - name: Get OS release of the hosts
+#   shell: cat /etc/*elease
+#   register: os_release
+#   delegate_to: "{{ item }}"
+#   loop: "{{ groups['hosts'] }}"
+#   become_user: root
+# 
+# - name: Parse retrieved OS release information
+#   set_fact:
+#     parsed_os_release: "{{ os_release['results'][0]['stdout_lines'] | last }}"
+#   delegate_to: "{{ item }}"
+#   loop: "{{ groups['hosts'] }}"
 
-- name: Parse retrieved OS release information
-  set_fact:
-    parsed_os_release: "{{ os_release['results'][0]['stdout_lines'] | last }}"
-  delegate_to: "{{ item }}"
-  loop: "{{ groups['hosts'] }}"
-
-- name: Print retrieved OS releases
-  debug:
-    msg: "{{ parsed_os_release }}"
-  delegate_to: "{{ item }}"
-  loop: "{{ groups['hosts'] }}"
+- name: Revoke SSO token
+  ovirt.ovirt.ovirt_auth:
+    ovirt_auth: "{{ ovirt_auth }}"
+    state: absent
+  when: check_base_info|default(false)

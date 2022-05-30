@@ -1,0 +1,66 @@
+Testcase                                                                                                                                                            Result
+--------                                                                                                                                                            ------
+[1] usb_passthrough dynamic_attach_on_boot                                                                                                                       ERROR (2)
+        USB device 0781:5581 not found
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source testcase.bash
+++ source functions.bash
++++ [[ -z '' ]]
++++ _FUNCTIONS_BASH=1
++++ shopt -s extglob
++++ unset auditd_conf audit_log
++++ auditd_conf=/etc/audit/auditd.conf
++++ audit_log=/var/log/audit/audit.log
++++ unset zero
++++ zero=test_usb_passthrough.bash
++++ [[ capp == lspp ]]
+++ [[ -n '' ]]
++++ mktemp -p /usr/local/eal4_testing/audit-test
+++ localtmp=/usr/local/eal4_testing/audit-test/tmp.4tUJWsWFB6
++++ mktemp
+++ tmp1=/tmp/tmp.UVfAliHnLd
++++ mktemp
+++ tmp2=/tmp/tmp.bdE0uAQaQW
+++ trap 'test_cleanup; exit' 0 1 2 15
++ source usb_device.conf
+++ usb_device_id=0781:5581
++ source tp_luks_functions.bash
+++ '[' -z ']'
++++ losetup -f
+++ LOOPDEV=/dev/loop0
+++ TIMEOUT=120
++ AUDIT_LOG=/var/log/audit/audit.log
++ USB_DEFCON=usb_device_t
++ scenario=dynamic_attach_on_boot
++ pkg_list='qemu-kvm libvirt libvirt-client'
++ [[ 0781:5581 == *X* ]]
+++ echo 0781:5581
+++ cut -d: -f1
++ usb_vendor=0781
++ '[' x = x0781 ']'
+++ echo 0781:5581
+++ cut -d: -f2
++ usb_product=5581
++ '[' x = x5581 ']'
+++ lsusb
+++ grep -m1 0781:5581
+++ tr : ' '
+++ cut '-d ' -f2
++ usb_bus=
++ '[' x = x ']'
++ exit_error 'USB device 0781:5581 not found'
++ declare status
++ [[ -n USB device 0781:5581 not found ]]
++ [[ USB device 0781:5581 not found != *[!0-9]* ]]
++ status=2
++ [[ -n USB device 0781:5581 not found ]]
++ printf '\nexit_error: %s\n' 'USB device 0781:5581 not found'
+
+exit_error: USB device 0781:5581 not found
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.UVfAliHnLd /tmp/tmp.bdE0uAQaQW /usr/local/eal4_testing/audit-test/tmp.4tUJWsWFB6
++ exit
+--- end output -------------------------------------------------------------
+

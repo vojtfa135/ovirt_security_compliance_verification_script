@@ -1,0 +1,36 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[7] test_selinux_trans_to_qemu.bash                                                            PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ sesearch -t qemu_t -c process -p transition --allow
+./test_selinux_trans_to_qemu.bash: line 30: sesearch: command not found
++ allowed=
+++ echo ''
+++ grep -E '^.*allow'
++ allowed=
+++ echo ''
+++ awk '{ print $2 }'
++ allowed=
+++ echo ''
+++ sed /lspp_harness_t/d
++ allowed=
+++ echo ''
+++ wc -l
++ allowed_count=1
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.I73Obom6o4 /tmp/tmp.NUqrWJKcN1 /usr/local/eal2_testing/audit-test/tmp.l73WyfcYRe
++ exit
+--- end output -------------------------------------------------------------
+

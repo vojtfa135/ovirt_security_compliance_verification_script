@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[18] audisp-remote_disk_low_action stop immediate                                                       ERROR (2)

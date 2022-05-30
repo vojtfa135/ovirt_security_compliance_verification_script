@@ -1,16 +1,15 @@
 ---
 # vars file for dependency_checker
-local_machine_dependencies_rh:
-  - sshpass
-  - libcurl-devel
-  - python38-devel
-  - openssl-devel
-  - libxslt-devel
-  - libxml2-devel
-  #- epel-release
+dep_checker_remove_deps: false
 
-ovirt_version: 44
-ovirt_repo: "http://resources.ovirt.org/pub/yum-repo/ovirt-release{{ ovirt_version }}.rpm"
+fips_dependencies:
+  - bs4
+  - requests
 
-ovirt_sdk: ovirt-engine-sdk-python
-# virtualenv_path: venv
+stig_dependencies:
+  - openscap-scanner
+  - scap-security-guide
+
+cc_dependencies:
+  - libselinux-devel
+  - rsync

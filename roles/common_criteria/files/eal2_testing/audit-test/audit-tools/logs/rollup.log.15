@@ -1,0 +1,3 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[15] ausearch -hn remote.system.domain.com                                                     PASS 

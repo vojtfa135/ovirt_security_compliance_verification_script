@@ -1,2 +1,36 @@
 ---
 # vars file for common_criteria
+cc_report_headline: COMMON CRITERIA COMPLIANCE REPORT
+cc_compliance_statement: Your infrastructure is compliant
+cc_non_compliance_statement: Your infrastructure is not compliant
+
+cc_required_prod: Red Hat Virtualization Manager
+cc_required_prod_version: 4.3.17
+cc_required_distribution: RedHat
+cc_required_os_version: 7.9
+
+cc_test_suite_name: eal2_testing
+cc_test_suite_remote_path: /tmp
+cc_required_test_suite_rc: 0
+
+cc_rules:
+  product_type:
+    name: Product type must be Red Hat Virtualization
+    pass: false
+    hint: The Security Target specifies that the TOE of this product is Red Hat Virtualization, therefore only this product is sufficient
+  product_version:
+    name: Product version must be 4.3.17
+    pass: false
+    hint: The Security Target identifies the version of RHV to be 4.3.17
+  os_type:
+    name: Operating system must be RHEL
+    pass: false
+    hint: The Security Target identifies the RHEL operating system as the provider of virtualization primitives for RHV
+  os_version:
+    name: Operating system version must be 7.9
+    pass: false
+    hint: The Security Target identifies the version of RHEL to be 7.9
+  test_results:
+    name: All tests from the test suite must pass
+    pass: false
+    hint: Unfortunately there is no formal way of remediating this issue

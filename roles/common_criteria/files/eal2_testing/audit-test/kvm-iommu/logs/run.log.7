@@ -1,0 +1,350 @@
+Testcase                                                                                                                                                            Result
+--------                                                                                                                                                            ------
+[7] pci_passthrough shared_attach_used                                                                                                                               FAIL 
+        Failed to start with assigned PCI
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source testcase.bash
+++ source functions.bash
++++ [[ -z '' ]]
++++ _FUNCTIONS_BASH=1
++++ shopt -s extglob
++++ unset auditd_conf audit_log
++++ auditd_conf=/etc/audit/auditd.conf
++++ audit_log=/var/log/audit/audit.log
++++ unset zero
++++ zero=test_pci_passthrough.bash
++++ [[ capp == lspp ]]
+++ [[ -n '' ]]
++++ mktemp -p /usr/local/eal4_testing/audit-test
+++ localtmp=/usr/local/eal4_testing/audit-test/tmp.lXOahb11mL
++++ mktemp
+++ tmp1=/tmp/tmp.GCwo3byodD
++++ mktemp
+++ tmp2=/tmp/tmp.gB3NeW8dct
+++ trap 'test_cleanup; exit' 0 1 2 15
++ source pci_device.conf
+++ pci_device=0000:03:00.0
++ source tp_luks_functions.bash
+++ '[' -z ']'
++++ losetup -f
+++ LOOPDEV=/dev/loop0
+++ TIMEOUT=120
++ PCI_DEFCON=sysfs_t
++ scenario=shared_attach_used
++ pkg_list='qemu-kvm libvirt libvirt-client'
++ pkg_list=bash
+++ lspci -vvv -s 0000:03:00.0
+++ sed -ne 's/Region.*Memory at \([a-f0-9]\{8\}\) .*/-e \1/p'
++ pci_regions='	-e f8000000'
++ [[ 0000:03:00.0 == *X* ]]
+++ echo 0000:03:00.0
+++ tr :. _
++ pci_device_name=pci_0000_03_00_0
+++ echo 0000:03:00.0
+++ cut -d: -f1
++ pci_domain=0000
+++ echo 0000:03:00.0
+++ cut -d: -f2
++ pci_bus=03
+++ echo 0000:03:00.0
+++ cut -d: -f3
+++ sed 's/\..*//'
++ pci_slot=00
+++ echo 0000:03:00.0
+++ cut -d. -f2
++ pci_function=0
++ dom1=guest1
++ dom2=guest2
++ dom3=guest1-dynamic
++ dom4=guest2-dynamic
++ img_path=/var/lib/libvirt/images
+++ cat /proc/sys/crypto/fips_enabled
++ FIPS=0
++ '[' x0 = x1 ']'
++ '[' -z shared_attach_used ']'
++ set_selinux_booleans
++ /usr/sbin/getsebool virt_use_sysfs
++ grep off
+Error getting active value for virt_use_sysfs
++ /usr/sbin/setsebool virt_use_sysfs 1
+Could not change active booleans: Invalid boolean
++ reload_kvm_module_for_unsafe_interrupts
++ ./evirsh --readonly list
++ grep running
+expect: spawn id exp4 not open
+    while executing
+"expect "password:" { send "Ooxee6ee\n" }"
+    (file "./evirsh" line 5)
++ /sbin/modprobe -r kvm_intel
++ /sbin/modprobe -r kvm
++ /sbin/modprobe kvm allow_unsafe_assigned_interrupts=1
+modprobe: ERROR: could not insert 'kvm': Unknown symbol in module, or unknown parameter (see dmesg)
++ /sbin/modprobe kvm_intel
++ check_kernel_boot_cmdline
++ /bin/grep intel_iommu=on /proc/cmdline
+BOOT_IMAGE=/rhvh-4.3.10.1-0.20200513.0+1/vmlinuz-3.10.0-1127.8.2.el7.x86_64 root=/dev/rhvh/rhvh-4.3.10.1-0.20200513.0+1 ro crashkernel=auto rd.lvm.lv=rhvh/swap rhgb quiet intel_iommu=on rd.lvm.lv=rhvh/rhvh-4.3.10.1-0.20200513.0+1 img.bootid=rhvh-4.3.10.1-0.20200513.0+1
++ return 0
++ check_enabled_iommu
++ /bin/dmesg
++ /bin/grep 'IOMMU.*enabled'
+[    0.000000] DMAR: IOMMU enabled
++ return 0
++ check_virt_extensions
++ /bin/grep vmx /proc/cpuinfo
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl aperfmperf eagerfpu pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 xsave lahf_lm tpr_shadow vnmi flexpriority dtherm
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl aperfmperf eagerfpu pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 xsave lahf_lm tpr_shadow vnmi flexpriority dtherm
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl aperfmperf eagerfpu pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 xsave lahf_lm tpr_shadow vnmi flexpriority dtherm
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl aperfmperf eagerfpu pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 xsave lahf_lm tpr_shadow vnmi flexpriority dtherm
++ return 0
++ check_selinux_booleans
++ return 0
++ check_kvm_modules
++ /sbin/lsmod
++ /bin/grep kvm_intel
+kvm_intel             188688  0 
+kvm                   636965  1 kvm_intel
++ return 0
++ check_installed_packages bash
++ /bin/rpm -q bash
+bash-4.2.46-34.el7.x86_64
++ return 0
++ prepare_guest_domains
++ /bin/dd if=/dev/zero of=/var/lib/libvirt/images/guest1.img bs=1M count=1
+1+0 records in
+1+0 records out
+1048576 bytes (1.0 MB) copied, 0.00191829 s, 547 MB/s
++ /bin/dd if=/dev/zero of=/var/lib/libvirt/images/guest2.img bs=1M count=1
+1+0 records in
+1+0 records out
+1048576 bytes (1.0 MB) copied, 0.00177194 s, 592 MB/s
++ /bin/dd if=/dev/zero of=/var/lib/libvirt/images/guest1-dynamic.img bs=1M count=1
+1+0 records in
+1+0 records out
+1048576 bytes (1.0 MB) copied, 0.00200687 s, 522 MB/s
++ /bin/dd if=/dev/zero of=/var/lib/libvirt/images/guest2-dynamic.img bs=1M count=1
+1+0 records in
+1+0 records out
+1048576 bytes (1.0 MB) copied, 0.00190708 s, 550 MB/s
++ /usr/bin/chcon system_u:object_r:svirt_image_t:s0:c50,c70 /var/lib/libvirt/images/guest1.img
++ /usr/bin/chcon system_u:object_r:svirt_image_t:s0:c19,c83 /var/lib/libvirt/images/guest2.img
++ append_cleanup '/bin/rm -f /var/lib/libvirt/images/guest1.img'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	/bin/rm -f /var/lib/libvirt/images/guest1.img
+    }'
++ append_cleanup '/bin/rm -f /var/lib/libvirt/images/guest2.img'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img
+	/bin/rm -f /var/lib/libvirt/images/guest2.img
+    }'
++ append_cleanup '/bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2.img
+	/bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img
+    }'
++ append_cleanup '/bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2.img;
+    /bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img
+	/bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img
+    }'
++ generate_pci_dev_file
++ /bin/cat
++ detach_multifunction_devices
+++ echo pci_0000:03:00.0
+++ tr :. _
++ pcifunction=pci_0000_03_00_0
+++ echo pci_0000_03_00_0
+++ sed 's/_[0-9]\+$//g'
++ pcidevice=pci_0000_03_00
+++ ./evirsh nodedev-list
+++ grep -c pci_0000_03_00
++ '[' 1 -gt 1 ']'
++ sestatus
++ grep mls
++ append_cleanup 'restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/resource*'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2.img;
+    /bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img
+	restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/resource*
+    }'
++ append_cleanup 'restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/rom'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2.img;
+    /bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/resource*
+	restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/rom
+    }'
++ append_cleanup 'restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/reset'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2.img;
+    /bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/resource*;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/rom
+	restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/reset
+    }'
+++ type -t test_shared_attach_used
++ '[' function == function ']'
++ test_shared_attach_used
++ relabel_pci_device_files_for_domain guest1
++ sestatus
++ grep mls
++ return 0
++ start_guest_with_pci_device guest1
++ local rc=0
++ create_guest_domain guest1 pci_dev.xml
++ '[' '!' -z pci_dev.xml ']'
++ /bin/sed '/HOSTDEV_CONFIG/ {r pci_dev.xml
+        d}' guest1-template.xml
++ append_cleanup '/bin/rm -f guest1.xml'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2.img;
+    /bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/resource*;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/rom;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/reset
+	/bin/rm -f guest1.xml
+    }'
++ prepend_cleanup './evirsh destroy guest1'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	./evirsh destroy guest1
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2.img;
+    /bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/resource*;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/rom;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/reset;
+    /bin/rm -f guest1.xml
+    }'
++ append_cleanup './evirsh nodedev-reattach pci_0000_03_00_0'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    ./evirsh destroy guest1;
+    rm -f "$tmp1" "$tmp2" "$localtmp";
+    /bin/rm -f /var/lib/libvirt/images/guest1.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2.img;
+    /bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img;
+    /bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/resource*;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/rom;
+    restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/reset;
+    /bin/rm -f guest1.xml
+	./evirsh nodedev-reattach pci_0000_03_00_0
+    }'
++ ./evirsh create guest1.xml
+spawn virsh create guest1.xml
+Please enter your authentication name: eal
+Please enter your password: 
+error: Failed to create domain from guest1.xml
+error: unsupported configuration: host doesn't support passthrough of host PCI devices
+
++ return 0
++ check_device_driver pci-stub
+++ readlink /sys/bus/pci/devices/0000:03:00.0/driver
++ driver=../../../../../bus/pci/drivers/bnx2
++ '[' x../../../../../bus/pci/drivers/bnx2 == x ']'
+++ basename ../../../../../bus/pci/drivers/bnx2
++ test bnx2 == pci-stub
++ return 1
++ (( rc+=2 ))
+++ get_guest_domain_pid guest1
+++ ./evirsh --readonly list
+++ grep guest1
+expect: spawn id exp4 not open
+    while executing
+"expect "password:" { send "Ooxee6ee\n" }"
+    (file "./evirsh" line 5)
+++ return
++ pid_maps=
++ check_proc_pid_maps
+++ readlink /sys/bus/pci/devices/0000:03:00.0/driver
++ driver=../../../../../bus/pci/drivers/bnx2
++ '[' x../../../../../bus/pci/drivers/bnx2 = x ']'
++ grep -e f8000000 /proc//maps
+grep: /proc//maps: No such file or directory
++ return 2
++ (( rc+=4 ))
++ return 6
++ exit_fail 'Failed to start with assigned PCI'
++ [[ -n Failed to start with assigned PCI ]]
++ printf '\nexit_fail: %s\n' 'Failed to start with assigned PCI'
+
+exit_fail: Failed to start with assigned PCI
++ exit 1
++ test_cleanup
++ ./evirsh destroy guest1
+spawn virsh destroy guest1
+Please enter your authentication name: eal
+Please enter your password: 
+error: failed to get domain 'guest1'
+error: Domain not found: no domain with matching name 'guest1'
+
++ rm -f /tmp/tmp.GCwo3byodD /tmp/tmp.gB3NeW8dct /usr/local/eal4_testing/audit-test/tmp.lXOahb11mL
++ /bin/rm -f /var/lib/libvirt/images/guest1.img
++ /bin/rm -f /var/lib/libvirt/images/guest2.img
++ /bin/rm -f /var/lib/libvirt/images/guest1-dynamic.img
++ /bin/rm -f /var/lib/libvirt/images/guest2-dynamic.img
++ restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/resource /sys/bus/pci/devices/0000:03:00.0/resource0
++ restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/rom
+restorecon:  lstat(/sys/bus/pci/devices/0000:03:00.0/rom) failed:  No such file or directory
++ restorecon -RvvvF /sys/bus/pci/devices/0000:03:00.0/reset
++ /bin/rm -f guest1.xml
++ ./evirsh nodedev-reattach pci_0000_03_00_0
+spawn virsh nodedev-reattach pci_0000_03_00_0
+Please enter your authentication name: eal
+Please enter your password: 
+Device pci_0000_03_00_0 re-attached
+
++ exit
+
+augrok output
+-------------
+Argument "enabled 1\nfailure 1\npid 943\nrate_limit 0\nbacklog_lim..." isn't numeric in numeric eq (==) at /usr/local/eal4_testing/audit-test/utils/augrok line 1209.
+type=VIRT_MACHINE_ID msg=audit(1623663295.218:528): pid=2035 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:virtd_t:s0-s0:c0.c1023 msg_1='virt=kvm vm="guest1" uuid=61637d28-e9a8-4109-ab38-a48ee2705634 vm-ctx=system_u:system_r:svirt_t:s0:c50,c70 img-ctx=system_u:object_r:svirt_image_t:s0:c50,c70 model=selinux exe="/usr/sbin/libvirtd" hostname=? addr=? terminal=? res=success'
+type=VIRT_MACHINE_ID msg=audit(1623663295.218:529): pid=2035 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:virtd_t:s0-s0:c0.c1023 msg_1='virt=kvm vm="guest1" uuid=61637d28-e9a8-4109-ab38-a48ee2705634 vm-ctx=+107:+107 img-ctx=+107:+107 model=dac exe="/usr/sbin/libvirtd" hostname=? addr=? terminal=? res=success'
+type=VIRT_RESOURCE msg=audit(1623663295.985:530): pid=2035 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:virtd_t:s0-s0:c0.c1023 msg_1='virt=kvm resrc=disk reason=start vm="guest1" uuid=61637d28-e9a8-4109-ab38-a48ee2705634 old-disk="?" new-disk="/var/lib/libvirt/images/guest1.img" exe="/usr/sbin/libvirtd" hostname=? addr=? terminal=? res=success'
+type=VIRT_RESOURCE msg=audit(1623663295.985:531): pid=2035 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:virtd_t:s0-s0:c0.c1023 msg_1='virt=kvm resrc=dev reason=start vm="guest1" uuid=61637d28-e9a8-4109-ab38-a48ee2705634 bus=pci device="0000:03:00.0" exe="/usr/sbin/libvirtd" hostname=? addr=? terminal=? res=success'
+type=VIRT_RESOURCE msg=audit(1623663295.985:532): pid=2035 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:virtd_t:s0-s0:c0.c1023 msg_1='virt=kvm resrc=mem reason=start vm="guest1" uuid=61637d28-e9a8-4109-ab38-a48ee2705634 old-mem=0 new-mem=262144 exe="/usr/sbin/libvirtd" hostname=? addr=? terminal=? res=success'
+type=VIRT_RESOURCE msg=audit(1623663295.985:533): pid=2035 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:virtd_t:s0-s0:c0.c1023 msg_1='virt=kvm resrc=vcpu reason=start vm="guest1" uuid=61637d28-e9a8-4109-ab38-a48ee2705634 old-vcpu=0 new-vcpu=1 exe="/usr/sbin/libvirtd" hostname=? addr=? terminal=? res=success'
+type=VIRT_CONTROL msg=audit(1623663295.985:534): pid=2035 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:virtd_t:s0-s0:c0.c1023 msg_1='virt=kvm op=start reason=booted vm="guest1" uuid=61637d28-e9a8-4109-ab38-a48ee2705634 vm-pid=-1 exe="/usr/sbin/libvirtd" hostname=? addr=? terminal=? res=failed'
+--- end output -------------------------------------------------------------
+

@@ -1,0 +1,15 @@
+#!/usr/bin/expect --
+if {[info exists ::env(VUSER)]} {
+        puts "using environment authentication data."
+        set VUSER $env(VUSER)
+        set VPASSWD $env(VPASSWD)
+} else {
+        puts "using fallback authentication data."
+        set VUSER "eal"
+        set VPASSWD "Ooxee6ee"
+}
+#spawn virsh {*}[lrange $argv 1 end]
+spawn virt-install {*}$argv
+expect "authentication name:" { send "$VUSER\n" }
+expect "password:" { send "$VPASSWD\n" }
+interact

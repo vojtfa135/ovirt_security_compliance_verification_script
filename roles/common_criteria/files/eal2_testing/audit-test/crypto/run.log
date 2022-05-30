@@ -1,0 +1,432 @@
+
+Started:                         Tue Jun  8 16:22:47 CEST 2021
+Kernel:                          3.10.0-1127.8.2.el7.x86_64
+Architecture:                    x86_64
+Mode:                            64
+Hostname:                        rhv.atsec.com
+Profile:                         capp
+selinux-policy version:          selinux-policy-3.13.1-266.el7.noarch
+
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31
+
+Log file started Tue Jun  8 16:22:47 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[0] cryptsetup_access                                                                                       FAIL 
+        Failed check on hash spec
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ create_loop_device
++ LOOPSIZE=100
++ '[' x '!=' x ']'
++ '[' x '!=' x ']'
+++ mktemp
++ LOOPFILE=/tmp/tmp.kVuhQ4X3Bu
++ dd if=/dev/zero of=/tmp/tmp.kVuhQ4X3Bu bs=1M count=100
+100+0 records in
+100+0 records out
+104857600 bytes (105 MB) copied, 0.163892 s, 640 MB/s
++ losetup /dev/loop1 /tmp/tmp.kVuhQ4X3Bu
++ prepend_cleanup remove_loop_device
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	remove_loop_device
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+    }'
++ create_luks 'kc3%a9?cF]Xffd'
++ expect -c '
+		set timeout 120
+		spawn cryptsetup luksFormat /dev/loop1
+		expect {Are you sure} {send "YES\r"}
+		expect {Enter} {send "kc3%a9?cF]Xffd\r"}
+		expect {Verify} {send "kc3%a9?cF]Xffd\r"}
+		expect eof
+	'
+spawn cryptsetup luksFormat /dev/loop1
+
+WARNING!
+========
+This will overwrite data on /dev/loop1 irrevocably.
+
+Are you sure? (Type uppercase yes): YES
+Enter passphrase for /tmp/tmp.kVuhQ4X3Bu: 
+Verify passphrase: 
+++ cat /proc/sys/crypto/fips_enabled
++ '[' x0 = x1 ']'
++ check_luks 1
++ '[' x1 = x ']'
+++ mktemp
++ TMP=/tmp/tmp.HThh74QwMO
++ cryptsetup luksDump /dev/loop1
++ egrep 'Cipher name.*aes' /tmp/tmp.HThh74QwMO
+Cipher name:   	aes
++ egrep 'Cipher mode.*(cbc-essiv:sha256|xts-plain64)' /tmp/tmp.HThh74QwMO
+Cipher mode:   	xts-plain64
++ egrep 'Hash spec.*sha1' /tmp/tmp.HThh74QwMO
++ exit_fail 'Failed check on hash spec'
++ [[ -n Failed check on hash spec ]]
++ printf '\nexit_fail: %s\n' 'Failed check on hash spec'
+
+exit_fail: Failed check on hash spec
++ exit 1
++ test_cleanup
++ remove_loop_device
++ '[' x '!=' x ']'
++ umount /dev/loop1
+umount: /dev/loop1: not mounted
+++ losetup /dev/loop1
+++ sed 's|.*(\(/.*\))|\1|g'
++ LOOPFILE=/tmp/tmp.kVuhQ4X3Bu
++ losetup -d /dev/loop1
++ rm -f /tmp/tmp.kVuhQ4X3Bu
++ rm -f /tmp/tmp.2p2mZaqVX0 /tmp/tmp.wA6zyrzNsx /usr/local/eal4_testing/audit-test/tmp.2103e4N2EY
++ exit
+
+augrok output
+-------------
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = (unset),
+	LC_CTYPE = "UTF-8",
+	LANG = "en_GB.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+Argument "enabled 1\nfailure 1\npid 6534\nrate_limit 0\nbacklog_li..." isn't numeric in numeric eq (==) at /usr/local/eal4_testing/audit-test/utils/augrok line 1208.
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[1] ssh_cipher_hmac                                                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ backup /etc/profile
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.XXXXXX
++ b=/etc/profile.UCtIL2
++ cp -a /etc/profile /etc/profile.UCtIL2
++ prepend_cleanup 'mv -f '\''/etc/profile.UCtIL2'\'' '\''/etc/profile'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/profile.UCtIL2'\'' '\''/etc/profile'\''
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+    }'
++ backup /etc/sysconfig/sshd
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/sysconfig/sshd.XXXXXX
++ b=/etc/sysconfig/sshd.LiiHJi
++ cp -a /etc/sysconfig/sshd /etc/sysconfig/sshd.LiiHJi
++ prepend_cleanup 'mv -f '\''/etc/sysconfig/sshd.LiiHJi'\'' '\''/etc/sysconfig/sshd'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/sysconfig/sshd.LiiHJi'\'' '\''/etc/sysconfig/sshd'\''
+	    mv -f '\''/etc/profile.UCtIL2'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp"
+    }'
++ backup /etc/profile.d/cc-configuration.sh
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.d/cc-configuration.sh.XXXXXX
++ b=/etc/profile.d/cc-configuration.sh.bDhu9i
++ cp -a /etc/profile.d/cc-configuration.sh /etc/profile.d/cc-configuration.sh.bDhu9i
+cp: cannot stat '/etc/profile.d/cc-configuration.sh': No such file or directory
++ exit_error
++ declare status
++ [[ -n '' ]]
++ status=2
++ [[ -n '' ]]
++ exit 2
++ test_cleanup
++ mv -f /etc/sysconfig/sshd.LiiHJi /etc/sysconfig/sshd
++ mv -f /etc/profile.UCtIL2 /etc/profile
++ rm -f /tmp/tmp.uviUDQVbuS /tmp/tmp.fTFejVI4y1 /usr/local/eal4_testing/audit-test/tmp.OVXiBqu3An
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[2] ssh_dsa                                                                                             ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ setsebool ssh_sysadm_login=1
++ append_cleanup 'setsebool ssh_sysadm_login=0'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.XXXXXX
++ b=/etc/profile.RTJNKz
++ cp -a /etc/profile /etc/profile.RTJNKz
++ prepend_cleanup 'mv -f '\''/etc/profile.RTJNKz'\'' '\''/etc/profile'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/profile.RTJNKz'\'' '\''/etc/profile'\''
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/sysconfig/sshd
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/sysconfig/sshd.XXXXXX
++ b=/etc/sysconfig/sshd.NBzP2Y
++ cp -a /etc/sysconfig/sshd /etc/sysconfig/sshd.NBzP2Y
++ prepend_cleanup 'mv -f '\''/etc/sysconfig/sshd.NBzP2Y'\'' '\''/etc/sysconfig/sshd'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/sysconfig/sshd.NBzP2Y'\'' '\''/etc/sysconfig/sshd'\''
+	    mv -f '\''/etc/profile.RTJNKz'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile.d/cc-configuration.sh
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.d/cc-configuration.sh.XXXXXX
++ b=/etc/profile.d/cc-configuration.sh.W0S7V0
++ cp -a /etc/profile.d/cc-configuration.sh /etc/profile.d/cc-configuration.sh.W0S7V0
+cp: cannot stat '/etc/profile.d/cc-configuration.sh': No such file or directory
++ exit_error
++ declare status
++ [[ -n '' ]]
++ status=2
++ [[ -n '' ]]
++ exit 2
++ test_cleanup
++ mv -f /etc/sysconfig/sshd.NBzP2Y /etc/sysconfig/sshd
++ mv -f /etc/profile.RTJNKz /etc/profile
++ rm -f /tmp/tmp.4Zu5REFPGm /tmp/tmp.GU41VnDjZP /usr/local/eal4_testing/audit-test/tmp.h5cIOX0HN2
++ setsebool ssh_sysadm_login=0
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[3] ssh_multi                                                                                           ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ setsebool ssh_sysadm_login=1
++ append_cleanup 'setsebool ssh_sysadm_login=0'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.XXXXXX
++ b=/etc/profile.q841nZ
++ cp -a /etc/profile /etc/profile.q841nZ
++ prepend_cleanup 'mv -f '\''/etc/profile.q841nZ'\'' '\''/etc/profile'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/profile.q841nZ'\'' '\''/etc/profile'\''
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/sysconfig/sshd
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/sysconfig/sshd.XXXXXX
++ b=/etc/sysconfig/sshd.M02Skp
++ cp -a /etc/sysconfig/sshd /etc/sysconfig/sshd.M02Skp
++ prepend_cleanup 'mv -f '\''/etc/sysconfig/sshd.M02Skp'\'' '\''/etc/sysconfig/sshd'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/sysconfig/sshd.M02Skp'\'' '\''/etc/sysconfig/sshd'\''
+	    mv -f '\''/etc/profile.q841nZ'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile.d/cc-configuration.sh
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.d/cc-configuration.sh.XXXXXX
++ b=/etc/profile.d/cc-configuration.sh.DzTtT0
++ cp -a /etc/profile.d/cc-configuration.sh /etc/profile.d/cc-configuration.sh.DzTtT0
+cp: cannot stat '/etc/profile.d/cc-configuration.sh': No such file or directory
++ exit_error
++ declare status
++ [[ -n '' ]]
++ status=2
++ [[ -n '' ]]
++ exit 2
++ test_cleanup
++ mv -f /etc/sysconfig/sshd.M02Skp /etc/sysconfig/sshd
++ mv -f /etc/profile.q841nZ /etc/profile
++ rm -f /tmp/tmp.HGcWu9QXRr /tmp/tmp.J0FjxK2JbI /usr/local/eal4_testing/audit-test/tmp.pXDRDbsO65
++ setsebool ssh_sysadm_login=0
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[4] ssh_rsa                                                                                             ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ setsebool ssh_sysadm_login=1
++ append_cleanup 'setsebool ssh_sysadm_login=0'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.XXXXXX
++ b=/etc/profile.OdgfyD
++ cp -a /etc/profile /etc/profile.OdgfyD
++ prepend_cleanup 'mv -f '\''/etc/profile.OdgfyD'\'' '\''/etc/profile'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/profile.OdgfyD'\'' '\''/etc/profile'\''
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/sysconfig/sshd
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/sysconfig/sshd.XXXXXX
++ b=/etc/sysconfig/sshd.vnR53R
++ cp -a /etc/sysconfig/sshd /etc/sysconfig/sshd.vnR53R
++ prepend_cleanup 'mv -f '\''/etc/sysconfig/sshd.vnR53R'\'' '\''/etc/sysconfig/sshd'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/sysconfig/sshd.vnR53R'\'' '\''/etc/sysconfig/sshd'\''
+	    mv -f '\''/etc/profile.OdgfyD'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile.d/cc-configuration.sh
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.d/cc-configuration.sh.XXXXXX
++ b=/etc/profile.d/cc-configuration.sh.vmxrUU
++ cp -a /etc/profile.d/cc-configuration.sh /etc/profile.d/cc-configuration.sh.vmxrUU
+cp: cannot stat '/etc/profile.d/cc-configuration.sh': No such file or directory
++ exit_error
++ declare status
++ [[ -n '' ]]
++ status=2
++ [[ -n '' ]]
++ exit 2
++ test_cleanup
++ mv -f /etc/sysconfig/sshd.vnR53R /etc/sysconfig/sshd
++ mv -f /etc/profile.OdgfyD /etc/profile
++ rm -f /tmp/tmp.hN0iU0qJMo /tmp/tmp.dIFRlKkNLy /usr/local/eal4_testing/audit-test/tmp.7CANtyIbIA
++ setsebool ssh_sysadm_login=0
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[5] ssh_sym                                                                                             ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ setsebool ssh_sysadm_login=1
++ append_cleanup 'setsebool ssh_sysadm_login=0'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.XXXXXX
++ b=/etc/profile.zQ9ktk
++ cp -a /etc/profile /etc/profile.zQ9ktk
++ prepend_cleanup 'mv -f '\''/etc/profile.zQ9ktk'\'' '\''/etc/profile'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/profile.zQ9ktk'\'' '\''/etc/profile'\''
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/sysconfig/sshd
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/sysconfig/sshd.XXXXXX
++ b=/etc/sysconfig/sshd.jmcjQG
++ cp -a /etc/sysconfig/sshd /etc/sysconfig/sshd.jmcjQG
++ prepend_cleanup 'mv -f '\''/etc/sysconfig/sshd.jmcjQG'\'' '\''/etc/sysconfig/sshd'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/sysconfig/sshd.jmcjQG'\'' '\''/etc/sysconfig/sshd'\''
+	    mv -f '\''/etc/profile.zQ9ktk'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp";
+    setsebool ssh_sysadm_login=0
+    }'
++ backup /etc/profile.d/cc-configuration.sh
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.d/cc-configuration.sh.XXXXXX
++ b=/etc/profile.d/cc-configuration.sh.UMyWmZ
++ cp -a /etc/profile.d/cc-configuration.sh /etc/profile.d/cc-configuration.sh.UMyWmZ
+cp: cannot stat '/etc/profile.d/cc-configuration.sh': No such file or directory
++ exit_error
++ declare status
++ [[ -n '' ]]
++ status=2
++ [[ -n '' ]]
++ exit 2
++ test_cleanup
++ mv -f /etc/sysconfig/sshd.jmcjQG /etc/sysconfig/sshd
++ mv -f /etc/profile.zQ9ktk /etc/profile
++ rm -f /tmp/tmp.V444wb1GYc /tmp/tmp.493lzkjCbk /usr/local/eal4_testing/audit-test/tmp.CzyBYk8S7z
++ setsebool ssh_sysadm_login=0
++ exit
+--- end output -------------------------------------------------------------
+
+
+
+   0 pass (0%)
+   1 fail (16%)
+   5 error (83%)
+------------------
+   6 total
+Killing all processes for testuser
+Removing user testuser
+Removing group testuser
+Killing all processes for testadmin
+Removing user testadmin
+Removing group testadmin

@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[64] audisp-remote_network_failure_action syslog immediate                                              ERROR (2)

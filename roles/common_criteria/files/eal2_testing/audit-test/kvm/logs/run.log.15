@@ -1,0 +1,201 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[15] test_selinux_chcon_resource.bash                                                          PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
++ append_cleanup 'killall -9 -u testuser1; userdel -fr testuser1'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	killall -9 -u testuser1; userdel -fr testuser1
+    }'
++ append_cleanup 'groupdel testuser1'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr testuser1
+	groupdel testuser1
+    }'
++ userdel -fr testuser1
+userdel: user 'testuser1' does not exist
++ groupdel testuser1
+groupdel: group 'testuser1' does not exist
++ useradd testuser1 -G libvirt
++ [[ 0 -ne 0 ]]
++ append_cleanup 'killall -9 -u testuser2; userdel -fr testuser2'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr testuser1;
+    groupdel testuser1
+	killall -9 -u testuser2; userdel -fr testuser2
+    }'
++ append_cleanup 'groupdel testuser2'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr testuser1;
+    groupdel testuser1;
+    killall -9 -u testuser2;
+    userdel -fr testuser2
+	groupdel testuser2
+    }'
++ userdel -fr testuser2
+userdel: user 'testuser2' does not exist
++ groupdel testuser2
+groupdel: group 'testuser2' does not exist
++ useradd testuser2
++ [[ 0 -ne 0 ]]
+++ seq 1 2
++ for i in '$(seq $first $last)'
+++ stat -c %s /var/log/audit/audit.log
++ offset=409000
++ [[ capp == lspp ]]
++ eval 'runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t --         runcon -t qemu_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+++ runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t -- runcon -t qemu_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img
+runcon: runcon: Permission denied
++ [[ 126 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm==runcon and scontext=~(qemu_t|svirt_t)'
+++ augrok -c --seek 409000 type==AVC and 'extra_text=~denied' and comm==runcon and 'scontext=~(qemu_t|svirt_t)'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 70: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ [[ capp == lspp ]]
++ expression='type==SYSCALL syscall==59 and success==no and comm==runcon and subj=~virtd_t'
+++ augrok -c --seek 409000 type==SYSCALL syscall==59 and success==no and comm==runcon and 'subj=~virtd_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 80: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
+++ stat -c %s /var/log/audit/audit.log
++ offset=410754
++ [[ capp == lspp ]]
++ eval 'runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t --         runcon -t svirt_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+++ runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t -- runcon -t svirt_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img
+runcon: runcon: Permission denied
++ [[ 126 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm==runcon and scontext=~svirt_t'
+++ augrok -c --seek 410754 type==AVC and 'extra_text=~denied' and comm==runcon and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 102: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ [[ capp == lspp ]]
++ expression='type==SYSCALL syscall==59 and success==no and comm==runcon and subj=~virtd_t'
+++ augrok -c --seek 410754 type==SYSCALL syscall==59 and success==no and comm==runcon and 'subj=~virtd_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 112: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ eval '/bin/su - testuser1 -c "chcon -l s0:c1,c3 $kvm_guest_1_resource"'
+++ /bin/su - testuser1 -c 'chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+chcon: failed to change context of ‘/var/lib/libvirt/images/KVM-Guest-1.img’ to ‘system_u:object_r:svirt_image_t:s0:c1,c3’: Operation not permitted
++ [[ 1 -eq 0 ]]
++ eval '/bin/su - testuser2 -c "chcon -l s0:c1,c3 $kvm_guest_1_resource"'
+++ /bin/su - testuser2 -c 'chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+chcon: failed to change context of ‘/var/lib/libvirt/images/KVM-Guest-1.img’ to ‘system_u:object_r:svirt_image_t:s0:c1,c3’: Operation not permitted
++ [[ 1 -eq 0 ]]
++ for i in '$(seq $first $last)'
+++ stat -c %s /var/log/audit/audit.log
++ offset=414852
++ [[ capp == lspp ]]
++ eval 'runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t --         runcon -t qemu_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+++ runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t -- runcon -t qemu_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img
+runcon: runcon: Permission denied
++ [[ 126 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm==runcon and scontext=~(qemu_t|svirt_t)'
+++ augrok -c --seek 414852 type==AVC and 'extra_text=~denied' and comm==runcon and 'scontext=~(qemu_t|svirt_t)'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 70: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ [[ capp == lspp ]]
++ expression='type==SYSCALL syscall==59 and success==no and comm==runcon and subj=~virtd_t'
+++ augrok -c --seek 414852 type==SYSCALL syscall==59 and success==no and comm==runcon and 'subj=~virtd_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 80: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
+++ stat -c %s /var/log/audit/audit.log
++ offset=416690
++ [[ capp == lspp ]]
++ eval 'runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t --         runcon -t svirt_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+++ runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t -- runcon -t svirt_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img
+runcon: runcon: Permission denied
++ [[ 126 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm==runcon and scontext=~svirt_t'
+++ augrok -c --seek 416690 type==AVC and 'extra_text=~denied' and comm==runcon and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 102: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ [[ capp == lspp ]]
++ expression='type==SYSCALL syscall==59 and success==no and comm==runcon and subj=~virtd_t'
+++ augrok -c --seek 416690 type==SYSCALL syscall==59 and success==no and comm==runcon and 'subj=~virtd_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 112: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ eval '/bin/su - testuser1 -c "chcon -l s0:c1,c3 $kvm_guest_2_resource"'
+++ /bin/su - testuser1 -c 'chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-2.img'
+chcon: failed to change context of ‘/var/lib/libvirt/images/KVM-Guest-2.img’ to ‘system_u:object_r:svirt_image_t:s0:c1,c3’: Operation not permitted
++ [[ 1 -eq 0 ]]
++ eval '/bin/su - testuser2 -c "chcon -l s0:c1,c3 $kvm_guest_2_resource"'
+++ /bin/su - testuser2 -c 'chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-2.img'
+chcon: failed to change context of ‘/var/lib/libvirt/images/KVM-Guest-2.img’ to ‘system_u:object_r:svirt_image_t:s0:c1,c3’: Operation not permitted
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.lmZeFqCdg4 /tmp/tmp.0hz2ga4aDL /usr/local/eal2_testing/audit-test/tmp.8o2UIrR3iY
++ killall -9 -u testuser1
++ userdel -fr testuser1
++ groupdel testuser1
+groupdel: group 'testuser1' does not exist
++ killall -9 -u testuser2
++ userdel -fr testuser2
++ groupdel testuser2
+groupdel: group 'testuser2' does not exist
++ exit
+--- end output -------------------------------------------------------------
+

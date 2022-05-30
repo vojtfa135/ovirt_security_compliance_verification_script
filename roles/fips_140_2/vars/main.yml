@@ -1,43 +1,54 @@
 ---
 # vars file for fips_140_2
 fips_binaries_flat:
-  - openssl-libs
+  - openssl
   - libgcrypt
   - kernel
-  - libkcapi-hmaccalc
   - gnutls
-  - gmp
-  - nettle
-  - nss-softokn
-  - nss-softokn-freebl
-
-fips_binaries:
-  openssl:
-    - name: openssl-libs
-      version: 1.1.1c-15
-  libgcrypt:
-    - name: libgcrypt
-      version: 1.8.3-4
-  Kernel Cryptographic API:
-    - name: kernel
-      version: 4.18.0-193
-    - name: libkcapi-hmaccalc
-      version: 1.1.1-16_1
-  gnutls:
-    - name: gnutls
-      version: 3.6.8-9
-    - name: gmp
-      version: 6.1.2-10
-    - name: nettle
-      version: 3.4.1-1
-  NSS:
-    - name: nss-softokn
-      version: 3.44.0-8
-    - name: nss-softokn-freebl
-      version: 3.44.0-8
+  - nss
 
 fips_kernel_param: crypto.fips_enabled
 
 fips_required_prod: Red Hat Virtualization Manager
-fips_ovirt_prod: oVirt
-fips_required_os: Red Hat Enterprise Linux release 8.5 (Ootpa)
+fips_required_distribution: RedHat
+fips_required_crypto_policy: FIPS
+fips_required_crypto_policy_appliance: The configured policy is applied
+fips_required_validation_status: Active
+fips_required_kernel_param: 1
+
+nist_cmvp_validated_modules_url: https://csrc.nist.gov/projects/cryptographic-module-validation-program/validated-modules
+redhat_gov_standards_url: https://access.redhat.com/articles/2918071
+
+fips_report_headline: FIPS 140-2 COMPLIANCE REPORT
+fips_compliance_statement: Your infrastructure is compliant
+fips_non_compliance_statement: Your infrastructure is not compliant
+
+fips_rules:
+  product_type:
+    name: Product type must be Red Hat Virtualization
+    pass: false
+    hint: According to the security policy, the product applicability allows only Red Hat Virtualization (RHV)
+  os_type:
+    name: Operating system must be RHEL
+    pass: false
+    hint: According to the security policy, the operational environment must be RHEL
+  fips_mode_enabled:
+    name: "{{ fips_required_crypto_policy }} mode must be enabled on the system"
+    pass: false
+    hint: "{{ fips_required_crypto_policy }} mode can be enabled via fips-mode-setup --enable"
+  fips_crypto_policy_enabled:
+    name: "{{ fips_required_crypto_policy }} system-wide cryptographic policy must be enabled"
+    pass: false
+    hint: "{{ fips_required_crypto_policy }} cryptographic policy can be enabled via update-crypto-policies --set {{ fips_required_crypto_policy }}"
+  fips_crypto_policy_applied:
+    name: "{{ fips_required_crypto_policy }} system-wide cryptographic policy must be applied"
+    pass: false
+    hint: "{{ fips_required_crypto_policy }} cryptographic policy can be applied via update-crypto-policies --set {{ fips_required_crypto_policy }}"
+  fips_kernel_param:
+    name: "Kernel parameter {{ fips_kernel_param }} must be set to 1"
+    pass: false
+    hint: "{{ fips_kernel_param }} can be set to 1 via sysctl -w crypto.fips_enabled=1"
+  fips_binaries_versions:
+    name: "Binaries of the cryptographic modules must be of the versions specified by the security policy for RHEL {{ fips_rhel_version }}"
+    pass: false
+    hint: "Access this website to check which versions of the binaries are compliant: {{ redhat_gov_standards_url }}"
