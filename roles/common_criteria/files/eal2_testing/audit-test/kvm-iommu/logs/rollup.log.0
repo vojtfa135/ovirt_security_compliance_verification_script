@@ -1,4 +1,0 @@
-Testcase                                                                                                                                                            Result
---------                                                                                                                                                            ------
-[0] pci_passthrough sanity_detach_1                                                                                                                                  FAIL 
-        Failed to start guest with assigned PCI 0000:03:00.0

@@ -1,8 +1,0 @@
-Testcase                                                                                                                                                                                                   Result
---------                                                                                                                                                                                                   ------
-[1] cgroup_device devices_controller                                                                                                                                                                  Killing all processes for testuser
-Removing user testuser
-Removing group testuser
-Killing all processes for testadmin
-Removing user testadmin
-Removing group testadmin

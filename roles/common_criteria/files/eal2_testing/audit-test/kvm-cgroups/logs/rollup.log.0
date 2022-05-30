@@ -1,4 +1,0 @@
-Testcase                                                                                                                                                                                                   Result
---------                                                                                                                                                                                                   ------
-[0] cgroup_device basic_sanity                                                                                                                                                                              FAIL 
-        creating domain

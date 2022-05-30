@@ -1,9 +1,0 @@
-Testcase                                                                                                   Result
---------                                                                                                   ------
-[60] audisp-remote_remote_ending_action single immediate                                                ERROR (2)
---- begin output -----------------------------------------------------------
-Redirecting to /bin/systemctl start auditd.service
-Job for auditd.service failed because start of the service was attempted too often. See "systemctl status auditd.service" and "journalctl -xe" for details.
-To force a start use "systemctl reset-failed auditd.service" followed by "systemctl start auditd.service" again.
---- end output -------------------------------------------------------------
-

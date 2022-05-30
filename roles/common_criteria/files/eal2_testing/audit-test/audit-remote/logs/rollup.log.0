@@ -1,4 +1,0 @@
-Testcase                                                                                                   Result
---------                                                                                                   ------
-[0] remote_system server_basic immediate                                                                ERROR (2)
-        Please, define LBLNET_SVR_IPV4
