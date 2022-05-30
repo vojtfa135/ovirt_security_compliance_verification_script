@@ -1,9 +1,98 @@
 ---
 # tasks file for disa_stig
-- name: DISA STIG Compliance Evaluation
-  debug:
-    msg: "{{ item }}"
-  loop:
-    - "Evaluating DISA STIG Compliance"
-    - "Score: 0/100"
-    - "Not implented :)"
+- name: Product type must be Red Hat Virtualization
+  block:
+    - name: Evaluate product type
+      set_fact:
+        prod_type_is_rhv: "{{ (stig_prod_type == stig_required_prod) | ternary(true, false) }}"
+    
+    - name: Set pass key for the rule
+      set_fact:
+        stig_rules: "{{ stig_rules | combine(prod_type_rule_val, recursive=true) }}"
+      vars:
+        prod_type_rule_val: "{
+          'product_type': {
+            'pass': '{{ prod_type_is_rhv }}'
+          }
+        }"
+      with_dict: "{{ stig_rules }}"
+
+- name: Operating system must be RHEL
+  block:
+    - name: Evaluate OS type on the hosts
+      set_fact:
+        os_type_is_rhel: "{{ (stig_os_distribution == stig_required_distribution) | ternary(true, false) }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        stig_rules: "{{ stig_rules | combine(os_type_rule_val, recursive=true) }}"
+      vars:
+        os_type_rule_val: "{
+          'os_type': {
+            'pass': '{{ os_type_is_rhel }}'
+          }
+        }"
+      with_dict: "{{ stig_rules }}"
+
+- name: Scan from the oscap tool must pass
+  block:
+    - name: Execute oscap scan
+      command: |
+        oscap xccdf eval \
+        --profile {{ stig_profile }} \
+        --results {{ stig_oscap_results_dest }} \
+        --report {{ stig_oscap_report_dest }}
+        {{ stig_oscap_ssg_content_dest }}/{{ stig_ds }}
+      become_user: "{{ disa_stig_host_username }}"
+      register: stig_oscap_host_check
+      failed_when: stig_oscap_host_check.rc == 1
+
+    - name: Evaluate oscap scan results
+      set_fact:
+        stig_oscap_scan_pass: (stig_oscap_host_check.rc|int == stig_required_oscap_rc) | ternary(true, false)
+
+    - name: Set pass key for the rule
+      set_fact:
+        fips_rules: "{{ stig_rules | combine(stig_scan_results_rule_val, recursive=true) }}"
+      vars:
+        stig_scan_results_rule_val: "{
+          'scan_results': {
+            'pass': '{{ stig_oscap_scan_pass }}'
+          }
+        }"
+      with_dict: "{{ stig_rules }}"
+
+- name: DISA STIG final report generation
+  block:
+    - name: Fetch oscap scan report
+      fetch:
+        src: "{{ stig_oscap_report_dest }}"
+        dest: "{{ stig_oscap_report_local_path }}"
+
+    - name: STIG final evaluation
+      local_action:
+        module: set_fact
+        stig_infra_compliant: "{{ stig_rules | stig_final_evaluation }}"
+
+    - name: Generate link to oscap report
+      block:
+        - name: Determine current location
+          local_action: shell pwd
+          register: stig_pwd
+
+        - name: Create path link
+          local_action:
+            module: set_fact
+            stig_oscap_report_paths: "{{ stig_pwd.stdout | stig_get_oscap_reports_paths(
+                groups['ovirt_hosts'],
+                stig_oscap_report_local_path,
+                stig_oscap_default_path,
+                stig_oscap_report_name
+              )
+            }}"
+
+    - name: Generate final report
+      local_action:
+        module: template
+        src: stig_final_report.html.j2
+        dest: stig_final_report.html

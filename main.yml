@@ -1,96 +1,98 @@
 ---
-- name: Compliance Verification Script v0.1
+- name: Compliance Verification Script v1.0 | Base info
   hosts: localhost
   vars_files:
-    - var_files/engine.yml
-    - var_files/hosts.yml
-  tasks:
-    - name: Authenticate against oVirt engine
-      ovirt.ovirt.ovirt_auth:
-        url: "{{ engine_url }}"
-        username: "{{ engine_username }}"
-        password: "{{ engine_password }}"
-        insecure: yes
+    - vars_files/engine.yml
+    - vars_files/hosts.yml
 
-    - name: Extract relevant information about hosts
-      ovirt.ovirt.ovirt_host_info:
-        auth: "{{ ovirt_auth }}"
-      register: result
+  roles:
+    - role: dependency_checker
+      dep_checker_os_flavor: ansible_facts["ansible_distribution_file_variety"]
+      dep_checker_deps: base_info
+      when: check_base_info|default(false)
+    - role: base_info
+      base_info_ovirt_url: "{{ engine_url }}/ovirt-engine/api"
+      base_info_ovirt_username: "{{ engine_username }}"
+      base_info_ovirt_password: "{{ engine_password }}"
+      when: check_base_info|default(false)
+    - role: dependency_checker
+      dep_checker_os_flavor: ansible_facts["ansible_distribution_file_variety"]
+      dep_checker_deps: base_info
+      dep_checker_remove_deps: true
+      when: check_base_info|default(false)
 
-    - name: Retrieve oVirt API data
-      ovirt.ovirt.ovirt_api_info:
-        auth: "{{ ovirt_auth }}"
-      register: api_data
+- name: Compliance Verification Script v1.0 | FIPS 140-2
+  hosts: ovirt_hosts
+  vars_files:
+    - vars_files/engine.yml
+    - vars_files/hosts.yml
 
-    - name: API data
-      debug:
-        msg: "{{ result }}"
+  roles:
+    - role: dependency_checker
+      dep_checker_os_flavor: ansible_facts["ansible_distribution_file_variety"]
+      dep_checker_deps: fips
+      dep_checker_priv_user: "{{ host_username }}"
+      when: check_fips|default(false)
+    - role: fips_140_2
+      fips_rhel_version: "{{ ansible_distribution_version }}"
+      fips_os_distribution: "{{ ansible_distribution }}"
+      fips_prod_type: "{{ hostvars['localhost']['prod_type'] }}"
+      fips_host_username: "{{ host_username }}"
+      when: check_fips|default(false)
+    - role: dependency_checker
+      dep_checker_os_flavor: ansible_facts["ansible_distribution_file_variety"]
+      dep_checker_deps: fips
+      dep_checker_priv_user: "{{ host_username }}"
+      dep_checker_remove_deps: true
+      when: check_fips|default(false)
 
-    - name: Print product type
-      debug:
-        msg: "{{ api_data.ovirt_api['product_info']['name'] }}"
+- name: Compliance Verification Script v1.0 | DISA STIG
+  hosts: ovirt_hosts
+  vars_files:
+    - vars_files/engine.yml
+    - vars_files/hosts.yml
 
-    - name: Register product type
-      set_fact:
-        prod_type: "{{ api_data.ovirt_api['product_info']['name'] }}"
+  roles:
+    - role: dependency_checker
+      dep_checker_os_flavor: ansible_facts["ansible_distribution_file_variety"]
+      dep_checker_deps: stig
+      dep_checker_priv_user: "{{ host_username }}"
+      when: check_disa_stig|default(false)
+    - role: disa_stig
+      stig_os_distribution: "{{ ansible_distribution }}"
+      stig_prod_type: "{{ hostvars['localhost']['prod_type'] }}"
+      disa_stig_host_username: "{{ host_username }}"
+      when: check_disa_stig|default(false)
+    - role: dependency_checker
+      dep_checker_os_flavor: ansible_facts["ansible_distribution_file_variety"]
+      dep_checker_remove_deps: true
+      dep_checker_deps: stig
+      dep_checker_priv_user: "{{ host_username }}"
+      when: check_disa_stig|default(false)
 
-    - name: Print product's version
-      debug:
-        msg: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
+- name: Compliance Verification Script v1.0 | Common Criteria
+  hosts: ovirt_hosts
+  vars_files:
+    - vars_files/engine.yml
+    - vars_files/hosts.yml
 
-    - name: Register product's version
-      set_fact:
-        prod_version: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
-
-    - name: Print retrieved OS information from oVirt API
-      debug:
-        msg: "{{ item }}"
-      loop:
-        - "{{ result.ovirt_hosts[0]['os']['type'] }}"
-        - "{{ result.ovirt_hosts[1]['os']['type'] }}"
-        - "{{ result.ovirt_hosts[2]['os']['type'] }}"
-
-    - name: Add hosts to the inventory
-      add_host:
-        name: "{{ item }}"
-        groups: hosts
-      loop:
-        - "{{ result.ovirt_hosts[0]['address'] }}"
-        - "{{ result.ovirt_hosts[1]['address'] }}"
-        - "{{ result.ovirt_hosts[2]['address'] }}"
-
-    - name: Get OS release of the hosts
-      shell: cat /etc/*elease
-      register: os_release
-      delegate_to: "{{ item }}"
-      loop: "{{ groups['hosts'] }}"
-      become_user: root
-
-    - name: Parse retrieved OS release information
-      set_fact:
-        parsed_os_release: "{{ os_release['results'][0]['stdout_lines'] | last }}"
-      delegate_to: "{{ item }}"
-      loop: "{{ groups['hosts'] }}"
-
-    - name: Print retrieved OS releases
-      debug:
-        msg: "{{ parsed_os_release }}"
-      delegate_to: "{{ item }}"
-      loop: "{{ groups['hosts'] }}"
-
-    - include_role:
-        name: "{{ eval_role }}"
-      loop:
-        - fips_140_2
-        - disa_stig
-        - common_criteria
-      loop_control:
-        loop_var: eval_role
-
-  post_tasks:
-    - name: Revoke SSO token
-      ovirt.ovirt.ovirt_auth:
-        ovirt_auth: "{{ ovirt_auth }}"
-        state: absent
-      delegate_to: "{{ item }}"
-      loop: "{{ groups['engine'] }}"
+  roles:
+    - role: dependency_checker
+      dep_checker_os_flavor: ansible_facts["ansible_distribution_file_variety"]
+      dep_checker_deps: cc
+      dep_checker_priv_user: "{{ host_username }}"
+      when: check_common_criteria|default(false)
+    - role: common_criteria
+      cc_prod_version: "{{ hostvars['localhost']['prod_version'] }}"
+      cc_os_version: "{{ ansible_distribution_version }}"
+      cc_os_distribution: "{{ ansible_distribution }}"
+      cc_prod_type: "{{ hostvars['localhost']['prod_type'] }}"
+      cc_host_username: "{{ host_username }}"
+      cc_host_password: "{{ host_password }}"
+      when: check_common_criteria|default(false)
+    - role: dependency_checker
+      dep_checker_os_flavor: ansible_facts["ansible_distribution_file_variety"]
+      dep_checker_remove_deps: true
+      dep_checker_deps: cc
+      dep_checker_priv_user: "{{ host_username }}"
+      when: check_common_criteria|default(false)

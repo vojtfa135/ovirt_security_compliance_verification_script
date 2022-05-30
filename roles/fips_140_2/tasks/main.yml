@@ -1,10 +1,189 @@
 ---
 # tasks file for fips_140_2
-- name: FIPS 140-2 Compliance Evaluation
-  debug:
-    msg: "{{ item }}"
-  loop:
-    - "Evaluating FIPS 140-2 Compliance"
-    - "Score: 0/100"
-    - "Not implented :)"
-  
+- name: Product type must be Red Hat Virtualization
+  block:
+    - name: Evaluate product type
+      set_fact:
+        prod_type_is_rhv: "{{ (fips_prod_type == fips_required_prod) | ternary(true, false) }}"
+    
+    - name: Set pass key for the rule
+      set_fact:
+        fips_rules: "{{ fips_rules | combine(prod_type_rule_val, recursive=true) }}"
+      vars:
+        prod_type_rule_val: "{
+          'product_type': {
+            'pass': '{{ prod_type_is_rhv }}'
+          }
+        }"
+      with_dict: "{{ fips_rules }}"
+
+- name: Operating system must be RHEL
+  block:
+    - name: Evaluate OS type on the hosts
+      set_fact:
+        os_type_is_rhel: "{{ (fips_os_distribution == fips_required_distribution) | ternary(true, false) }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        fips_rules: "{{ fips_rules | combine(os_type_rule_val, recursive=true) }}"
+      vars:
+        os_type_rule_val: "{
+          'os_type': {
+            'pass': '{{ os_type_is_rhel }}'
+          }
+        }"
+      with_dict: "{{ fips_rules }}"
+
+- name: FIPS mode must be enabled on the system
+  block:
+    - name: Check if FIPS mode is enabled on the hosts
+      shell: fips-mode-setup --is-enabled
+      register: is_fips_mode_enabled
+      failed_when: is_fips_mode_enabled.rc == 1
+
+    - name: Parse the output of the FIPS mode check
+      set_fact:
+        host_fips_mode_enabled: "{{ (is_fips_mode_enabled.rc == 0) | ternary(true, false) }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        fips_rules: "{{ fips_rules | combine(fips_mode_rule_val, recursive=true) }}"
+      vars:
+        fips_mode_rule_val: "{
+          'fips_mode_enabled': {
+            'pass': '{{ host_fips_mode_enabled }}'
+          }
+        }"
+      with_dict: "{{ fips_rules }}"
+
+- name: FIPS system-wide cryptographic policy must be enabled
+  block:
+    - name: Check if FIPS system-wide crypto policy is enabled
+      shell: update-crypto-policies --show
+      register: is_fips_crypto_policy_enabled
+
+    - name: Parse the output of the FIPS system-wide crypto policy check
+      set_fact:
+        host_fips_crypto_policy_enabled: "{{
+            (is_fips_crypto_policy_enabled.stdout == fips_required_crypto_policy) | ternary(true, false)
+          }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        fips_rules: "{{ fips_rules | combine(fips_crypto_policy_rule_val, recursive=true) }}"
+      vars:
+        fips_crypto_policy_rule_val: "{
+          'fips_crypto_policy_enabled': {
+            'pass': '{{ host_fips_crypto_policy_enabled }}'
+          }
+        }"
+      with_dict: "{{ fips_rules }}"
+
+- name: FIPS system-wide cryptographic policy must be applied
+  block:
+    - name: Check if FIPS system-wide crypto policy is applied
+      shell: update-crypto-policies --is-applied
+      register: is_fips_crypto_policy_applied
+
+    - name: Parse the output of the FIPS system-wide crypto policy appliance check
+      set_fact:
+        host_fips_crypto_policy_applied: "{{
+          (is_fips_crypto_policy_applied.stdout == fips_required_crypto_policy_appliance and
+          host_fips_crypto_policy_enabled) | ternary(true, false)
+        }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        fips_rules: "{{ fips_rules | combine(fips_crypto_policy_applied_rule_val, recursive=true) }}"
+      vars:
+        fips_crypto_policy_applied_rule_val: "{
+          'fips_crypto_policy_applied': {
+            'pass': '{{ host_fips_crypto_policy_applied }}'
+          }
+        }"
+      with_dict: "{{ fips_rules }}"
+
+- name: Kernel parameter crypto.fips_mode must be set to 1 
+  block:
+    - name: Check if {{ fips_kernel_param }} kernel parameter is set on the hosts
+      shell: sysctl -n crypto.fips_enabled
+      register: is_fips_kernel_param_enabled
+
+    - name: Parse the output of the {{ fips_kernel_param }} kernel parameter check
+      set_fact:
+        hosts_fips_kernel_param_enabled: "{{
+          (is_fips_kernel_param_enabled.stdout|int == fips_required_kernel_param) | ternary(true, false)
+        }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        fips_rules: "{{ fips_rules | combine(fips_kernel_param_rule_val, recursive=true) }}"
+      vars:
+        fips_kernel_param_rule_val: "{
+          'fips_kernel_param': {
+            'pass': '{{ hosts_fips_kernel_param_enabled }}'
+          }
+        }"
+      with_dict: "{{ fips_rules }}"
+
+- name: Binaries of the cryptographic modules must be of the versions specified by the security policy
+  block:
+    # move this to deps checker role
+    - name: Ensure related pip packages are installed
+      pip:
+        name: "{{ item }}"
+      loop:
+        - bs4
+        - requests
+
+    - name: Fetch FIPS data for the given OS distribution and version
+      fips_data_fetcher:
+        url_to_scrape: "{{ redhat_gov_standards_url }}"
+        rhel_version: "{{ fips_rhel_version }}"
+        validation_status: "{{ fips_required_validation_status }}"
+      register: fips_data_fetcher_output
+
+    - name: Check versions of the FIPS binaries
+      shell: rpm -qa "{{ item }}"
+      register: extracted_binaries_versions
+      loop: "{{ fips_binaries_flat }}"
+      become_user: "{{ fips_host_username }}"
+
+    - name: Parse binaries version check
+      set_fact:
+        parsed_extracted_binaries_versions: "{{
+          extracted_binaries_versions['results'] | fips_extract_versions
+        }}"
+
+    - name: Check if versions of FIPS binaries are correct
+      set_fact:
+        hosts_fips_binaries_versions_compatible: "{{
+          parsed_extracted_binaries_versions | fips_match_versions(
+            fips_data_fetcher_output.fips_binaries_versions,
+            fips_required_validation_status
+          )
+        }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        fips_rules: "{{ fips_rules | combine(fips_binaries_versions_rule_val, recursive=true) }}"
+      vars:
+        fips_binaries_versions_rule_val: "{
+          'fips_binaries_versions': {
+            'pass': '{{ hosts_fips_binaries_versions_compatible }}'
+          }
+        }"
+      with_dict: "{{ fips_rules }}"
+
+- name: FIPS final report generation
+  block:
+    - name: FIPS final evaluation
+      local_action:
+        module: set_fact
+        fips_infra_compliant: "{{ fips_rules | fips_final_evaluation }}"
+
+    - name: Generate final report
+      local_action:
+        module: template
+        src: fips_final_report.html.j2
+        dest: fips_final_report.html

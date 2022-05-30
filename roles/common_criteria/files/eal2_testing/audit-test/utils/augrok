@@ -1,0 +1,1418 @@
+#!/usr/bin/perl -w
+#=============================================================================
+# augrok - audit.log search tool - http://augrok.sourceforge.net/
+#
+# (c) Copyright Hewlett-Packard Development Company, L.P., 2005
+# Written by Aron Griffis <aron@hp.com>
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of version 2 the GNU General Public License as
+#   published by the Free Software Foundation.
+#   
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#   
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#=============================================================================
+
+use POSIX;
+use Getopt::Long;
+use strict;
+
+######################################################################
+# Global vars
+######################################################################
+
+(my $zero = $0) =~ s|.*/||;
+my $version = 'augrok version 2.1';
+my $found = 0;
+my %opt = (
+    'f' => '/var/log/audit/audit.log',
+    'mode' => $ENV{'MODE'},
+);
+my $usage = <<EOT;
+usage: augrok [options...] condition...
+
+    -c     --count          Only print a count of matching lines
+    -f     --file=logfile   Search a log other than $opt{f}
+    -h     --help           Show this help message
+           --help-interpret List the fields augrok attempts to interpret
+    -i     --interpret      Convert numbers to names when possible
+    -m     --max-count=NUM  stop after NUM matches
+           --mode=BITS      32 or 64, defaults to \$MODE or native
+           --nosync         don't wait for auditd to finish flushing
+    -q     --quiet          No output, just set exit status (like grep)
+           --resolve=k=v    Attempt to resolve v according to k
+           --resolve=v      Same as --resolve=syscall=v (compat)
+           --seek=offset    Seek to offset before starting search
+           --raw            Show raw lines instead of merged record
+    -V     --version        Show version information
+EOT
+my $ausearch_usage = <<EOT;
+usage: ausearch [options]
+       -a  <audit event id>
+       -c  <comm name>
+       -f  <file name>
+       -ga <all group id>
+       -ge <effective group id>
+       -gi <group id>
+       -h
+       -hn <host name>
+       -i
+       -if <input file name>
+       -m  <message type>
+       -o  <obj>
+       -p  <process id>
+       -sc <syscall name>
+       -su <subj>
+       -sv <success value>
+       -te [end date] [end time]
+       -ts [start date] [start time]
+       -tm <terminal>
+       -ua <all user id>
+       -ue <effective user id>
+       -ui <user id>
+       -ul <login id>
+       -v
+       -w
+       -x <executable name>
+EOT
+
+$SIG{'__DIE__'} = sub {
+    $! = 2;
+    die(@_);
+};
+
+######################################################################
+# SyscallTable (singleton)
+######################################################################
+
+package SyscallTable;
+
+our $singleton;
+
+sub new {
+    my ($class) = @_;
+    my $arch = `uname -m`;
+
+    unless (defined $singleton) {
+        $singleton = {};
+        bless $singleton, $class;
+
+        my $m32 = '';
+        if (defined $opt{'mode'} and $opt{'mode'} == 32) {
+            if ($arch =~ /s390x/) {
+                $m32 = '-m31';
+            } else {
+                $m32 = '-m32';
+            }
+        }
+        open(S, "gcc $m32 -E -dM /usr/include/syscall.h |") or die;
+        my $line;
+        while (defined($line = <S>)) {
+            if ($line =~ /^#define\s+__NR_(\w+)\s+(\w+|\(.*?\))/) {
+                $singleton->{$1} = $2;
+            }
+            if ($line =~ /^#define\s+__NR3264_(\w+)\s+(\w+|\(.*?\))/) {
+                $singleton->{"3264_$1"} = $2;
+            }
+        }
+        close S;
+
+        my $changed;
+        do {
+            my ($v, $new_v);
+            $changed = 0;
+            for my $k (keys %$singleton) {
+                next unless ($v = $singleton->{$k}) =~ /\D/;
+
+                #define __NR_syscall_max __NR_mq_getsetattr
+                if ($v =~ /^__NR_(\w+)$/ and
+                         defined($new_v = $singleton->{$1})) {
+                    $singleton->{$k} = $new_v;
+                    $changed = 1;
+                }
+
+                #define __NR_mq_getsetattr (__NR_mq_open+5)
+                elsif ($v =~ /^\(__NR_(\w+)\s*\+\s*(\d+)\)$/ and
+                         defined($new_v = $singleton->{$1})) {
+                    $singleton->{$k} = $new_v + $2;
+                    $changed = 1;
+                }
+
+                #define __NR_truncate __NR3264_truncate
+                elsif ($v =~ /^__NR3264_(\w+)$/ and
+                         defined($new_v = $singleton->{"3264_$1"})) {
+                    $singleton->{$k} = $new_v;
+                    $changed = 1;
+                }
+
+                # don't know how to handle this, hope it wasn't important
+                else {
+                    print STDERR "Removing syscall{$k} = $v\n" if $opt{'debug'};
+                    delete $singleton->{$k};
+                }
+            }
+        } while ($changed);
+
+        my (%rev) = ();
+        while (my ($k, $v) = each %$singleton) {
+            $rev{$v} ||= [];
+            push @{$rev{$v}}, $k;
+        }
+        $singleton->{'_reverse'} = \%rev;
+    }
+
+    return $singleton;
+}
+
+sub resolve {
+    my ($self, $k) = @_;
+    return $self->{$k};
+}
+
+sub reverse {
+    my ($self, $k) = @_;
+    return $self->{'_reverse'}{$k};
+}
+
+######################################################################
+# TransTable (singleton)
+######################################################################
+
+package TransTable;
+
+our $singleton;
+
+sub new {
+    my ($class) = @_;
+
+    unless (defined $singleton) {
+        $singleton = {};
+        bless $singleton, $class;
+
+        # Fetch config location from sestatus
+        my $config;
+        open(C, "sestatus|") or goto out;
+        while (<C>) {
+            /^Policy from config file:\s*(\S+)/ || next;
+            $config = "/etc/selinux/$1/setrans.conf";
+            last;
+        }
+        close C;
+
+        # Snarf the mctransd translation pairs
+	printf STDOUT "HHHHHHHHHHHHHHHHHHHH \n";
+	open(C, $config) or warn("Can't open $config"), goto out;
+        while (<C>) {
+            /^\s*#/ && next;
+            /(\S+?)=(\S+)/ || next;
+            $singleton->{$1} = $2;
+        }
+        close C;
+
+out:
+        # Invert hash for reverse lookups
+        my %rev;
+        while (my ($k, $v) = each %$singleton) {
+            $rev{$v} = $k;
+        }
+        $singleton->{'_reverse'} = \%rev;
+    }
+
+    return $singleton;
+}
+
+# not intended to be called except by resolve() or reverse()
+sub resolve2 {
+    my ($self, $full_k, $table) = @_;
+
+    # Trim leading portion of $k; only last portion is translated
+    my ($lead, $trans) = ($full_k =~ m/((?:.*?:){3})(.*)/);
+    return undef unless defined($trans);
+
+    # Translate if possible
+    $trans = defined($trans) && $table->{$trans};
+    return undef unless defined($trans);
+
+    # Join parts
+    return "$lead$trans";
+}
+
+sub resolve {
+    my ($self, $k) = @_;
+    # Forward lookup table is stored directly on $self
+    $self->resolve2($k, $self);
+}
+
+sub reverse {
+    my ($self, $k) = @_;
+    # Reverse lookup table is stored under special key on forward table
+    $self->resolve2($k, $self->{'_reverse'});
+}
+
+######################################################################
+# AuditReader
+######################################################################
+
+package AuditReader;
+
+use FileHandle;
+
+sub new {
+    my ($class, $filename) = @_;
+    my $self = {
+        filename => $filename,
+        fh => undef,
+        records => [],
+    };
+    bless $self, $class;
+
+    $self->{'fh'} = FileHandle->new($filename, 'r') 
+        or die "failed to open $filename: $!";
+
+    return $self;
+}
+
+sub seek {
+    my ($self, $pos) = @_;
+    my $fh = $self->{'fh'};
+
+    if ($pos == 0) {
+        $fh->seek(0, 0) or die "failed to seek: $!";
+    } else {
+        $fh->seek($pos-1, 0) or die "failed to seek: $!";
+        # move to the next line
+        scalar <$fh>;
+    }
+}
+
+sub next_record {
+    my ($self) = @_;
+    my $fh = $self->{'fh'};
+    my ($line, $record, $msg, $other, $o_msg);
+
+    # populate the array; low-water=60, high-water=120
+    if (@{$self->{'records'}} < 60) {
+        while (@{$self->{'records'}} < 120) {
+            $line = <$fh>;
+            # Make sure we got a line and that it was complete.
+            # Incomplete lines can be found when the filesystem is full and
+            # auditd couldn't write the entire record.
+            last unless defined($line) and substr($line,-1) eq "\n";
+            push @{$self->{'records'}}, AuditRecord->new($line);
+        }
+    }
+    return undef unless (@{$self->{'records'}});
+
+    # take the top record from the list
+    $record = shift @{$self->{'records'}};
+
+    # merge following records with duplicate ids
+    if (defined($msg = $record->_lget(0, 'msg'))) {
+        for (my $i = 0; $i < @{$self->{'records'}}; $i++) {
+            $other = $self->{'records'}[$i];
+            next unless defined($o_msg = $other->_lget(0, 'msg'));
+            if ($o_msg eq $msg) {
+                $record->merge($other);
+                splice @{$self->{'records'}}, $i, 1;
+                $i--;
+            }
+        }
+    }
+
+    # return the merged record
+    return $record;
+}
+
+######################################################################
+# AuditParser
+######################################################################
+
+package AuditParser;
+
+sub new {
+    my ($class, $line) = @_;
+    my $self = \$line;
+    bless $self, $class;
+    return $self;
+}
+
+our $key_re = q{
+    [^\s"'=]+ |         # normal keys
+    auditd\ pid |       # DAEMON_START, DAEMON_END
+    sending\ pid |      # DAEMON_END
+    login\ pid |        # LOGIN
+    (?:old|new)\ auid | # LOGIN
+    user\ pid           # USER_AUTH
+};
+
+sub next_field {
+    my ($self) = @_;
+    if (
+            $$self =~ s/  # -- simple value --
+        \A(\s*)           # $1 = leading ws
+        ($key_re)         # $2 = key, incl known keys with ws
+            =             # no ws around equal sign
+        (?!['"])          # first char of value cannot be a quote
+        ()                # $3 = empty (no quotes)
+        (                 # $4 = value
+            (?:
+                [^\\\s]+ |          # normal chars; no ws allowed
+                (?:\\[0-7]{1,3})+ | # escaped octal
+                (?:\\.)             # escaped character
+            )*                      # repeat to capture all of value
+        )
+                //xo or
+            $$self =~ s/  # -- quoted value--
+        \A(\s*)           # $1 = leading ws
+        ($key_re)         # $2 = key, incl known keys with ws
+            =             # no ws around equal sign
+        (['"])            # $3 = leading quote
+        (                 # $4 = value
+            (?: [^\\] |             # normal chars
+                (?:\\[0-7]{1,3}) |  # escaped octal
+                (?:\\.)             # escaped character
+            )*?           # repeat to capture all of value
+        )
+        \3                # backreference to end quote
+                //xo or
+            $$self =~ s/  # -- extra text --
+        \A(\s*)           # $1 = leading ws
+        (\S+)             # $2 = only capture one token at a time
+                //x
+    ) {
+        return $2, $4, $1, $3;  # key, value, leading ws, quotes
+    }
+
+    if ($$self =~ /\S/) {
+        chomp($$self);
+        print STDERR "$zero: WARNING: could not parse [$$self]";
+    }
+
+    return ();
+}
+
+######################################################################
+# AuditRecord
+######################################################################
+
+package AuditRecord;
+use Carp;
+
+sub new {
+    my ($class, $line) = @_;
+    my $self = {
+        _order => [],
+        _aux => [],
+    };
+    bless $self, $class;
+
+    $self->merge($line) if defined($line);
+
+    return $self;
+}
+
+sub merge {
+    my ($self, $other) = @_;
+
+    # argument is an AuditRecord reference
+    if (ref($other) eq 'AuditRecord') {
+        push @{$self->{'_aux'}}, $other;
+    }
+
+    # argument is (presumably) a string to parse
+    else {
+        $self->merge_kv('_raw', $other) if $opt{'raw'} or $opt{'ausearch'};
+        my $parser = AuditParser->new($other);
+        while (my ($k, $v) = $parser->next_field) {
+            if (defined $v) {
+                $k =~ s/\s+/_/g;
+                $v =~ s/^(['"])(.*)\1$/$2/;
+                $self->merge_kv($k, $v);
+            } else {
+                $self->merge_kv('extra_text', $k);
+            }
+        }
+    }
+}
+
+sub merge_kv {
+    my ($self, $k, $v) = @_;
+
+    #print STDERR "Merging [$k] = [$v]\n" if $opt{'debug'};
+
+    # handle duplicate keys
+    if (exists $self->{$k}) {
+        # concatenate raw lines
+        if ($k eq '_raw') {
+            $self->{$k} .= $v; 
+            return; 
+        }
+
+        # only merge other special fields once
+        if (substr($k, 0, 1) eq '_') {
+            return;
+        }
+
+        # simply concatenate types
+        if ($k eq 'type') {
+            $self->{$k} .= ',' . $v;
+            return;
+        }
+
+        # concatenate extra_text with spaces
+        if ($k eq 'extra_text') {
+            $self->{$k} .= ' ' . $v;
+            return;
+        }
+
+        # handle other duplicates generically by appending a serial number
+        my ($new_k, $serial) = ($k, 0);
+        while (exists $self->{$new_k} and $self->{$new_k} ne $v) {
+            $new_k = $k.'_'.(++$serial);
+        }
+        $k = $new_k;
+    }
+
+    # fix up auditd-generated records which use a comma-space separator
+    my $type = $self->{'type'};
+    if (defined $type 
+            and ($type eq 'DAEMON_START' or $type eq 'DAEMON_END') 
+            and $k ne 'extra_text'
+            and substr($v, -1) eq ',') {
+        chop($v);
+    }
+
+    # remember the order in which fields were seen
+    push @{$self->{'_order'}}, $k unless $self->{$k};
+
+    # specials cases handled, add to our hash
+    $self->{$k} = $v;
+}
+
+sub lines {
+    my ($self) = @_;
+    return 1 + @{$self->{'_aux'}};
+}
+
+sub aux {
+    my ($self, $l) = @_;
+    return $l ? $self->{'_aux'}[$l-1] : $self;
+}
+
+sub _lget {
+    my ($self, $l, $k) = @_;
+    return $self->aux($l)->{$k};
+}
+
+sub lget {
+    goto &_lget unless $opt{'i'};
+    my ($self, $l, $k) = @_;
+    my $v = $self->_lget($l, $k);
+    return defined($v) ? interp($k, $v) : $v;
+}
+
+sub _get {
+    my ($self, $k) = @_;
+#   return $self->_lget(0, $k);
+    grep { defined and return $_ }
+        map $self->_lget($_, $k), 0..$self->lines-1;
+    return undef;
+}
+
+sub get {
+    goto &_get unless $opt{'i'};
+    my ($self, $k) = @_;
+#   return $self->lget(0, $k);
+    grep { defined and return $_ }
+        map $self->lget($_, $k), 0..$self->lines-1;
+    return undef;
+}
+
+sub _lraw {
+    my ($self, $l) = @_;
+    return $self->aux($l)->{'_raw'};
+}
+
+sub lraw {
+    goto &_lraw unless $opt{'i'};
+    my ($self, $l) = @_;
+    my $raw = $self->_lraw($l);
+
+    # since we're interpreting the fields, run the text through the parser
+    # again, this time interpreting the values.  Doing this as a second pass
+    # ensures that we're not wasting effort interpreting more records than are
+    # matched by the expression on the command-line.
+    my $parser = AuditParser->new($raw);
+    my $type = $self->_lget($l, 'type');
+    $raw = '';
+
+    while (my ($k, $v, $ws, $q) = $parser->next_field) {
+        if (defined $v) {
+            # Fix up auditd-generated records which use a comma-space separator.
+            # This is necessary for interp to work!
+            if (defined $type 
+                    and ($type eq 'DAEMON_START' or $type eq 'DAEMON_END') 
+                    and $k ne 'extra_text'
+                    and substr($v, -1) eq ',') {
+                chop($v);
+            }
+            $raw .= "$ws$k=$q".interp($k, $v)."$q";
+        } else {
+            $raw .= $ws.$k; # misc text
+        }
+    }
+    return $raw."\n";
+}
+
+sub _raw {
+    my ($self) = @_;
+    return join '', map $self->_lraw($_), 0..$self->lines-1;
+}
+
+sub raw {
+    goto &_raw unless $opt{'i'};
+    my ($self) = @_;
+    return join '', map $self->lraw($_), 0..$self->lines-1;
+}
+
+# This list should be fairly static.  It was generated using
+# gcc -E -dM /usr/include/linux/audit.h | grep '^#define AUDIT_ARCH_'
+our (%archtab) = (
+    'c0009026' => 'alpha',
+    '40000028' => 'arm',
+    '28'       => 'armeb',
+    'c00000b7' => 'aarch64',
+    '800000b7' => 'aarch64eb',
+    '4000004c' => 'cris',
+    '2e'       => 'h8300',
+    '40000003' => 'i386',
+    'c0000032' => 'ia64',
+    '58'       => 'm32r',
+    '4'        => 'm68k',
+    '8'        => 'mips',
+    '40000008' => 'mipsel',
+    '80000008' => 'mips64',
+    'c0000008' => 'mipsel64',
+    'f'        => 'parisc',
+    '8000000f' => 'parisc64',
+    '14'       => 'ppc',
+    '80000015' => 'ppc64',
+    '16'       => 's390',
+    '80000016' => 's390x',
+    '2a'       => 'sh',
+    '4000002a' => 'shel',
+    '8000002a' => 'sh64',
+    'c000002a' => 'shel64',
+    '2'        => 'sparc',
+    '40000057' => 'v850',
+    'c000003e' => 'x86_64',
+);
+our (%archtab_r);
+while (my ($bits, $name) = each %archtab) {
+    $archtab_r{$name} = $bits;
+}
+
+# This list should be fairly static.  It was retrieved from audit-1.0.12
+our (@flagtab) = (
+    'follow',     # 0x0001
+    'directory',  # 0x0002
+    'continue',   # 0x0004
+    'parent',     # 0x0008
+    'noalt',      # 0x0010
+    'atomic',     # 0x0020
+    'open',       # 0x0040
+    'create',     # 0x0080
+    'access',     # 0x0100
+);
+our %flagtab_r;
+{ my $ctr=0; %flagtab_r = map { $_ => (1<<$ctr++) } @flagtab; }
+
+# This list should be fairly static (and hopefully platform-independent).  It
+# was generated using
+# gcc -E -dM /usr/include/sys/stat.h | grep '^#define __S_IF' | sort -n -k3
+our (%modetab) = (
+    0010000 => 'fifo',
+    0020000 => 'char',
+    0040000 => 'dir',
+    0060000 => 'block',
+    0100000 => 'file',
+    0120000 => 'symlink',
+    0140000 => 'socket',
+);
+our (%modetab_r);
+while (my ($bits, $name) = each %modetab) {
+    $modetab_r{$name} = $bits;
+}
+
+# Forward interpretations should return interpreted text or undef if there was
+# no interpretation to be done.
+#
+# Reverse interpretations (those starting with '_') should interpreted text or
+# undef if there was no interpretation to be done.  Unlike forward
+# interpretations, reverse interpretations should die if there is a problem.
+our (%interptab) = (
+    'id'          => sub { scalar getpwuid $_[0]; },
+    '_id'         => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'uid'         => sub { scalar getpwuid $_[0]; },
+    '_uid'        => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'auid'        => sub { scalar getpwuid $_[0]; },
+    '_auid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'euid'        => sub { scalar getpwuid $_[0]; },
+    '_euid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'fsuid'       => sub { scalar getpwuid $_[0]; },
+    '_fsuid'      => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'inode_uid'   => sub { scalar getpwuid $_[0]; },
+    '_inode_uid'  => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'iuid'        => sub { scalar getpwuid $_[0]; },
+    '_iuid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'ouid'        => sub { scalar getpwuid $_[0]; },
+    '_ouid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'suid'        => sub { scalar getpwuid $_[0]; },
+    '_suid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getpwnam $_[0];
+        die "$zero: Error: unknown user \"$_[0]\"\n" unless defined $id;
+        $id; },
+
+    'gid'         => sub { scalar getgrgid $_[0]; },
+    '_gid'        => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getgrnam $_[0];
+        die "$zero: Error: unknown group \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'egid'        => sub { scalar getgrgid $_[0]; },
+    '_egid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getgrnam $_[0];
+        die "$zero: Error: unknown group \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'fsgid'       => sub { scalar getgrgid $_[0]; },
+    '_fsgid'      => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getgrnam $_[0];
+        die "$zero: Error: unknown group \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'inode_gid'   => sub { scalar getgrgid $_[0]; },
+    '_inode_gid'  => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getgrnam $_[0];
+        die "$zero: Error: unknown group \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'igid'        => sub { scalar getgrgid $_[0]; },
+    '_igid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getgrnam $_[0];
+        die "$zero: Error: unknown group \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'ogid'        => sub { scalar getgrgid $_[0]; },
+    '_ogid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getgrnam $_[0];
+        die "$zero: Error: unknown group \"$_[0]\"\n" unless defined $id;
+        $id; },
+    'sgid'        => sub { scalar getgrgid $_[0]; },
+    '_sgid'       => sub {
+        return undef unless $_[0] =~ /\D/;
+        my $id = getgrnam $_[0];
+        die "$zero: Error: unknown group \"$_[0]\"\n" unless defined $id;
+        $id; },
+
+    'arch'        => sub { $archtab{$_[0]}; },
+    '_arch'       => sub {
+        $archtab_r{$_[0]} or
+        ($_[0] =~ /[[:^xdigit:]]/
+                and die "$zero: Error: unknown arch \"$_[0]\"\n") or
+        undef; },
+
+    'flags'       => sub {
+        my (@flags);
+        for (my $i = 0; $i < @flagtab; $i++) {
+            push @flags, $flagtab[$i] if ($_[0] & (1<<$i));
+        }
+        join(',', @flags) || 'none'; },
+    '_flags'      => sub {
+        return undef if $_[0] =~ /^\d+$/;
+        my $value = 0;
+        for my $f (split ',', $_[0]) {
+            my $bits = $flagtab_r{$f};
+            die "$zero: Error: unknown flag \"$f\"\n" unless defined $bits;
+            $value |= $bits;
+        }
+        $value; },
+
+    'mode'        => sub {
+        my $mode = $modetab{oct($_[0]) & 0170000};
+        $mode ? sprintf("%s,%03o", $mode, oct($_[0]) & 0777) : undef; },
+    '_mode'       => sub {
+        return undef if $_[0] =~ /^[0-7]+$/;
+        my ($s, $bits) = split ',', $_[0];
+        my $type = $modetab_r{$s};
+        die "$zero: Error: unknown type \"$type\"\n" unless defined $type;
+        sprintf("%07o", ($type << 4) | oct($bits)); },
+
+    'msg'         => sub {
+        my $v = $_[0];
+        return undef unless $v =~ s/^(audit\()(\d+)(?=\.\d+:\d+\))/
+            $1 . POSIX::strftime('%D %T', localtime($2))/e;
+        $v; },
+
+    'obj'         => sub { TransTable->new->resolve($_[0]); },
+    '_obj'        => sub { TransTable->new->reverse($_[0]); },
+    'subj'        => sub { TransTable->new->resolve($_[0]); },
+    '_subj'       => sub { TransTable->new->reverse($_[0]); },
+    'scontext'    => sub { TransTable->new->resolve($_[0]); },
+    '_scontext'   => sub { TransTable->new->reverse($_[0]); },
+    'tcontext'    => sub { TransTable->new->resolve($_[0]); },
+    '_tcontext'   => sub { TransTable->new->reverse($_[0]); },
+
+    'syscall'     => sub {
+        my $name = SyscallTable->new->reverse($_[0]);
+        defined($name) ? $name->[0] : undef; },
+    '_syscall'    => sub {
+        return undef if $_[0] =~ /^\d+$/;
+        my $num = SyscallTable->new->resolve($_[0]);
+        die "$zero: Error: unknown syscall \"$_[0]\"\n" unless defined $num;
+        $num; },
+);
+
+# NB: this is not a method
+sub interp {
+    my ($k, $v) = @_;
+    my ($subr, $iv);
+
+    # deserialize keys so the interpretation routine is found
+    $k =~ s/_\d+$//;
+
+    $iv = &$subr($v) if $subr = $interptab{$k};
+    return defined $iv ? $iv : $v;
+}
+
+# NB: this is not a method
+sub rinterp {
+    my ($k, $v) = @_;
+    my ($subr, $iv);
+
+    # deserialize keys so the interpretation routine is found
+    $k =~ s/_\d+$//;
+
+    $iv = &$subr($v) if $subr = $interptab{"_$k"};
+    return defined $iv ? $iv : $v;
+}
+
+# NB: only acts on primary fields, consumer handles aux
+sub _keys {
+    my ($self) = @_;
+    return @{$self->{'_order'}};
+}
+
+# NB: only acts on primary fields, consumer handles aux
+sub keys {
+    my ($self) = @_;
+    # filter out special keys.  the only one in @_order is probably _raw
+    return grep {substr($_, 0, 1) ne '_'} @{$self->{'_order'}};
+}
+
+# NB: this is not a method
+sub quote {
+    my ($v) = @_;
+    if ($v =~ /".*'|'.*"/) {
+        # escape contained double-quotes then wrap in double-quotes
+        $v =~ s/"/\\"/g; $v = "\"$v\"";
+    }
+    elsif ($v =~ /"/) {
+        # wrap in single-quotes
+        $v = "'$v'";
+    }
+    elsif ($v =~ /[\s']/) {
+        # wrap in double-quotes
+        $v = "\"$v\"";
+    }
+    return $v;
+}
+
+sub to_s {
+    my ($self) = @_;
+    my $l;
+    return join "\n", map {
+        $l = $_;
+        join ' ', map "$_=".quote($self->lget($l, $_)), $self->aux($l)->keys;
+    } 0..$self->lines-1;
+}
+
+our (@tags, %tagsidx, @force_taglines);
+
+sub test {
+    # generate dotest if it doesn't already exist
+    AuditRecord::generate_dotest('dotest', @ARGV) 
+        unless defined *{AuditRecord::dotest}{CODE};
+
+    # if there are no tags in this query, call straight to dotest
+    goto &dotest unless @tags;
+
+    # ok, there are tags, start this function in earnest
+    my $self = shift;
+    my $lines = $self->lines;
+
+    # tags are mutually exclusive, need at least one line per tag
+    return undef if $lines < @tags;
+
+    # generate dotest_pre if it doesn't already exist
+    AuditRecord::generate_dotest('dotest_pre', @ARGV) 
+        unless defined *{AuditRecord::dotest_pre}{CODE};
+
+    # deep copy and pad out force_taglines.  This will be updated by dotest_pre
+    my @ft;
+    for (my $ti = 0; $ti < @tags; $ti++) {
+        $ft[$ti] = $force_taglines[$ti] || [ (0..($lines-1)) ];
+    }
+
+    # before descending into tagged madness, check to see if this line can
+    # match without mutual exclusion.  Use this alternate syntax to prevent perl
+    # from complaining: Name "AuditRecord::dotest_pre" used only once
+    return undef unless dotest_pre($self, \@ft);
+
+    # convert @ft from [undef,undef,undef,3,undef,5] to [3,5]
+    for (@ft) { @$_ = grep defined, @$_; }
+
+    # generate tagline combinations from @ft.  This must be done every time
+    # because @ft changes in dotest_pre
+    my @tc = ( [] );          # empty seed combination
+    for my $ft (@ft) {        # ( [3], [0..9], [2,4], [0..9] )
+        my @ntc;
+        for my $l (@$ft) {    # ( 0..9 )
+            # grep keeps taglines out that aren't mutually exclusive
+            for (@tc) { push @ntc, [@$_,$l] unless grep($_==$l, @$_) }
+        }
+        @tc = @ntc;
+    }
+    if ($opt{'debug'}) {
+        print STDERR "\@tc is [\n";
+        for (@tc) { print(STDERR "\t\t(@$_)\n") }
+        print STDERR "\t]\n";
+    }
+
+    for my $taglines (@tc) {
+        $self->dotest($taglines) and return 1;
+    }
+    return undef;
+}
+
+sub generate_dotest {
+    my ($funcname, @conds) = @_;
+    my ($prev_was_cond, $negate, $line, $tag, $ti);
+    my ($k, $v, $op, $qk, $qv);
+
+    print STDERR "\nGENERATING $funcname\n" if $opt{'debug'};
+    my ($pre) = $funcname eq 'dotest_pre';
+
+    for my $a (@conds) {
+        print STDERR "Parsing [$a]\n" if $opt{'debug'};
+
+        $a eq 'and'     and do { $a = '&' if $pre; $prev_was_cond = 0; next };
+        $a eq 'or'      and do { $a = '|' if $pre; $prev_was_cond = 0; next };
+        $a eq '!'       and do { $a =~ s/^/and / if $prev_was_cond; $prev_was_cond = 0; next };
+        $a eq 'not'     and do { $a =~ s/^/and / if $prev_was_cond; $prev_was_cond = 0; next };
+        $a =~ /^\(+$/   and do { $a =~ s/^/and / if $prev_was_cond; $prev_was_cond = 0; next };
+        ($a =~ /^\)+$/) and do { $prev_was_cond = 1; next };
+
+        # each condition can be lined and/or tagged, or neither
+        $tag = ($a =~ s{^(\w+)#(?!\d)(\w+)}{$1}) ? $2 : undef;
+        $line = ($a =~ s{^(\w+)#(\d+)}{$1}) ? $2 : undef;
+        if (defined $tag) {
+            if (!defined $tagsidx{$tag}) {
+                push @tags, $tag;
+                $tagsidx{$tag} = $#tags;    # remember which array index it occupies
+            }
+            $ti = $tagsidx{$tag};
+            $force_taglines[$ti][$line] = $line if defined $line;
+        }
+
+        # handle equality negations generically
+        $a =~ s{^(\w+)!=(.*)}{$1==$2} and $negate = 1 or
+        $a =~ s{^(\w+)!~(.*)}{$1=~$2} and $negate = 1;
+
+        # string or regex comparison, handling surrounding quotes
+        if ($a =~ s{^(\w+)(=~|~|==?)(.*)}{}s) {
+            ($k, $op, $v) = ($1, $2, $3);
+            if ($k eq 'msg_time' or $k eq 'msg_seq') {
+                $a = "$k==$v";      # punt to numeric comparison
+            } else {
+                $op =~ s/^==?$/eq/;
+                $v = rinterp($k, $v);
+                $qk = '"' . quotemeta($k) . '"';
+                $qv = '"' . quotemeta($v) . '"';
+                if (defined $line) {
+                    $a = qq|
+                        \$v = \$self->_lget($line, $qk);
+                        \$v = substr(\$v, 1, -1) if substr(\$v, 0, 1) =~ /['"]/;
+                        \$v $op $qv;
+                    |;
+                } elsif (defined $tag and not $pre) {
+                    $a = qq|
+                        \$v = \$self->_lget(\$taglines->[$ti], $qk);
+                        \$v = substr(\$v, 1, -1) if substr(\$v, 0, 1) =~ /['"]/;
+                        \$v $op $qv;
+                    |;
+                } else {
+                    $a = (defined $tag and $pre)
+                        ? qq| \$v $op $qv and \$found = 1 or undef \$ft->[$ti][\$l] | 
+                        : qq| \$v $op $qv and \$found = 1, last |;
+                    $a = qq|
+                        for (\$found = 0, \$l = 0; \$l < \$self->lines; \$l++) {
+                            \$v = \$self->_lget(\$l, $qk);
+                            \$v = substr(\$v, 1, -1) if substr(\$v, 0, 1) =~ /['"]/;
+                            $a;
+                        }
+                        \$found;
+                    |;
+                }
+                goto end_subs;
+            }
+        }
+
+        # numeric comparison
+        if ($a =~ s{^(\w+)(<=|>=|==?|<|>)(.*)}{}s) {
+            ($k, $op, $v) = ($1, $2, rinterp($1, $3));
+            if ($k eq 'msg_time' or $k eq 'msg_seq') {
+                croak "Tagged query ridiculous for $k" if defined $tag or defined $line;
+                chomp($v = `date +\%s -d '$v'`) if $k eq 'msg_time' and $v =~ /[^\d.]/;
+                $k =~ s/^msg_//;
+                $a = qq|
+                    (\$time, \$seq) = (split /[(:)]/, \$self->_lget(0, 'msg'))[1,2];
+                    defined \$seq and \$$k $op $v;
+                |;
+                goto end_subs;
+            } 
+            $qk = '"' . quotemeta($k) . '"';
+            $qv = $v;   # don't quote numbers
+            if (defined $line) {
+                $a = qq| \$self->_lget($line, $qk) $op $qv |;
+            } elsif (defined $tag and not $pre) {
+                $a = qq| \$self->_lget(\$taglines->[$ti], $qk) $op $qv |;
+            } else {
+                $a = (defined $tag and $pre)
+                    ? qq| \$v $op $qv and \$found = 1 or undef \$ft->[$ti][\$l] |
+                    : qq| \$v $op $qv and \$found = 1, last |;
+                $a = qq|
+                    for (\$found = 0, \$l = 0; \$l < \$self->lines; \$l++) {
+                        \$v = \$self->_lget(\$l, $qk);
+                        $a;
+                    }
+                    \$found;
+                |;
+            }
+            goto end_subs;
+        };
+
+        croak "Error evaluating expression: $a";
+
+end_subs:
+
+        # wrap in do { } to handle blocks
+        $a = "do { $a; }";
+
+        # handle negated comparisons
+        $a = "not ($a)" if $negate;
+        $negate = 0;
+
+        # make 'and' implicit, like the find command
+        $a =~ s/^/$pre ? '& ' : 'and '/e if $prev_was_cond;
+        $prev_was_cond = 1;
+
+        print STDERR "Became [$a]\n" if $opt{'debug'};
+    }
+
+    # in theory this should be (significantly) faster than eval'ing
+    # repeatedly
+    my $arg2 = $pre ? 'ft' : 'taglines';
+    eval "sub AuditRecord::$funcname {
+        my (\$self, \$$arg2) = \@_;
+        my (\$l, \$v, \$found, \$time, \$seq);
+        local \$^W = 0;
+        @conds
+    }";
+    if ($@) {
+        print STDERR "Error in expression: $@" if $@;
+        print STDERR "Full test was:\n";
+        print STDERR "@conds";
+        croak;
+    }
+}
+
+######################################################################
+# Main
+######################################################################
+
+package main;
+
+if ($zero eq 'ausearch' or grep {$_ eq '--ausearch'} @ARGV) {
+    $opt{'ausearch'} = 1;
+
+    my $eq = '=~';
+    Getopt::Long::Configure("default", "pass_through");
+    die unless GetOptions(
+        'w'     => sub { $eq = '==' },
+    );
+
+    push @ARGV, '--' unless grep {$_ eq '--'} @ARGV;
+
+    Getopt::Long::Configure("default", "bundling_override");
+    die unless GetOptions(
+        'ausearch' => sub { },                                  # just ignore
+        'a=i'   => sub { push @ARGV, "msg_seq==$_[1]" },
+        'c=s'   => sub { push @ARGV, "comm==$_[1]" },
+        'f=s'   => sub { push @ARGV, "name$eq$_[1]" },
+        'ga=s'  => sub { push @ARGV, "(", "gid==$_[1]", "or",
+                                          "egid==$_[1]", ")" },
+        'ge=s'  => sub { push @ARGV, "egid==$_[1]" },
+        'gi=s'  => sub { push @ARGV, "gid==$_[1]" },
+        'h'     => sub { print STDERR $ausearch_usage; exit 0 },
+        'hn=s'  => sub { push @ARGV, ($eq eq '==')
+                            ? "msg_1=~\\bhostname=$_[1]\\b"
+                            : "msg_1=~\\bhostname=\\S*$_[1]" },
+        'i'     => sub { $opt{'i'} = 1; },
+        'if=s'  => sub { $opt{'f'} = $_[1] },
+        'm=s'   => sub { push @ARGV, ($_[1] eq 'ALL') ?
+                         "type!=" : "type=~\\b$_[1]\\b" },
+        'o=s'   => sub { push @ARGV, "obj=$_[1]" },
+        'p=i'   => sub { push @ARGV, "pid==$_[1]" },
+        'sc=s'  => sub { push @ARGV, "syscall==$_[1]" },        # XXX names
+        'su=s'  => sub { push @ARGV, "subj=$_[1]" },
+        # success/failure definitions according to ausearch >= 1.3
+        # XXX add avc messages
+        'sv=s'  => sub {
+                $_[1] =~ /yes/i
+                ? push @ARGV, "(", "success==yes", "or", "res==1", "or",
+                                   "res==success", "or", "msg_1=~res=success",
+                                   "or", "msg_1=~result=Success", "or",
+                                   "type=LOGIN", "or", "type=CONFIG_CHANGE",
+                                   "and", "res!=0", ")"
+                : push @ARGV, "(", "success==no", "or", "res==0", "or",
+                                   "res==failed", "or", "msg_1=~res=failed",
+                                   "or", "msg_1=~result=[^=]*[Ff]ail", ")"
+        },
+        'ts'    => sub { push @ARGV, "msg_time>=" },            # see <> below
+        'te'    => sub { push @ARGV, "msg_time<=" },            # see <> below
+        'tm'    => sub { push @ARGV, ($eq eq '==')
+                            ? "msg_1=~\\bterminal=$_[1]\\b"
+                            : "msg_1=~\\bterminal=\\S*$_[1]" },
+        'ua=s'  => sub { push @ARGV, "(", "uid==$_[1]", "or",
+                                          "euid==$_[1]", "or",
+                                          "auid==$_[1]", ")" },
+        'ue=s'  => sub { push @ARGV, "euid==$_[1]" },
+        'ui=s'  => sub { push @ARGV, "uid==$_[1]" },
+        'ul=s'  => sub { push @ARGV, "auid==$_[1]" },
+        'v'     => sub { print STDERR $version; exit 0 },
+        'w'     => sub { },                                     # handled above
+        'x=s'   => sub { push @ARGV, "exe==$_[1]" },
+        'debug' => sub { $opt{'debug'} = 1 },
+        'nosync' => sub { $opt{'nosync'} = 1 },
+        '<>'    => sub {
+            die "I don't understand $_[0]\n" unless
+            $ARGV[-1] =~ s/^(msg_time.=)(.*)/$1.(length($2)?"$2 ":"").$_[0]/e
+        },
+    );
+    die "$zero: argument required\n$ausearch_usage" unless @ARGV;
+
+} else {
+    Getopt::Long::Configure("default", "bundling");
+    die unless GetOptions(
+        \%opt,
+        'c|count',
+        'debug',
+        'f|file=s',
+        'h|help',
+        'help-interpret',
+        'i|interpret',
+        'm|max-count=i',
+        'mode=i',
+        'nosync',
+        'q|quiet',
+        'raw',
+        'resolve:s',
+        'seek=i',
+        'V|version',
+    );
+    if ($opt{'h'}) { print $usage; exit 0 }
+    if ($opt{'V'}) { print $version; exit 0 }
+    if ($opt{'help-interpret'}) {
+        print join "\n", sort grep /^[^_]/, keys %AuditRecord::interptab;
+        print "\n"; exit 0;
+    }
+    if (defined $opt{'mode'} and $opt{'mode'} != 32 and $opt{'mode'} != 64) {
+        die "$zero: --mode must be 32 or 64\n$usage";
+    }
+    if (defined $opt{'resolve'}) {
+        my ($k, $v) = split('=', $opt{'resolve'}, 2);
+        if (not defined $v) {
+            $k = 'syscall';
+            $v = $opt{'resolve'};
+        }
+        if ($v =~ /\D/) {
+            my $num = AuditRecord::rinterp($k, $v);
+            defined $num and print($num, "\n"), exit 0;
+        } elsif ($k eq 'syscall') {
+            my $name = SyscallTable->new->reverse($v);
+            defined $name and print(join("\n", @$name), "\n"), exit 0;
+        } else {
+            my $name = AuditRecord::interp($k, $v);
+            defined $name and print($name, "\n"), exit 0;
+        }
+        exit 1; # could not resolve
+    }
+    die "$zero: argument required\n$usage" unless @ARGV;
+}
+
+# Unless --nosync is given, wait for the auditd backlog to reach zero, as
+# reported by auditctl -s
+if ($> == 0 and not $opt{'nosync'}) {
+    my ($i, $backlog);
+    for ($i = 0; $i < 30; $i++) {
+        ($backlog = `/sbin/auditctl -s`) =~ s/.*?\bbacklog\s+(\d+).*/$1/s;
+        last if $backlog == 0;
+        if ($i % 10 == 0 and $opt{'debug'}) {
+            print STDERR "$zero: waiting on backlog ($backlog)\n";
+        }
+        select(undef, undef, undef, 0.1);
+    }
+    if ($i == 30) {
+        print STDERR "$zero: WARNING: backlog=$backlog after 3 seconds\n";
+    }
+}
+
+my $reader = AuditReader->new($opt{'f'});
+$reader->seek($opt{'seek'} || $ENV{'AUDIT_SEEK'} || 0);
+
+while (my $record = $reader->next_record) {
+    next unless $record->test();
+    $found++;
+    if ($opt{'raw'}) {
+        if ($opt{'c'}) {
+            $found += ($record->raw =~ tr/\n//) - 1;
+        } else {
+            print $record->raw unless $opt{'q'};
+        }
+    } elsif ($opt{'ausearch'}) {
+        if ($opt{'i'}) {
+            printf "----\n%s", $record->raw;
+        } else {
+            my $time = (split /[(:)]/, $record->get('msg'))[1];
+            printf "----\ntime->%s%s", 
+                defined($time) ? ctime(int $time) : "(null)\n", $record->raw;
+        }
+    } else {
+        print $record->to_s."\n" unless $opt{'q'} or $opt{'c'};
+    }
+    last if $opt{'q'} or (defined($opt{'m'}) and $found >= $opt{'m'});
+}
+
+print $found, "\n" if $opt{'c'};
+exit !$found;
+
+__END__
+
+=head1 NAME
+
+augrok - audit.log search tool
+
+=head1 SYNOPSIS
+
+B<augrok> [I<-chqvV>] 
+[I<--ausearch --count --help --interpret --quiet --raw --version>] 
+[I<-f logfile | --file logfile>] [I<--seek offset>] expression...
+
+B<augrok> I<--resolve k=v>
+
+B<augrok> I<--ausearch options...>
+
+=head1 DESCRIPTION
+
+This tool provides a command-line interface for searching audit logs, similar to
+ausearch but slower and possibly more flexible.
+
+=head2 EXPRESSIONS
+
+The primitive expression syntax is <key><op><value>, where <key> is one of the
+keys from audit.log, <op> is an operator (==, !=, <, >, <=, >=, =~) and <value>
+is the value against which to compare.  There should be no whitespace between
+the key, operator and value.  The value should not be quoted beyond the quoting
+required by the shell.  For example, "type=~SYSCALL" is valid but
+"type=~'SYSCALL'" is not.  In particular, make sure to quote any primitive
+expression containing < or >, otherwise you're redirecting stdin/stdout, which
+is probably not what you intended.
+
+Complex expressions can be constructed using a combination of primitive
+expressions and logical operators (not, and, or, and parentheses).  Note that
+parentheses may need to be quoted to escape interpretation by the shell, for
+example: '(' type=~SYSCALL ')'
+
+In addition to the keys in audit.log, two special keys are provided: msg_time
+and msg_seq.  These are the time and sequence values extracted from the msg
+entry.  In particular, msg_time is special because augrok will automatically
+parse the comparison value into the seconds-since-epoch format used by augrok,
+for example, the following will find all messages that occurred during the
+specified half-hour: 'msg_time>=14:00' 'msg_time<14:30'
+
+=head2 TAGGED EXPRESSIONS
+
+As of augrok-2.0, a new syntax is provided to support queries against the
+auxiliary records that make up a complete audit record.  For example, consider
+an AVC record with multiple PATH auxiliary records:
+
+    type=AVC msg=audit(1124137373.408:565): ...
+    type=SYSCALL msg=audit(1124137373.408:565): ...
+    type=PATH msg=audit(1124137373.408:565): subj=foo obj=bar ...
+    type=PATH msg=audit(1124137373.408:565): subj=baz obj=qux ...
+
+In this case, an ordinary augrok query for subj==foo obj==qux would match this
+record, since both these key/value pairs are present.  However the query really
+wants to know if these appear in the same auxiliary record.  To make this query
+work as intended, add a tag after the key to indicate they should be on the same
+line: subj#a==foo obj#a==qux.  This would not be fooled by the above record.
+
+The above query only uses one tag 'a'.  Augrok will accept any number of tags,
+but note that augrok will automatically discard any records for which there are
+fewer lines than tags in the expression.
+
+If a number is given in place of a tag, it's assumed to be referring to that
+particular line, where the lines are numbered starting with 0.  For example the
+above query would match type#1=SYSCALL because of the second line's
+type=SYSCALL.
+
+=head1 OPTIONS
+
+=over
+
+=item B<--ausearch>
+
+If this is found anywhere on the command-line, all of the other options are
+interpeted in ausearch mode.  For the usage, try --ausearch -h or read
+ausearch(8).  Another way of invoking ausearch mode is to run augrok through
+a symbolic link called ausearch.
+
+=item B<-c --count>
+
+Suppress normal output; instead print a count of matching lines.
+
+=item B<-f> I<logfile> B<--file> I<logfile>
+
+Search a logfile other than /var/log/audit/audit.log
+
+=item B<-h --help>
+
+Show usage information
+
+-item B<-i --interpret>
+
+When possible, augrok will interpret values to human-readable.  For example,
+user ids are interpreted to user names, syscall numbers are interpreted to
+syscall names, etc.  Note that this option is not required for the query to be
+interpreted: augrok always tries to interpret query values so that, for example,
+uid=root is always translated to uid=0, and syscall=creat is always translated
+to the appropriate syscall number for the architecture.
+
+The list of fields augrok attempts to interpret can be obtained with
+--help-interpret
+
+=item B<--nosync>
+
+Don't wait for auditd backlog to reach zero, as reported by auditctl -s
+
+=item B<-q --quiet>
+
+Quiet; do not write anything to standard output.  Exit immediately with zero
+status if any match is found, otherwise exit with non-zero status.
+
+=item B<--raw>
+
+Output the raw lines related to the search, rather than the lines processed by
+augrok.  Note this means that the search expression differ from the output that
+appears, since the search expression always operates on the processed format.
+
+=item B<--resolve> I<key=value>
+
+Resolve the value according to augrok's interpretation rules for key.  If value
+is non-numeric, reverse interpretation is attempted.  If key= is omitted,
+syscall= is assumed for backward compatibility.
+
+=item B<--seek> I<offset>
+
+Start the search at the first line at or after offset (bytes).
+
+=item B<-V --version>
+
+Show version information.
+
+=back
+
+=head1 EXAMPLES
+
+To count the number of records containing an auxiliary record with type=SYSCALL:
+
+    $ augrok -c type==SYSCALL
+    537
+
+To find a specific record:
+
+    $ augrok msg=='audit(1124137373.408:565):'
+    type=SYSCALL,FS_WATCH,FS_INODE,CWD,PATH msg=audit(1124137373.408:565):
+    arch=c0000032 syscall=1210 success=yes exit=0 a0=6000000000006388
+    a1=6000000000006390 a2=c00000000000048c a3=2000000000244238 items=1
+    pid=28239 auid=1001 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0
+    comm=chmod exe=/bin/chmod watch_inode=573461 watch=foo perm_mask=1
+    filterkey= perm=1 inode_dev=08:06 inode_gid=0 inode=573461 inode_uid=0
+    inode_rdev=00:00 cwd=/tmp rdev=00:00 ouid=0 dev=08:06 flags=1 mode=0100777
+    name=foo/a ogid=0 inode_1=573504
+
+or equally, use just the sequence number:
+
+    $ augrok msg_seq==565
+    (same output as above)
+
+=head1 ENVIRONMENT VARIABLES
+
+=over
+
+=item AUDIT_SEEK
+
+If --seek is not specified and AUDIT_SEEK is set in the environemnt, its value
+will be used as the default offset.
+
+=back

@@ -1,0 +1,15 @@
+---
+# vars file for dependency_checker
+dep_checker_remove_deps: false
+
+fips_dependencies:
+  - bs4
+  - requests
+
+stig_dependencies:
+  - openscap-scanner
+  - scap-security-guide
+
+cc_dependencies:
+  - libselinux-devel
+  - rsync

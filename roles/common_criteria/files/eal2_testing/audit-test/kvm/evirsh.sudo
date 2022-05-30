@@ -1,0 +1,5 @@
+#!/bin/bash
+if [ -z "$VUSER" ]; then
+	VUSER=eal
+fi
+sudo -u $VUSER virsh $@

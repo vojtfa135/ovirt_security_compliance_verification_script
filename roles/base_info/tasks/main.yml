@@ -1,0 +1,63 @@
+---
+# tasks file for base_info
+- name: Authenticate against oVirt engine
+  ovirt.ovirt.ovirt_auth:
+    url: "{{ engine_url }}/ovirt-engine/api"
+    username: "{{ engine_username_full }}"
+    password: "{{ engine_password }}"
+    insecure: yes
+
+- name: Extract relevant information about hosts
+  ovirt.ovirt.ovirt_host_info:
+    auth: "{{ ovirt_auth }}"
+  register: result
+
+- name: Retrieve oVirt API data
+  ovirt.ovirt.ovirt_api_info:
+    auth: "{{ ovirt_auth }}"
+  register: api_data
+
+- name: Get the number of oVirt hosts
+  set_fact:
+    num_hosts: "{{ result['ovirt_hosts']|length }}"
+
+- name: Print product type
+  debug:
+    msg: "{{ api_data.ovirt_api['product_info']['name'] }}"
+
+- name: Register product type
+  set_fact:
+    prod_type: "{{ api_data.ovirt_api['product_info']['name'] }}"
+
+- name: Print product's version
+  debug:
+    msg: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
+
+- name: Register product's version
+  set_fact:
+    prod_version: "{{ api_data.ovirt_api['product_info']['version']['full_version'] }}"
+
+- name: Add hosts to the inventory
+  add_host:
+    name: "{{ result.ovirt_hosts[item|int]['address'] }}"
+    groups: ovirt_hosts
+  with_sequence: start=0 count={{ num_hosts }}
+
+# - name: Get OS release of the hosts
+#   shell: cat /etc/*elease
+#   register: os_release
+#   delegate_to: "{{ item }}"
+#   loop: "{{ groups['hosts'] }}"
+#   become_user: root
+# 
+# - name: Parse retrieved OS release information
+#   set_fact:
+#     parsed_os_release: "{{ os_release['results'][0]['stdout_lines'] | last }}"
+#   delegate_to: "{{ item }}"
+#   loop: "{{ groups['hosts'] }}"
+
+- name: Revoke SSO token
+  ovirt.ovirt.ovirt_auth:
+    ovirt_auth: "{{ ovirt_auth }}"
+    state: absent
+  when: check_base_info|default(false)

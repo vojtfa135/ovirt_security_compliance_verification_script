@@ -1,0 +1,32 @@
+###############################################################################
+# (c) Copyright Hewlett-Packard Development Company, L.P., 2006
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of version 2 the GNU General Public License as
+#   published by the Free Software Foundation.
+#   
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#   
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
+
+TOPDIR		= ..
+
+include $(TOPDIR)/rules.mk
+
+SUB_DIRS	= system
+
+.PHONY:	unlock
+
+unlock:
+ifneq ($(DISTRO), SUSE)
+	[[ -n $$LBLNET_SVR_IPV6 ]] && \
+		(echo "lock:release;" | nc -w 3 $$LBLNET_SVR_IPV6 4000)
+else
+	[[ -n $$LBLNET_SVR_IPV6 ]] && \
+		(echo "lock:release;" | nc6 -t 1 -w 3 $$LBLNET_SVR_IPV6 4000)
+endif
