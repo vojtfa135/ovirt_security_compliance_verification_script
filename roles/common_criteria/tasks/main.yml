@@ -1,5 +1,111 @@
 ---
 # tasks file for common_criteria
-- name: Common Criteria Compliance Evaluation
-  debug:
-    msg: "Implement me!"
+- name: Product type must be Red Hat Virtualization
+  block:
+    - name: Evaluate product type
+      set_fact:
+        prod_type_is_rhv: "{{ (cc_prod_type == cc_required_prod) | ternary(true, false) }}"
+    
+    - name: Set pass key for the rule
+      set_fact:
+        cc_rules: "{{ cc_rules | combine(prod_type_rule_val, recursive=true) }}"
+      vars:
+        prod_type_rule_val: "{
+          'product_type': {
+            'pass': '{{ prod_type_is_rhv }}'
+          }
+        }"
+      with_dict: "{{ cc_rules }}"
+
+- name: Product version must be 4.3.17
+  block:
+    - name: Evaluate product version
+      set_fact:
+        prod_version_is_correct: "{{ (cc_required_prod_version in cc_prod_version) | ternary(true, false) }}"
+    
+    - name: Set pass key for the rule
+      set_fact:
+        cc_rules: "{{ cc_rules | combine(prod_version_rule_val, recursive=true) }}"
+      vars:
+        prod_version_rule_val: "{
+          'product_version': {
+            'pass': '{{ prod_version_is_correct }}'
+          }
+        }"
+      with_dict: "{{ cc_rules }}"
+
+- name: Operating system must be RHEL
+  block:
+    - name: Evaluate OS type on the hosts
+      set_fact:
+        os_type_is_rhel: "{{ (cc_os_distribution == cc_required_distribution) | ternary(true, false) }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        cc_rules: "{{ cc_rules | combine(os_type_rule_val, recursive=true) }}"
+      vars:
+        os_type_rule_val: "{
+          'os_type': {
+            'pass': '{{ os_type_is_rhel }}'
+          }
+        }"
+      with_dict: "{{ cc_rules }}"
+
+- name: Operating system version must be 7.9
+  block:
+    - name: Evaluate OS version on the hosts
+      set_fact:
+        os_version_is_correct: "{{ (cc_required_os_version|string in cc_os_version|string) | ternary(true, false) }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        cc_rules: "{{ cc_rules | combine(os_version_rule_val, recursive=true) }}"
+      vars:
+        os_version_rule_val: "{
+          'os_version': {
+            'pass': '{{ os_version_is_correct }}'
+          }
+        }"
+      with_dict: "{{ cc_rules }}"
+
+- name: All tests from the test suite must pass
+  block:
+    - name: Copy CC test suite to the hosts
+      synchronize:
+        src: files/{{ cc_test_suite_name }}
+        dest: "{{ cc_test_suite_remote_path }}"
+
+    - name: Run test suite
+      shell: "echo {{ cc_host_password }} | make run"
+      args:
+        chdir: "{{ cc_test_suite_remote_path }}/{{ cc_test_suite_name }}"
+      ignore_errors: yes
+      register: test_suite_run
+
+    - name: Evaluate OS version on the hosts
+      set_fact:
+        cc_tests_passed: "{{ (test_suite_run.rc == cc_required_test_suite_rc) | ternary(true, false) }}"
+
+    - name: Set pass key for the rule
+      set_fact:
+        cc_rules: "{{ cc_rules | combine(cc_test_suite_pass, recursive=true) }}"
+      vars:
+        cc_test_suite_pass: "{
+          'test_results': {
+            'pass': '{{ cc_tests_passed }}'
+          }
+        }"
+      with_dict: "{{ cc_rules }}"
+
+- name: Common Criteria final report generation
+  block:
+    - name: Common Criteria final evaluation
+      local_action:
+        module: set_fact
+        cc_infra_compliant: "{{ cc_rules | cc_final_evaluation }}"
+
+    - name: Generate final report
+      local_action:
+        module: template
+        src: cc_final_report.html.j2
+        dest: cc_final_report.html

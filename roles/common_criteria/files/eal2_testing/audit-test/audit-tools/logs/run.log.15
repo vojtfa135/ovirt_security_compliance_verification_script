@@ -1,0 +1,19 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[15] ausearch -hn remote.system.domain.com                                                     PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -hn remote.system.domain.com
+----
+time->Thu Jun 23 23:00:21 2011
+type=USER_AUTH msg=audit(1308862821.623:649500): user pid=16571 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0-s15:c0.c1023 msg='op=PAM:authentication acct="abc" exe="/usr/sbin/sshd" hostname=remote.system.domain.com addr=123.456.789.10 terminal=ssh res=success'
+
+# ausearch -if auditlog.sample -hn remote.system.domain.com
+----
+time->Thu Jun 23 23:00:21 2011
+type=USER_AUTH msg=audit(1308862821.623:649500): user pid=16571 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0-s15:c0.c1023 msg='op=PAM:authentication acct="abc" exe="/usr/sbin/sshd" hostname=remote.system.domain.com addr=123.456.789.10 terminal=ssh res=success'
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+

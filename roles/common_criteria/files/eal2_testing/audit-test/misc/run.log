@@ -1,0 +1,92 @@
+
+Started:                         Thu Jun 17 16:17:10 CEST 2021
+Kernel:                          3.10.0-1127.8.2.el7.x86_64
+Architecture:                    x86_64
+Mode:                            64
+Hostname:                        rhv.atsec.com
+Profile:                         capp
+selinux-policy version:          selinux-policy-3.13.1-266.el7.noarch
+
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31
+
+Log file started Thu Jun 17 16:17:11 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[0] objreuse objreuse-brk                                                                                      PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[1] objreuse objreuse-ftruncate                                                                                PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[2] objreuse objreuse-lseek                                                                                    PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[3] objreuse objreuse-shm                                                                                      PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[4] objreuse objreuse-msg                                                                                      PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[5] objreuse objreuse-sem                                                                                      PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[6] objreuse objreuse-mmap                                                                                     PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+--- end output -------------------------------------------------------------
+
+
+
+   7 pass (100%)
+   0 fail (0%)
+   0 error (0%)
+------------------
+   7 total
+Killing all processes for testuser
+Removing user testuser
+Removing group testuser
+Killing all processes for testadmin
+Removing user testadmin
+Removing group testadmin

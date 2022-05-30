@@ -1,4 +1,6 @@
 ---
-engine_username: ""
-engine_password: ""
-engine_url: ""
+engine_profile: internal
+engine_username: "user"
+engine_username_full: "{{ engine_username }}@{{ engine_profile }}"
+engine_password: "password"
+engine_url: "https://hosted-engine-23.lab.eng.tlv2.redhat.com"

@@ -1,0 +1,28 @@
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[11] pamfaillock_lock                                                                                      ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ source tp_ssh_functions.bash
+++ source functions.bash
++++ [[ -z 1 ]]
++++ return 0
+++ BFOLDER=/tmp
+++ RND=17368
+++ TIMEOUT=600
++ /sbin/faillock --user testuser --reset
+++ id -u testuser
++ tuid=1004
++ grep -q pam_faillock /etc/pam.d/sshd
++ grep -q pam_faillock /etc/pam.d/password-auth
++ exit_error
++ declare status
++ [[ -n '' ]]
++ status=2
++ [[ -n '' ]]
++ exit 2
++ test_cleanup
++ rm -f /tmp/tmp.pO5mjHEI5G /tmp/tmp.K2F8LYXhFf /usr/local/eal4_testing/audit-test/tmp.0xOPrxwaa5
++ exit
+--- end output -------------------------------------------------------------
+

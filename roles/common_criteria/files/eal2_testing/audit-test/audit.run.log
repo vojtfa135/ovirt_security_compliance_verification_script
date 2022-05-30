@@ -1,0 +1,2376 @@
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::: audit-tools                                          :::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+Started:                         Tue Jun 29 11:13:06 CEST 2021
+Kernel:                          3.10.0-1127.8.2.el7.x86_64
+Architecture:                    x86_64
+Mode:                            64
+Hostname:                        rhv.atsec.com
+Profile:                         capp
+selinux-policy version:          selinux-policy-3.13.1-266.el7.noarch
+
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31
+
+Log file started Tue Jun 29 11:13:06 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                      Result
+--------                                                                                      ------
+[0] auditd_restart                                                                             PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+Stopping logging: [  OK  ]
+Redirecting start to /bin/systemctl start auditd.service
+type=DAEMON_END msg=audit(1624957987.792:4047): op=terminate auid=1002 pid=7855 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 res=success
+type=DAEMON_START msg=audit(1624957988.935:4576): op=start ver=2.8.5 format=raw kernel=3.10.0-1127.8.2.el7.x86_64 auid=4294967295 pid=7872 uid=0 ses=4294967295 subj=system_u:system_r:auditd_t:s0 res=success
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[1] auditd_start                                                                               PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+Redirecting to /bin/systemctl status auditd.service
+Stopping logging: [  OK  ]
+Redirecting to /bin/systemctl start auditd.service
+type=DAEMON_START msg=audit(1624957989.663:421): op=start ver=2.8.5 format=raw kernel=3.10.0-1127.8.2.el7.x86_64 auid=4294967295 pid=7970 uid=0 ses=4294967295 subj=system_u:system_r:auditd_t:s0 res=success
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[2] auditd_stop                                                                                PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+Stopping logging: [  OK  ]
+type=DAEMON_END msg=audit(1624957990.116:423): op=terminate auid=1002 pid=8037 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 res=success
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[3] auditd_reload                                                                              PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+rotate_audit_logs: Seems that USR1 is not supported
+Stopping logging: [FAILED]
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start.
+Reconfiguring: [  OK  ]
+type=DAEMON_CONFIG msg=audit(1624957990.740:8440) op=reconfigure state=changed auid=1002 pid=8152 subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 res=success
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[4] ausearch -a 6179                                                                           PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -a 6179
+----
+time->Thu May 17 00:18:47 2007
+type=DAEMON_START msg=audit(1179353927.452:6179) auditd start ver=1.3.1 format=raw auid=501 pid=11282 res=success auditd pid=11282
+
+# ausearch -if auditlog.sample -a 6179
+----
+time->Thu May 17 00:18:47 2007
+type=DAEMON_START msg=audit(1179353927.452:6179) auditd start ver=1.3.1 format=raw auid=501 pid=11282 res=success auditd pid=11282
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[5] ausearch -a 49969                                                                          PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -a 49969
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+
+# ausearch -if auditlog.sample -a 49969
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[6] ausearch -c chmod                                                                          PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -c chmod
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Mon Dec 5 23:22:37 2005
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+
+# ausearch -if auditlog.sample -c chmod
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+----
+time->Mon Dec 5 23:22:37 2005
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[7] ausearch -f .Xdefaults                                                                     PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -f .Xdefaults
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Mon Dec 5 23:22:37 2005
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+
+# ausearch -if auditlog.sample -f .Xdefaults
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+----
+time->Mon Dec 5 23:22:37 2005
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[8] ausearch -ga 10208                                                                         PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -ga 10208
+----
+time->Mon Dec 5 23:22:37 2005
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+
+# ausearch -if auditlog.sample -ga 10208
+----
+time->Mon Dec 5 23:22:37 2005
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[9] ausearch -p 25761                                                                          PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -p 25761
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+
+# ausearch -if auditlog.sample -p 25761
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[10] ausearch -m ALL                                                                           PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -m ALL
+----
+time->Fri Jan 5 21:26:36 2007
+type=DAEMON_CONFIG msg=audit(1168028796.315:7533) config changed, auid=500 pid=15465 res=success
+----
+time->Thu May 17 00:18:47 2007
+type=DAEMON_START msg=audit(1179353927.452:6179) auditd start ver=1.3.1 format=raw auid=501 pid=11282 res=success auditd pid=11282
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.142:49946): audit_enabled=1 old=1 by auid=10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.346:49947): audit_backlog_limit=256 old=256 by auid=10208
+----
+time->Fri Jan 5 22:02:11 2007
+type=CONFIG_CHANGE msg=audit(1168030931.528:451): auid=500 op=add rule key=(null) list=4 res=1
+----
+time->Fri Jan 5 22:02:17 2007
+type=CONFIG_CHANGE msg=audit(1168030937.871:452): auid=500 op=add rule key=(null) list=4 res=0
+----
+time->Fri Jan 5 22:16:46 2007
+type=LOGIN msg=audit(1168031806.396:457): login pid=15671 uid=0 old auid=4294967295 new auid=500
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER msg=audit(1133817257.347:49948): user pid=25504 uid=0 auid=10208 msg='testing 1-2-3 testing'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.367:49949): user pid=25521 uid=0 auid=10208 msg='groupadd: op=adding group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.477:49950): user pid=25522 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.661:49951): user pid=25540 uid=0 auid=10208 msg='userdel: op=deleting user entries acct=testuser res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.854:49952): user pid=25541 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser res=failed'
+----
+time->Mon Dec 5 22:15:50 2005
+type=CRED_ACQ msg=audit(1133817350.160:49953): user pid=25543 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_START msg=audit(1133817350.160:49954): user pid=25543 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_END msg=audit(1133817350.160:49955): user pid=25543 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=CRED_ACQ msg=audit(1133817894.617:49956): user pid=25579 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_START msg=audit(1133817894.618:49957): user pid=25579 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_END msg=audit(1133817894.618:49958): user pid=25579 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=CRED_ACQ msg=audit(1133818361.504:49959): user pid=25755 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_START msg=audit(1133818361.504:49960): user pid=25755 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_END msg=audit(1133818361.504:49961): user pid=25755 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Mon Dec 5 23:22:37 2005
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Thu Jun 23 23:00:21 2011
+type=USER_AUTH msg=audit(1308862821.623:649500): user pid=16571 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0-s15:c0.c1023 msg='op=PAM:authentication acct="abc" exe="/usr/sbin/sshd" hostname=remote.system.domain.com addr=123.456.789.10 terminal=ssh res=success'
+----
+time->Thu Jun 23 23:14:25 2011
+type=PATH msg=audit(1308863665.472:655416): item=0 name="/lib64/libpthread.so.0" inode=7995430 dev=fd:00 mode=0100755 ouid=0 ogid=0 rdev=00:00 obj=system_u:object_r:lib_t:s0
+
+# ausearch -if auditlog.sample -m ALL
+----
+time->Fri Jan 5 21:26:36 2007
+type=DAEMON_CONFIG msg=audit(1168028796.315:7533) config changed, auid=500 pid=15465 res=success
+----
+time->Thu May 17 00:18:47 2007
+type=DAEMON_START msg=audit(1179353927.452:6179) auditd start ver=1.3.1 format=raw auid=501 pid=11282 res=success auditd pid=11282
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.142:49946): audit_enabled=1 old=1 by auid=10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.346:49947): audit_backlog_limit=256 old=256 by auid=10208
+----
+time->Fri Jan 5 22:02:11 2007
+type=CONFIG_CHANGE msg=audit(1168030931.528:451): auid=500 op=add rule key=(null) list=4 res=1
+----
+time->Fri Jan 5 22:02:17 2007
+type=CONFIG_CHANGE msg=audit(1168030937.871:452): auid=500 op=add rule key=(null) list=4 res=0
+----
+time->Fri Jan 5 22:16:46 2007
+type=LOGIN msg=audit(1168031806.396:457): login pid=15671 uid=0 old auid=4294967295 new auid=500
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER msg=audit(1133817257.347:49948): user pid=25504 uid=0 auid=10208 msg='testing 1-2-3 testing'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.367:49949): user pid=25521 uid=0 auid=10208 msg='groupadd: op=adding group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.477:49950): user pid=25522 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.661:49951): user pid=25540 uid=0 auid=10208 msg='userdel: op=deleting user entries acct=testuser res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.854:49952): user pid=25541 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser res=failed'
+----
+time->Mon Dec 5 22:15:50 2005
+type=CRED_ACQ msg=audit(1133817350.160:49953): user pid=25543 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_START msg=audit(1133817350.160:49954): user pid=25543 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_END msg=audit(1133817350.160:49955): user pid=25543 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=CRED_ACQ msg=audit(1133817894.617:49956): user pid=25579 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_START msg=audit(1133817894.618:49957): user pid=25579 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_END msg=audit(1133817894.618:49958): user pid=25579 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=CRED_ACQ msg=audit(1133818361.504:49959): user pid=25755 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_START msg=audit(1133818361.504:49960): user pid=25755 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_END msg=audit(1133818361.504:49961): user pid=25755 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+----
+time->Mon Dec 5 23:22:37 2005
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+----
+time->Thu Jun 23 23:00:21 2011
+type=USER_AUTH msg=audit(1308862821.623:649500): user pid=16571 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0-s15:c0.c1023 msg='op=PAM:authentication acct="abc" exe="/usr/sbin/sshd" hostname=remote.system.domain.com addr=123.456.789.10 terminal=ssh res=success'
+----
+time->Thu Jun 23 23:14:25 2011
+type=PATH msg=audit(1308863665.472:655416): item=0 name="/lib64/libpthread.so.0" inode=7995430 dev=fd:00 mode=0100755 ouid=0 ogid=0 rdev=00:00 obj=system_u:object_r:lib_t:s0
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[11] ausearch -m SYSCALL                                                                       PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -m SYSCALL
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Mon Dec 5 23:22:37 2005
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+
+# ausearch -if auditlog.sample -m SYSCALL
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+----
+time->Mon Dec 5 23:22:37 2005
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[12] ausearch -sv yes                                                                          PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -sv yes
+----
+time->Fri Jan 5 21:26:36 2007
+type=DAEMON_CONFIG msg=audit(1168028796.315:7533) config changed, auid=500 pid=15465 res=success
+----
+time->Thu May 17 00:18:47 2007
+type=DAEMON_START msg=audit(1179353927.452:6179) auditd start ver=1.3.1 format=raw auid=501 pid=11282 res=success auditd pid=11282
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.142:49946): audit_enabled=1 old=1 by auid=10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.346:49947): audit_backlog_limit=256 old=256 by auid=10208
+----
+time->Fri Jan 5 22:02:11 2007
+type=CONFIG_CHANGE msg=audit(1168030931.528:451): auid=500 op=add rule key=(null) list=4 res=1
+----
+time->Fri Jan 5 22:16:46 2007
+type=LOGIN msg=audit(1168031806.396:457): login pid=15671 uid=0 old auid=4294967295 new auid=500
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.367:49949): user pid=25521 uid=0 auid=10208 msg='groupadd: op=adding group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.477:49950): user pid=25522 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.661:49951): user pid=25540 uid=0 auid=10208 msg='userdel: op=deleting user entries acct=testuser res=success'
+----
+time->Mon Dec 5 22:15:50 2005
+type=CRED_ACQ msg=audit(1133817350.160:49953): user pid=25543 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_START msg=audit(1133817350.160:49954): user pid=25543 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_END msg=audit(1133817350.160:49955): user pid=25543 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=CRED_ACQ msg=audit(1133817894.617:49956): user pid=25579 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_START msg=audit(1133817894.618:49957): user pid=25579 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_END msg=audit(1133817894.618:49958): user pid=25579 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=CRED_ACQ msg=audit(1133818361.504:49959): user pid=25755 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_START msg=audit(1133818361.504:49960): user pid=25755 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_END msg=audit(1133818361.504:49961): user pid=25755 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Mon Dec 5 23:22:37 2005
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Thu Jun 23 23:00:21 2011
+type=USER_AUTH msg=audit(1308862821.623:649500): user pid=16571 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0-s15:c0.c1023 msg='op=PAM:authentication acct="abc" exe="/usr/sbin/sshd" hostname=remote.system.domain.com addr=123.456.789.10 terminal=ssh res=success'
+
+# ausearch -if auditlog.sample -sv yes
+----
+time->Fri Jan 5 21:26:36 2007
+type=DAEMON_CONFIG msg=audit(1168028796.315:7533) config changed, auid=500 pid=15465 res=success
+----
+time->Thu May 17 00:18:47 2007
+type=DAEMON_START msg=audit(1179353927.452:6179) auditd start ver=1.3.1 format=raw auid=501 pid=11282 res=success auditd pid=11282
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.142:49946): audit_enabled=1 old=1 by auid=10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.346:49947): audit_backlog_limit=256 old=256 by auid=10208
+----
+time->Fri Jan 5 22:02:11 2007
+type=CONFIG_CHANGE msg=audit(1168030931.528:451): auid=500 op=add rule key=(null) list=4 res=1
+----
+time->Fri Jan 5 22:16:46 2007
+type=LOGIN msg=audit(1168031806.396:457): login pid=15671 uid=0 old auid=4294967295 new auid=500
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.367:49949): user pid=25521 uid=0 auid=10208 msg='groupadd: op=adding group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.477:49950): user pid=25522 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.661:49951): user pid=25540 uid=0 auid=10208 msg='userdel: op=deleting user entries acct=testuser res=success'
+----
+time->Mon Dec 5 22:15:50 2005
+type=CRED_ACQ msg=audit(1133817350.160:49953): user pid=25543 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_START msg=audit(1133817350.160:49954): user pid=25543 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_END msg=audit(1133817350.160:49955): user pid=25543 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=CRED_ACQ msg=audit(1133817894.617:49956): user pid=25579 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_START msg=audit(1133817894.618:49957): user pid=25579 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_END msg=audit(1133817894.618:49958): user pid=25579 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=CRED_ACQ msg=audit(1133818361.504:49959): user pid=25755 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_START msg=audit(1133818361.504:49960): user pid=25755 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_END msg=audit(1133818361.504:49961): user pid=25755 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+----
+time->Mon Dec 5 23:22:37 2005
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+----
+time->Thu Jun 23 23:00:21 2011
+type=USER_AUTH msg=audit(1308862821.623:649500): user pid=16571 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0-s15:c0.c1023 msg='op=PAM:authentication acct="abc" exe="/usr/sbin/sshd" hostname=remote.system.domain.com addr=123.456.789.10 terminal=ssh res=success'
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[13] ausearch -ua 10208                                                                        PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -ua 10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.142:49946): audit_enabled=1 old=1 by auid=10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.346:49947): audit_backlog_limit=256 old=256 by auid=10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER msg=audit(1133817257.347:49948): user pid=25504 uid=0 auid=10208 msg='testing 1-2-3 testing'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.367:49949): user pid=25521 uid=0 auid=10208 msg='groupadd: op=adding group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.477:49950): user pid=25522 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.661:49951): user pid=25540 uid=0 auid=10208 msg='userdel: op=deleting user entries acct=testuser res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.854:49952): user pid=25541 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser res=failed'
+----
+time->Mon Dec 5 22:15:50 2005
+type=CRED_ACQ msg=audit(1133817350.160:49953): user pid=25543 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_START msg=audit(1133817350.160:49954): user pid=25543 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_END msg=audit(1133817350.160:49955): user pid=25543 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=CRED_ACQ msg=audit(1133817894.617:49956): user pid=25579 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_START msg=audit(1133817894.618:49957): user pid=25579 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_END msg=audit(1133817894.618:49958): user pid=25579 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=CRED_ACQ msg=audit(1133818361.504:49959): user pid=25755 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_START msg=audit(1133818361.504:49960): user pid=25755 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_END msg=audit(1133818361.504:49961): user pid=25755 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Mon Dec 5 23:22:37 2005
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+
+# ausearch -if auditlog.sample -ua 10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.142:49946): audit_enabled=1 old=1 by auid=10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=CONFIG_CHANGE msg=audit(1133817257.346:49947): audit_backlog_limit=256 old=256 by auid=10208
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER msg=audit(1133817257.347:49948): user pid=25504 uid=0 auid=10208 msg='testing 1-2-3 testing'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.367:49949): user pid=25521 uid=0 auid=10208 msg='groupadd: op=adding group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.477:49950): user pid=25522 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser1 res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.661:49951): user pid=25540 uid=0 auid=10208 msg='userdel: op=deleting user entries acct=testuser res=success'
+----
+time->Mon Dec 5 22:14:17 2005
+type=USER_CHAUTHTOK msg=audit(1133817257.854:49952): user pid=25541 uid=0 auid=10208 msg='groupdel: op=deleting group acct=testuser res=failed'
+----
+time->Mon Dec 5 22:15:50 2005
+type=CRED_ACQ msg=audit(1133817350.160:49953): user pid=25543 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_START msg=audit(1133817350.160:49954): user pid=25543 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:15:50 2005
+type=USER_END msg=audit(1133817350.160:49955): user pid=25543 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=CRED_ACQ msg=audit(1133817894.617:49956): user pid=25579 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_START msg=audit(1133817894.618:49957): user pid=25579 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:24:54 2005
+type=USER_END msg=audit(1133817894.618:49958): user pid=25579 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=CRED_ACQ msg=audit(1133818361.504:49959): user pid=25755 uid=0 auid=10208 msg='PAM setcred: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_START msg=audit(1133818361.504:49960): user pid=25755 uid=0 auid=10208 msg='PAM session open: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:32:41 2005
+type=USER_END msg=audit(1133818361.504:49961): user pid=25755 uid=0 auid=10208 msg='PAM session close: user=root exe="/usr/bin/sudo" (hostname=?, addr=?, terminal=pts/0 result=Success)'
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+----
+time->Mon Dec 5 23:22:37 2005
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[14] ausearch -x /bin/chmod                                                                    PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -x /bin/chmod
+----
+time->Mon Dec 5 22:35:06 2005
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+----
+time->Mon Dec 5 23:22:37 2005
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+
+# ausearch -if auditlog.sample -x /bin/chmod
+----
+time->Mon Dec 5 22:35:06 2005
+type=PATH msg=audit(1133818506.374:49969): name=".Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100644 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133818506.374:49969): cwd="/home/agriffis"
+type=SYSCALL msg=audit(1133818506.374:49969): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1ed a2=8 a3=4 items=1 pid=25761 auid=10208 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 comm="chmod" exe="/bin/chmod"
+----
+time->Mon Dec 5 23:22:37 2005
+type=PATH msg=audit(1133821357.979:50097): name="/home/agriffis/.Xdefaults" flags=1 inode=1196355 dev=fd:01 mode=0100755 ouid=10208 ogid=10208 rdev=00:00
+type=CWD msg=audit(1133821357.979:50097): cwd="/home/agriffis/audit-test/audit-tools"
+type=SYSCALL msg=audit(1133821357.979:50097): arch=c000003e syscall=90 success=yes exit=0 a0=50a1c0 a1=1a4 a2=8 a3=4 items=1 pid=26438 auid=10208 uid=10208 gid=10208 euid=10208 suid=10208 fsuid=10208 egid=10208 sgid=10208 fsgid=10208 comm="chmod" exe="/bin/chmod"
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[15] ausearch -hn remote.system.domain.com                                                     PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+# augrok --ausearch -if auditlog.sample -hn remote.system.domain.com
+----
+time->Thu Jun 23 23:00:21 2011
+type=USER_AUTH msg=audit(1308862821.623:649500): user pid=16571 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0-s15:c0.c1023 msg='op=PAM:authentication acct="abc" exe="/usr/sbin/sshd" hostname=remote.system.domain.com addr=123.456.789.10 terminal=ssh res=success'
+
+# ausearch -if auditlog.sample -hn remote.system.domain.com
+----
+time->Thu Jun 23 23:00:21 2011
+type=USER_AUTH msg=audit(1308862821.623:649500): user pid=16571 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:sshd_t:s0-s15:c0.c1023 msg='op=PAM:authentication acct="abc" exe="/usr/sbin/sshd" hostname=remote.system.domain.com addr=123.456.789.10 terminal=ssh res=success'
+
+
+exit_pass: output matches
+--- end output -------------------------------------------------------------
+
+
+
+  16 pass (100%)
+   0 fail (0%)
+   0 error (0%)
+------------------
+  16 total
+Killing all processes for testuser
+Removing user testuser
+Removing group testuser
+Killing all processes for testadmin
+Removing user testadmin
+Removing group testadmin
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::: audit-trail-protection                               :::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+Started:                         Tue Jun 29 11:13:15 CEST 2021
+Kernel:                          3.10.0-1127.8.2.el7.x86_64
+Architecture:                    x86_64
+Mode:                            64
+Hostname:                        rhv.atsec.com
+Profile:                         capp
+selinux-policy version:          selinux-policy-3.13.1-266.el7.noarch
+
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31
+
+Log file started Tue Jun 29 11:13:15 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                      Result
+--------                                                                                      ------
+[0] audit_trail_protection                                                                     PASS 
+--- begin output -----------------------------------------------------------
+Testing file permissions: [/etc/audit/auditd.conf]
+Testing file permissions: [/etc/audit/audit.rules]
+--- end output -------------------------------------------------------------
+
+
+
+   1 pass (100%)
+   0 fail (0%)
+   0 error (0%)
+------------------
+   1 total
+Killing all processes for testuser
+Removing user testuser
+Removing group testuser
+Killing all processes for testadmin
+Removing user testadmin
+Removing group testadmin
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::: kvm                                                  :::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+Started:                         Tue Jun 29 11:13:17 CEST 2021
+Kernel:                          3.10.0-1127.8.2.el7.x86_64
+Architecture:                    x86_64
+Mode:                            64
+Hostname:                        rhv.atsec.com
+Profile:                         capp
+selinux-policy version:          selinux-policy-3.13.1-266.el7.noarch
+
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31
+
+Log file started Tue Jun 29 11:13:17 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                      Result
+--------                                                                                      ------
+[0] test_auditctl_rule_subj.bash                                                               PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ mktemp test_auditctl_rule_subj_trueXXXX
++ true_file=test_auditctl_rule_subj_trueQDs2
++ append_cleanup 'rm -f test_auditctl_rule_subj_trueQDs2'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	rm -f test_auditctl_rule_subj_trueQDs2
+    }'
++ rm -f test_auditctl_rule_subj_trueQDs2
++ cp -p /bin/true test_auditctl_rule_subj_trueQDs2
++ for label in '$labels'
+++ echo system_u:system_r:svirt_t:s0:c46,c474
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c46,c474
+++ echo system_u:system_r:svirt_t:s0:c46,c474
+++ awk 'BEGIN { FS = ":" } ; { print $4 }'
++ subj_sen=s0
+++ echo system_u:system_r:svirt_t:s0:c46,c474
+++ awk 'BEGIN { FS = ":" } ; { print $5 }'
++ subj_clr=c46,c474
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
++ runcon -l s0:c46,c474 ./test_auditctl_rule_subj_trueQDs2
+++ id -Z
+++ awk 'BEGIN { FS = ":" } ; { print $1 ":" $2 ":" $3 }'
++ subj=unconfined_u:unconfined_r:unconfined_t
++ subj=unconfined_u:unconfined_r:unconfined_t:s0:c46,c474
++ expression=subj==unconfined_u:unconfined_r:unconfined_t:s0:c46,c474
+++ augrok -c --seek 353 subj==unconfined_u:unconfined_r:unconfined_t:s0:c46,c474
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_auditctl_rule_subj.bash: line 61: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ for label in '$labels'
+++ echo system_u:system_r:svirt_t:s0:c295,c995
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c295,c995
+++ echo system_u:system_r:svirt_t:s0:c295,c995
+++ awk 'BEGIN { FS = ":" } ; { print $4 }'
++ subj_sen=s0
+++ echo system_u:system_r:svirt_t:s0:c295,c995
+++ awk 'BEGIN { FS = ":" } ; { print $5 }'
++ subj_clr=c295,c995
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
++ runcon -l s0:c295,c995 ./test_auditctl_rule_subj_trueQDs2
+++ id -Z
+++ awk 'BEGIN { FS = ":" } ; { print $1 ":" $2 ":" $3 }'
++ subj=unconfined_u:unconfined_r:unconfined_t
++ subj=unconfined_u:unconfined_r:unconfined_t:s0:c295,c995
++ expression=subj==unconfined_u:unconfined_r:unconfined_t:s0:c295,c995
+++ augrok -c --seek 353 subj==unconfined_u:unconfined_r:unconfined_t:s0:c295,c995
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_auditctl_rule_subj.bash: line 61: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ for label in '$labels'
+++ echo unconfined_u:unconfined_r:svirt_t:s0:c802,c1022
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c802,c1022
+++ echo unconfined_u:unconfined_r:svirt_t:s0:c802,c1022
+++ awk 'BEGIN { FS = ":" } ; { print $4 }'
++ subj_sen=s0
+++ echo unconfined_u:unconfined_r:svirt_t:s0:c802,c1022
+++ awk 'BEGIN { FS = ":" } ; { print $5 }'
++ subj_clr=c802,c1022
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022'
+++ sed '1,3d;$d'
+++ type test_cleanup
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueQDs2;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
++ runcon -l s0:c802,c1022 ./test_auditctl_rule_subj_trueQDs2
+++ id -Z
+++ awk 'BEGIN { FS = ":" } ; { print $1 ":" $2 ":" $3 }'
++ subj=unconfined_u:unconfined_r:unconfined_t
++ subj=unconfined_u:unconfined_r:unconfined_t:s0:c802,c1022
++ expression=subj==unconfined_u:unconfined_r:unconfined_t:s0:c802,c1022
+++ augrok -c --seek 353 subj==unconfined_u:unconfined_r:unconfined_t:s0:c802,c1022
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_auditctl_rule_subj.bash: line 61: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.KnlEAe73W5 /tmp/tmp.G1GDNhfcZZ /usr/local/eal2_testing/audit-test/tmp.z8yOJHb5Kf
++ rm -f test_auditctl_rule_subj_trueQDs2
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c46,c474
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c46,c474
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c46,c474
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c295,c995
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c295,c995
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c295,c995
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[1] test_auditctl_rule_obj.bash                                                                PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
++ filename=/var/lib/libvirt/images/testresource.img
++ append_cleanup 'rm -f /var/lib/libvirt/images/testresource.img'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	rm -f /var/lib/libvirt/images/testresource.img
+    }'
++ rm -f /var/lib/libvirt/images/testresource.img
++ qemu-img create /var/lib/libvirt/images/testresource.img 8G
+Formatting '/var/lib/libvirt/images/testresource.img', fmt=raw size=8589934592
++ for context in '$contexts'
+++ echo system_u:object_r:svirt_image_t:s0:c723,c806
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c723,c806
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c723,c806'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f /var/lib/libvirt/images/testresource.img
+	auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c723,c806
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c723,c806'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f /var/lib/libvirt/images/testresource.img;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c723,c806
+	auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c723,c806
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c723,c806
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c723,c806
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c723,c806
++ auditctl -a exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c723,c806
++ chcon system_u:object_r:svirt_image_t:s0:c723,c806 /var/lib/libvirt/images/testresource.img
++ qemu-img info /var/lib/libvirt/images/testresource.img
+image: /var/lib/libvirt/images/testresource.img
+file format: raw
+virtual size: 8.0G (8589934592 bytes)
+disk size: 0
++ expression=obj==system_u:object_r:svirt_image_t:s0:c723,c806
+++ augrok -c --seek 30910 obj==system_u:object_r:svirt_image_t:s0:c723,c806
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+2 -eq 0 ]]
+./test_auditctl_rule_obj.bash: line 51: [[: HHHHHHHHHHHHHHHHHHHH 
+2: syntax error in expression (error token is "2")
++ for context in '$contexts'
+++ echo system_u:object_r:svirt_image_t:s0:c627,c737
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c627,c737
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c627,c737'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f /var/lib/libvirt/images/testresource.img;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c723,c806;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c723,c806
+	auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c627,c737
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c627,c737'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f /var/lib/libvirt/images/testresource.img;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c723,c806;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c723,c806;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c627,c737
+	auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c627,c737
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c627,c737
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c627,c737
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c627,c737
++ auditctl -a exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c627,c737
++ chcon system_u:object_r:svirt_image_t:s0:c627,c737 /var/lib/libvirt/images/testresource.img
++ qemu-img info /var/lib/libvirt/images/testresource.img
+image: /var/lib/libvirt/images/testresource.img
+file format: raw
+virtual size: 8.0G (8589934592 bytes)
+disk size: 0
++ expression=obj==system_u:object_r:svirt_image_t:s0:c627,c737
+++ augrok -c --seek 30910 obj==system_u:object_r:svirt_image_t:s0:c627,c737
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+2 -eq 0 ]]
+./test_auditctl_rule_obj.bash: line 51: [[: HHHHHHHHHHHHHHHHHHHH 
+2: syntax error in expression (error token is "2")
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.Yo8tL7abeO /tmp/tmp.dn6efBiuFb /usr/local/eal2_testing/audit-test/tmp.VuvWxPbP4l
++ rm -f /var/lib/libvirt/images/testresource.img
++ auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c723,c806
++ auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c723,c806
++ auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c627,c737
++ auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c627,c737
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[2] test_libvirt_label_match.bash                                                              PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ seq 1 2
++ for i in '$(seq $first $last)'
+++ eval 'echo $kvm_guest_1_label_levl'
++++ echo s0:c227,c937
+++ eval 'echo $kvm_guest_1_context_levl'
++++ echo s0:c227,c937
++ [[ s0:c227,c937 != s0:c227,c937 ]]
++ for i in '$(seq $first $last)'
+++ eval 'echo $kvm_guest_2_label_levl'
++++ echo s0:c178,c789
+++ eval 'echo $kvm_guest_2_context_levl'
++++ echo s0:c178,c789
++ [[ s0:c178,c789 != s0:c178,c789 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.1rvGPpqVnZ /tmp/tmp.UHwDvgMrpw /usr/local/eal2_testing/audit-test/tmp.ZBB5KGiPN1
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[3] test_libvirt_label_process_unique.bash                                                     PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ uniq -u
+++ echo 'system_u:system_r:svirt_t:s0:c105,c687
+system_u:system_r:svirt_t:s0:c471,c662
+unconfined_u:unconfined_r:svirt_t:s0:c802,c1022'
++ unique_labels='system_u:system_r:svirt_t:s0:c105,c687
+system_u:system_r:svirt_t:s0:c471,c662
+unconfined_u:unconfined_r:svirt_t:s0:c802,c1022'
+++ echo 'system_u:system_r:svirt_t:s0:c105,c687
+system_u:system_r:svirt_t:s0:c471,c662
+unconfined_u:unconfined_r:svirt_t:s0:c802,c1022'
+++ uniq -u
+++ wc -l
++ unique_labels_count=3
++ [[ 3 -eq 0 ]]
+++ echo 'system_u:system_r:svirt_t:s0:c105,c687
+system_u:system_r:svirt_t:s0:c471,c662
+unconfined_u:unconfined_r:svirt_t:s0:c802,c1022'
+++ uniq -d
++ repeated_labels=
+++ echo 'system_u:system_r:svirt_t:s0:c105,c687
+system_u:system_r:svirt_t:s0:c471,c662
+unconfined_u:unconfined_r:svirt_t:s0:c802,c1022'
+++ wc -l
+++ uniq -d
++ repeated_labels_count=0
++ [[ 0 -ne 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.g7hyDi69L0 /tmp/tmp.SwTPjyG84y /usr/local/eal2_testing/audit-test/tmp.qkwWZ9pmmf
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[4] test_libvirt_label_resource_unique.bash                                                    PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ echo 'system_u:object_r:svirt_image_t:s0:c169,c481
+system_u:object_r:svirt_image_t:s0:c146,c377'
+++ sort
+++ uniq -u
++ unique_contexts='system_u:object_r:svirt_image_t:s0:c146,c377
+system_u:object_r:svirt_image_t:s0:c169,c481'
+++ echo 'system_u:object_r:svirt_image_t:s0:c169,c481
+system_u:object_r:svirt_image_t:s0:c146,c377'
+++ sort
+++ uniq -u
+++ wc -l
++ unique_contexts_count=2
++ [[ 2 -eq 0 ]]
+++ echo 'system_u:object_r:svirt_image_t:s0:c169,c481
+system_u:object_r:svirt_image_t:s0:c146,c377'
+++ uniq -d
+++ sort
++ repeated_contexts=
+++ echo 'system_u:object_r:svirt_image_t:s0:c169,c481
+system_u:object_r:svirt_image_t:s0:c146,c377'
+++ sort
+++ uniq -d
+++ wc -l
++ repeated_contexts_count=0
++ [[ 0 -ne 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.AMWPY1XLC2 /tmp/tmp.P75Tg6fMs8 /usr/local/eal2_testing/audit-test/tmp.z7EKFNAkNP
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[5] test_selinux_trans_from_qemu.bash                                                          PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ sesearch -s qemu_t -c process -p transition --allow
+./test_selinux_trans_from_qemu.bash: line 30: sesearch: command not found
++ allowed=
+++ echo ''
+++ grep -E '^.*allow'
++ allowed=
+++ echo ''
+++ awk '{ print $3 }'
++ allowed=
+++ echo ''
+++ sed /lspp_harness_t/d
++ allowed=
+++ echo ''
+++ wc -l
++ allowed_count=1
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.01Obb76orK /tmp/tmp.BcMngFcJju /usr/local/eal2_testing/audit-test/tmp.DIlj5XsNAo
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[6] test_selinux_trans_from_svirt.bash                                                         PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ sesearch -s svirt_t -c process -p transition --allow
+./test_selinux_trans_from_svirt.bash: line 30: sesearch: command not found
++ allowed=
+++ echo ''
+++ grep -E '^.*allow'
++ allowed=
+++ echo ''
+++ awk '{ print $3 }'
++ allowed=
+++ echo ''
+++ sed /lspp_harness_t/d
++ allowed=
+++ echo ''
+++ wc -l
++ allowed_count=1
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.kP0Tv4qUe6 /tmp/tmp.8ucpX5GghQ /usr/local/eal2_testing/audit-test/tmp.K2jzHbbjx9
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[7] test_selinux_trans_to_qemu.bash                                                            PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ sesearch -t qemu_t -c process -p transition --allow
+./test_selinux_trans_to_qemu.bash: line 30: sesearch: command not found
++ allowed=
+++ echo ''
+++ grep -E '^.*allow'
++ allowed=
+++ echo ''
+++ awk '{ print $2 }'
++ allowed=
+++ echo ''
+++ sed /lspp_harness_t/d
++ allowed=
+++ echo ''
+++ wc -l
++ allowed_count=1
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.tat6dMhAeh /tmp/tmp.JC7CLPiEI1 /usr/local/eal2_testing/audit-test/tmp.s0kIsOrHU0
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[8] test_selinux_trans_to_svirt.bash                                                           PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ sesearch -t svirt_t -c process -p transition --allow
+./test_selinux_trans_to_svirt.bash: line 30: sesearch: command not found
++ allowed=
+++ echo ''
+++ grep -E '^.*allow'
++ allowed=
+++ echo ''
+++ awk '{ print $2 }'
++ allowed=
+++ echo ''
+++ sed /lspp_harness_t/d
++ allowed=
+++ echo ''
+++ wc -l
++ allowed_count=1
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.FqKrPOd9V6 /tmp/tmp.5wR4T6kD3e /usr/local/eal2_testing/audit-test/tmp.ReFnxXMZbA
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[9] test_selinux_attr_virt_domain.bash                                                         PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ seinfo -avirt_domain -x
+./test_selinux_attr_virt_domain.bash: line 30: seinfo: command not found
++ types=
+++ echo ''
+++ sed /virt_domain/d
++ types=
+++ echo ''
+++ wc -l
++ types_count=1
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.rptjFv0euL /tmp/tmp.6uUbBa8QA2 /usr/local/eal2_testing/audit-test/tmp.dRs9V7V4EP
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[10] test_selinux_attr_virt_image_type.bash                                                    PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ seinfo -avirt_image_type -x
+./test_selinux_attr_virt_image_type.bash: line 30: seinfo: command not found
++ types=
+++ echo ''
+++ sed /virt_image_type/d
++ types=
+++ echo ''
+++ wc -l
++ types_count=1
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.mR0LCbyWhi /tmp/tmp.e60QwiBlKP /usr/local/eal2_testing/audit-test/tmp.7hjEkq2zQ3
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[11] test_network_export_other_source_ip.exp                                                   PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+spawn ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@192.168.129.129
+Warning: Permanently added '192.168.129.129' (ECDSA) to the list of known hosts.
+root@192.168.129.129's password: 
+Last login: Tue Jun 29 04:46:40 2021 from gateway
+]0;root@localhost:~[?1034h[root@localhost ~]# ping -c 5 -I 192.168.128.128 192.168.129.1
+bind: Cannot assign requested address
+]0;root@localhost:~[root@localhost ~]# echo $?
+2
+]0;root@localhost:~[root@localhost ~]# ping -c 5 -I 192.168.129.129 192.168.129.1
+PING 192.168.129.1 (192.168.129.1) from 192.168.129.129 : 56(84) bytes of data.
+64 bytes from 192.168.129.1: icmp_seq=1 ttl=64 time=0.133 ms
+64 bytes from 192.168.129.1: icmp_seq=2 ttl=64 time=0.189 ms
+64 bytes from 192.168.129.1: icmp_seq=3 ttl=64 time=0.118 ms
+64 bytes from 192.168.129.1: icmp_seq=4 ttl=64 time=0.077 ms
+64 bytes from 192.168.129.1: icmp_seq=5 ttl=64 time=0.104 ms
+
+--- 192.168.129.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4000ms
+rtt min/avg/max/mdev = 0.077/0.124/0.189/0.037 ms
+]0;root@localhost:~[root@localhost ~]# echo $?
+0
+]0;root@localhost:~[root@localhost ~]# 
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[12] test_network_export_source_ip.bash                                                        PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
++ append_cleanup 'iptables-save | xtables_empty | iptables-restore'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	iptables-save | xtables_empty | iptables-restore
+    }'
+++ seq 1 2
++ for i in '$(seq $first $last)'
++ iptables-save
++ xtables_empty
++ iptables-restore
++ sed 's/DROP/ACCEPT/ ; s/\[[0-9]*:[0-9]*\]/\[0:0\]/'
++ grep -e '^\*' -e '^:[^ ]* [^-]' -e '^COMMIT$'
++ eval 'ping -c 5 -I $kvm_guest_1_hostaddr $kvm_guest_1_hostaddr'
+++ ping -c 5 -I 192.168.128.1 192.168.128.1
+PING 192.168.128.1 (192.168.128.1) from 192.168.128.1 : 56(84) bytes of data.
+64 bytes from 192.168.128.1: icmp_seq=1 ttl=64 time=0.068 ms
+64 bytes from 192.168.128.1: icmp_seq=2 ttl=64 time=0.056 ms
+64 bytes from 192.168.128.1: icmp_seq=3 ttl=64 time=0.072 ms
+64 bytes from 192.168.128.1: icmp_seq=4 ttl=64 time=0.090 ms
+64 bytes from 192.168.128.1: icmp_seq=5 ttl=64 time=0.087 ms
+
+--- 192.168.128.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 3999ms
+rtt min/avg/max/mdev = 0.056/0.074/0.090/0.015 ms
++ [[ 0 -ne 0 ]]
+++ seq 1 5
++ for i in '$(seq 1 $kvm_guest_timeout)'
++ eval 'ping -c 5 -I $kvm_guest_1_hostaddr $kvm_guest_1_addr'
+++ ping -c 5 -I 192.168.128.1 192.168.128.128
+PING 192.168.128.128 (192.168.128.128) from 192.168.128.1 : 56(84) bytes of data.
+
+--- 192.168.128.128 ping statistics ---
+5 packets transmitted, 0 received, 100% packet loss, time 4000ms
+
++ [[ 1 -eq 0 ]]
++ sleep 60
++ for i in '$(seq 1 $kvm_guest_timeout)'
++ eval 'ping -c 5 -I $kvm_guest_2_hostaddr $kvm_guest_2_addr'
+++ ping -c 5 -I 192.168.129.1 192.168.129.129
+PING 192.168.129.129 (192.168.129.129) from 192.168.129.1 : 56(84) bytes of data.
+64 bytes from 192.168.129.129: icmp_seq=1 ttl=64 time=0.270 ms
+64 bytes from 192.168.129.129: icmp_seq=2 ttl=64 time=0.191 ms
+64 bytes from 192.168.129.129: icmp_seq=3 ttl=64 time=0.190 ms
+64 bytes from 192.168.129.129: icmp_seq=4 ttl=64 time=0.192 ms
+64 bytes from 192.168.129.129: icmp_seq=5 ttl=64 time=0.092 ms
+
+--- 192.168.129.129 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 3999ms
+rtt min/avg/max/mdev = 0.092/0.187/0.270/0.056 ms
++ [[ 0 -eq 0 ]]
++ break
+++ tr -cd 0-9A-Za-z
+++ head -c 27
++ log_prefix=6RXDw1gKuaV2ALIaMyTdMQRCfMY
++ eval 'iptables -A INPUT -s $kvm_guest_2_addr -p icmp --icmp-type echo-reply -j LOG --log-level=1 --log-prefix="6RXDw1gKuaV2ALIaMyTdMQRCfMY: "'
+++ iptables -A INPUT -s 192.168.129.129 -p icmp --icmp-type echo-reply -j LOG --log-level=1 '--log-prefix=6RXDw1gKuaV2ALIaMyTdMQRCfMY: '
++ eval 'iptables -A INPUT -s $kvm_guest_2_addr -p icmp --icmp-type echo-reply -j DROP'
+++ iptables -A INPUT -s 192.168.129.129 -p icmp --icmp-type echo-reply -j DROP
++ eval 'ping -c 5 -I $kvm_guest_2_hostaddr $kvm_guest_2_hostaddr'
+++ ping -c 5 -I 192.168.129.1 192.168.129.1
+PING 192.168.129.1 (192.168.129.1) from 192.168.129.1 : 56(84) bytes of data.
+64 bytes from 192.168.129.1: icmp_seq=1 ttl=64 time=0.085 ms
+64 bytes from 192.168.129.1: icmp_seq=2 ttl=64 time=0.038 ms
+64 bytes from 192.168.129.1: icmp_seq=3 ttl=64 time=0.031 ms
+64 bytes from 192.168.129.1: icmp_seq=4 ttl=64 time=0.025 ms
+64 bytes from 192.168.129.1: icmp_seq=5 ttl=64 time=0.054 ms
+
+--- 192.168.129.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4000ms
+rtt min/avg/max/mdev = 0.025/0.046/0.085/0.022 ms
++ [[ 0 -ne 0 ]]
++ eval 'ping -c 5 -I $kvm_guest_2_hostaddr $kvm_guest_2_addr'
+++ ping -c 5 -I 192.168.129.1 192.168.129.129
+PING 192.168.129.129 (192.168.129.129) from 192.168.129.1 : 56(84) bytes of data.
+
+--- 192.168.129.129 ping statistics ---
+5 packets transmitted, 0 received, 100% packet loss, time 3999ms
+
++ [[ 1 -eq 0 ]]
+++ eval 'grep -c -E "6RXDw1gKuaV2ALIaMyTdMQRCfMY: .* SRC=$kvm_guest_2_addr" /var/log/messages'
++++ grep -c -E '6RXDw1gKuaV2ALIaMyTdMQRCfMY: .* SRC=192.168.129.129' /var/log/messages
++ log_count=5
++ [[ 5 -eq 0 ]]
++ for i in '$(seq $first $last)'
++ iptables-save
++ xtables_empty
++ iptables-restore
++ grep -e '^\*' -e '^:[^ ]* [^-]' -e '^COMMIT$'
++ sed 's/DROP/ACCEPT/ ; s/\[[0-9]*:[0-9]*\]/\[0:0\]/'
++ eval 'ping -c 5 -I $kvm_guest_2_hostaddr $kvm_guest_2_hostaddr'
+++ ping -c 5 -I 192.168.129.1 192.168.129.1
+PING 192.168.129.1 (192.168.129.1) from 192.168.129.1 : 56(84) bytes of data.
+64 bytes from 192.168.129.1: icmp_seq=1 ttl=64 time=0.080 ms
+64 bytes from 192.168.129.1: icmp_seq=2 ttl=64 time=0.078 ms
+64 bytes from 192.168.129.1: icmp_seq=3 ttl=64 time=0.034 ms
+64 bytes from 192.168.129.1: icmp_seq=4 ttl=64 time=0.027 ms
+64 bytes from 192.168.129.1: icmp_seq=5 ttl=64 time=0.020 ms
+
+--- 192.168.129.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 3999ms
+rtt min/avg/max/mdev = 0.020/0.047/0.080/0.027 ms
++ [[ 0 -ne 0 ]]
+++ seq 1 5
++ for i in '$(seq 1 $kvm_guest_timeout)'
++ eval 'ping -c 5 -I $kvm_guest_1_hostaddr $kvm_guest_1_addr'
+++ ping -c 5 -I 192.168.128.1 192.168.128.128
+PING 192.168.128.128 (192.168.128.128) from 192.168.128.1 : 56(84) bytes of data.
+64 bytes from 192.168.128.128: icmp_seq=1 ttl=64 time=0.277 ms
+64 bytes from 192.168.128.128: icmp_seq=2 ttl=64 time=0.082 ms
+64 bytes from 192.168.128.128: icmp_seq=3 ttl=64 time=0.072 ms
+64 bytes from 192.168.128.128: icmp_seq=4 ttl=64 time=0.084 ms
+64 bytes from 192.168.128.128: icmp_seq=5 ttl=64 time=0.100 ms
+
+--- 192.168.128.128 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4000ms
+rtt min/avg/max/mdev = 0.072/0.123/0.277/0.077 ms
++ [[ 0 -eq 0 ]]
++ break
+++ tr -cd 0-9A-Za-z
+++ head -c 27
++ log_prefix=WE18cb1W6Qp9TFEfdgCZyvDrO3G
++ eval 'iptables -A INPUT -s $kvm_guest_1_addr -p icmp --icmp-type echo-reply -j LOG --log-level=1 --log-prefix="WE18cb1W6Qp9TFEfdgCZyvDrO3G: "'
+++ iptables -A INPUT -s 192.168.128.128 -p icmp --icmp-type echo-reply -j LOG --log-level=1 '--log-prefix=WE18cb1W6Qp9TFEfdgCZyvDrO3G: '
++ eval 'iptables -A INPUT -s $kvm_guest_1_addr -p icmp --icmp-type echo-reply -j DROP'
+++ iptables -A INPUT -s 192.168.128.128 -p icmp --icmp-type echo-reply -j DROP
++ eval 'ping -c 5 -I $kvm_guest_1_hostaddr $kvm_guest_1_hostaddr'
+++ ping -c 5 -I 192.168.128.1 192.168.128.1
+PING 192.168.128.1 (192.168.128.1) from 192.168.128.1 : 56(84) bytes of data.
+64 bytes from 192.168.128.1: icmp_seq=1 ttl=64 time=0.074 ms
+64 bytes from 192.168.128.1: icmp_seq=2 ttl=64 time=0.025 ms
+64 bytes from 192.168.128.1: icmp_seq=3 ttl=64 time=0.020 ms
+64 bytes from 192.168.128.1: icmp_seq=4 ttl=64 time=0.019 ms
+64 bytes from 192.168.128.1: icmp_seq=5 ttl=64 time=0.018 ms
+
+--- 192.168.128.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 3999ms
+rtt min/avg/max/mdev = 0.018/0.031/0.074/0.021 ms
++ [[ 0 -ne 0 ]]
++ eval 'ping -c 5 -I $kvm_guest_1_hostaddr $kvm_guest_1_addr'
+++ ping -c 5 -I 192.168.128.1 192.168.128.128
+PING 192.168.128.128 (192.168.128.128) from 192.168.128.1 : 56(84) bytes of data.
+
+--- 192.168.128.128 ping statistics ---
+5 packets transmitted, 0 received, 100% packet loss, time 3999ms
+
++ [[ 1 -eq 0 ]]
+++ eval 'grep -c -E "WE18cb1W6Qp9TFEfdgCZyvDrO3G: .* SRC=$kvm_guest_1_addr" /var/log/messages'
++++ grep -c -E 'WE18cb1W6Qp9TFEfdgCZyvDrO3G: .* SRC=192.168.128.128' /var/log/messages
++ log_count=5
++ [[ 5 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.5ynBB865AQ /tmp/tmp.FydW9Uaf9y /usr/local/eal2_testing/audit-test/tmp.xuYXBKm2cB
++ iptables-save
++ xtables_empty
++ iptables-restore
++ grep -e '^\*' -e '^:[^ ]* [^-]' -e '^COMMIT$'
++ sed 's/DROP/ACCEPT/ ; s/\[[0-9]*:[0-9]*\]/\[0:0\]/'
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[13] test_selinux_ipc_signals.bash                                                             PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ echo '17325
+17400
+28455'
+++ wc -l
++ pids_count=3
+++ mktemp test_selinux_ipc_signals_killXXXXXX
++ kill_file=test_selinux_ipc_signals_killurEPsX
++ append_cleanup 'rm -f test_selinux_ipc_signals_killurEPsX'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	rm -f test_selinux_ipc_signals_killurEPsX
+    }'
++ rm -f test_selinux_ipc_signals_killurEPsX
++ cp -p /bin/kill test_selinux_ipc_signals_killurEPsX
++ chcon -t qemu_exec_t test_selinux_ipc_signals_killurEPsX
++ for pid in '$pids'
+++ stat -c %s /var/log/audit/audit.log
++ offset=355072
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killurEPsX -9 17325
+test_selinux_ipc_signals_killurEPsX: sending signal to 17325 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 355072 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 54: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==9 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 355072 type==SYSCALL and syscall==62 and success==no and a1==9 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 60: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killurEPsX -19 17325
+test_selinux_ipc_signals_killurEPsX: sending signal to 17325 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 355072 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+2 -lt 2 ]]
+./test_selinux_ipc_signals.bash: line 72: [[: HHHHHHHHHHHHHHHHHHHH 
+2: syntax error in expression (error token is "2")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==13 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 355072 type==SYSCALL and syscall==62 and success==no and a1==13 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 78: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ for pid in '$pids'
+++ stat -c %s /var/log/audit/audit.log
++ offset=356716
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killurEPsX -9 17400
+test_selinux_ipc_signals_killurEPsX: sending signal to 17400 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 356716 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 54: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==9 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 356716 type==SYSCALL and syscall==62 and success==no and a1==9 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 60: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killurEPsX -19 17400
+test_selinux_ipc_signals_killurEPsX: sending signal to 17400 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 356716 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+2 -lt 2 ]]
+./test_selinux_ipc_signals.bash: line 72: [[: HHHHHHHHHHHHHHHHHHHH 
+2: syntax error in expression (error token is "2")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==13 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 356716 type==SYSCALL and syscall==62 and success==no and a1==13 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 78: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ for pid in '$pids'
+++ stat -c %s /var/log/audit/audit.log
++ offset=358360
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killurEPsX -9 28455
+test_selinux_ipc_signals_killurEPsX: sending signal to 28455 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 358360 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 54: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==9 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 358360 type==SYSCALL and syscall==62 and success==no and a1==9 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 60: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ runcon -t svirt_t -- ./test_selinux_ipc_signals_killurEPsX -19 28455
+test_selinux_ipc_signals_killurEPsX: sending signal to 28455 failed: Operation not permitted
++ [[ 1 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm=~test_selinux.* and scontext=~svirt_t'
+++ augrok -c --seek 358360 type==AVC and 'extra_text=~denied' and 'comm=~test_selinux.*' and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+2 -lt 2 ]]
+./test_selinux_ipc_signals.bash: line 72: [[: HHHHHHHHHHHHHHHHHHHH 
+2: syntax error in expression (error token is "2")
++ expression='type==SYSCALL and syscall==62 and success==no and a1==13 and comm=~test_selinux.* and subj=~svirt_t'
+++ augrok -c --seek 358360 type==SYSCALL and syscall==62 and success==no and a1==13 and 'comm=~test_selinux.*' and 'subj=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_selinux_ipc_signals.bash: line 78: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
+++ ps -C qemu-kvm -o pid=
+++ wc -l
++ _pids_count=3
++ [[ 3 -ne 3 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.WlfgMmdfmU /tmp/tmp.6oH1CjPGFO /usr/local/eal2_testing/audit-test/tmp.5VVgVP7M55
++ rm -f test_selinux_ipc_signals_killurEPsX
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[14] test_network_import_other_dest_ip.exp                                                     PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+spawn ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@192.168.129.129
+Warning: Permanently added '192.168.129.129' (ECDSA) to the list of known hosts.
+root@192.168.129.129's password: 
+Last login: Tue Jun 29 04:46:40 2021 from gateway
+]0;root@localhost:~[?1034h[root@localhost ~]# iptables -A INPUT -s 192.168.128.1 -p icmp --icmp-type echo-reply -j LOG --log-l evel=1 --log-prefix="20210629112240: "
+]0;root@localhost:~[root@localhost ~]# grep -c -E "20210629112240: .* SRC=$kvm_guest_1_addr" /var/log/messages
+0
+]0;root@localhost:~[root@localhost ~]# 
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[15] test_selinux_chcon_resource.bash                                                          PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
++ append_cleanup 'killall -9 -u testuser1; userdel -fr testuser1'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	killall -9 -u testuser1; userdel -fr testuser1
+    }'
++ append_cleanup 'groupdel testuser1'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr testuser1
+	groupdel testuser1
+    }'
++ userdel -fr testuser1
+userdel: user 'testuser1' does not exist
++ groupdel testuser1
+groupdel: group 'testuser1' does not exist
++ useradd testuser1 -G libvirt
++ [[ 0 -ne 0 ]]
++ append_cleanup 'killall -9 -u testuser2; userdel -fr testuser2'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr testuser1;
+    groupdel testuser1
+	killall -9 -u testuser2; userdel -fr testuser2
+    }'
++ append_cleanup 'groupdel testuser2'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr testuser1;
+    groupdel testuser1;
+    killall -9 -u testuser2;
+    userdel -fr testuser2
+	groupdel testuser2
+    }'
++ userdel -fr testuser2
+userdel: user 'testuser2' does not exist
++ groupdel testuser2
+groupdel: group 'testuser2' does not exist
++ useradd testuser2
++ [[ 0 -ne 0 ]]
+++ seq 1 2
++ for i in '$(seq $first $last)'
+++ stat -c %s /var/log/audit/audit.log
++ offset=408349
++ [[ capp == lspp ]]
++ eval 'runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t --         runcon -t qemu_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+++ runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t -- runcon -t qemu_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img
+runcon: runcon: Permission denied
++ [[ 126 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm==runcon and scontext=~(qemu_t|svirt_t)'
+++ augrok -c --seek 408349 type==AVC and 'extra_text=~denied' and comm==runcon and 'scontext=~(qemu_t|svirt_t)'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 70: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ [[ capp == lspp ]]
++ expression='type==SYSCALL syscall==59 and success==no and comm==runcon and subj=~virtd_t'
+++ augrok -c --seek 408349 type==SYSCALL syscall==59 and success==no and comm==runcon and 'subj=~virtd_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 80: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
+++ stat -c %s /var/log/audit/audit.log
++ offset=410103
++ [[ capp == lspp ]]
++ eval 'runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t --         runcon -t svirt_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+++ runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t -- runcon -t svirt_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img
+runcon: runcon: Permission denied
++ [[ 126 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm==runcon and scontext=~svirt_t'
+++ augrok -c --seek 410103 type==AVC and 'extra_text=~denied' and comm==runcon and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 102: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ [[ capp == lspp ]]
++ expression='type==SYSCALL syscall==59 and success==no and comm==runcon and subj=~virtd_t'
+++ augrok -c --seek 410103 type==SYSCALL syscall==59 and success==no and comm==runcon and 'subj=~virtd_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 112: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ eval '/bin/su - testuser1 -c "chcon -l s0:c1,c3 $kvm_guest_1_resource"'
+++ /bin/su - testuser1 -c 'chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+chcon: failed to change context of ‘/var/lib/libvirt/images/KVM-Guest-1.img’ to ‘system_u:object_r:svirt_image_t:s0:c1,c3’: Operation not permitted
++ [[ 1 -eq 0 ]]
++ eval '/bin/su - testuser2 -c "chcon -l s0:c1,c3 $kvm_guest_1_resource"'
+++ /bin/su - testuser2 -c 'chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+chcon: failed to change context of ‘/var/lib/libvirt/images/KVM-Guest-1.img’ to ‘system_u:object_r:svirt_image_t:s0:c1,c3’: Operation not permitted
++ [[ 1 -eq 0 ]]
++ for i in '$(seq $first $last)'
+++ stat -c %s /var/log/audit/audit.log
++ offset=413920
++ [[ capp == lspp ]]
++ eval 'runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t --         runcon -t qemu_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+++ runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t -- runcon -t qemu_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img
+runcon: runcon: Permission denied
++ [[ 126 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm==runcon and scontext=~(qemu_t|svirt_t)'
+++ augrok -c --seek 413920 type==AVC and 'extra_text=~denied' and comm==runcon and 'scontext=~(qemu_t|svirt_t)'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 70: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ [[ capp == lspp ]]
++ expression='type==SYSCALL syscall==59 and success==no and comm==runcon and subj=~virtd_t'
+++ augrok -c --seek 413920 type==SYSCALL syscall==59 and success==no and comm==runcon and 'subj=~virtd_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 80: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
+++ stat -c %s /var/log/audit/audit.log
++ offset=416039
++ [[ capp == lspp ]]
++ eval 'runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t --         runcon -t svirt_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img'
+++ runcon -u system_u -r system_r -t initrc_t -- runcon -t virtd_t -- runcon -t svirt_t -- chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-1.img
+runcon: runcon: Permission denied
++ [[ 126 -eq 0 ]]
++ expression='type==AVC and extra_text=~denied and comm==runcon and scontext=~svirt_t'
+++ augrok -c --seek 416039 type==AVC and 'extra_text=~denied' and comm==runcon and 'scontext=~svirt_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 102: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ [[ capp == lspp ]]
++ expression='type==SYSCALL syscall==59 and success==no and comm==runcon and subj=~virtd_t'
+++ augrok -c --seek 416039 type==SYSCALL syscall==59 and success==no and comm==runcon and 'subj=~virtd_t'
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_selinux_chcon_resource.bash: line 112: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ eval '/bin/su - testuser1 -c "chcon -l s0:c1,c3 $kvm_guest_2_resource"'
+++ /bin/su - testuser1 -c 'chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-2.img'
+chcon: failed to change context of ‘/var/lib/libvirt/images/KVM-Guest-2.img’ to ‘system_u:object_r:svirt_image_t:s0:c1,c3’: Operation not permitted
++ [[ 1 -eq 0 ]]
++ eval '/bin/su - testuser2 -c "chcon -l s0:c1,c3 $kvm_guest_2_resource"'
+++ /bin/su - testuser2 -c 'chcon -l s0:c1,c3 /var/lib/libvirt/images/KVM-Guest-2.img'
+chcon: failed to change context of ‘/var/lib/libvirt/images/KVM-Guest-2.img’ to ‘system_u:object_r:svirt_image_t:s0:c1,c3’: Operation not permitted
++ [[ 1 -eq 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.b2pMmyL0eB /tmp/tmp.c7sodqZf1s /usr/local/eal2_testing/audit-test/tmp.Jxxx9PILDn
++ killall -9 -u testuser1
++ userdel -fr testuser1
++ groupdel testuser1
+groupdel: group 'testuser1' does not exist
++ killall -9 -u testuser2
++ userdel -fr testuser2
++ groupdel testuser2
+groupdel: group 'testuser2' does not exist
++ exit
+--- end output -------------------------------------------------------------
+
+
+Testcase                                                                                      Result
+--------                                                                                      ------
+[16] test_libvirt_access.bash                                                                  PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
++ append_cleanup 'killall -9 -u testuser1; userdel -fr -Z testuser1'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	killall -9 -u testuser1; userdel -fr -Z testuser1
+    }'
++ append_cleanup 'groupdel testuser1'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr -Z testuser1
+	groupdel testuser1
+    }'
++ userdel -fr -Z testuser1
+userdel: user 'testuser1' does not exist
++ groupdel testuser1
+groupdel: group 'testuser1' does not exist
++ useradd -Z staff_u testuser1 -G libvirt
++ [[ 0 -ne 0 ]]
++ append_cleanup 'killall -9 -u testuser2; userdel -fr -Z testuser2'
+++ sed '1,3d;$d'
+++ type test_cleanup
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr -Z testuser1;
+    groupdel testuser1
+	killall -9 -u testuser2; userdel -fr -Z testuser2
+    }'
++ append_cleanup 'groupdel testuser2'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    killall -9 -u testuser1;
+    userdel -fr -Z testuser1;
+    groupdel testuser1;
+    killall -9 -u testuser2;
+    userdel -fr -Z testuser2
+	groupdel testuser2
+    }'
++ userdel -fr -Z testuser2
+userdel: user 'testuser2' does not exist
++ groupdel testuser2
+groupdel: group 'testuser2' does not exist
++ useradd -Z staff_u testuser2
++ [[ 0 -ne 0 ]]
++ virsh connect qemu+tls://rhv.atsec.com/system
+
++ [[ 0 -ne 0 ]]
++ /bin/su - testuser1 -c 'virsh connect qemu+tls://rhv.atsec.com/system'
+
++ [[ 0 -ne 0 ]]
++ /bin/su - testuser1 -c 'virsh connect qemu+tls://rhv.atsec.com/system --readonly'
+
++ [[ 0 -ne 0 ]]
++ /bin/su - testuser2 -c 'virsh connect qemu+tls://rhv.atsec.com/system'
+
++ [[ 0 -ne 0 ]]
++ /bin/su - testuser2 -c 'virsh connect qemu+tls://rhv.atsec.com/system --readonly'
+
++ [[ 0 -ne 0 ]]
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.WX4D0BWeyM /tmp/tmp.kObXJ2s0mJ /usr/local/eal2_testing/audit-test/tmp.VWecoENNQm
++ killall -9 -u testuser1
++ userdel -fr -Z testuser1
++ groupdel testuser1
+groupdel: group 'testuser1' does not exist
++ killall -9 -u testuser2
++ userdel -fr -Z testuser2
++ groupdel testuser2
+groupdel: group 'testuser2' does not exist
++ exit
+--- end output -------------------------------------------------------------
+
+
+
+  17 pass (100%)
+   0 fail (0%)
+   0 error (0%)
+------------------
+  17 total
+Killing all processes for testuser
+Removing user testuser
+Removing group testuser
+Killing all processes for testadmin
+Removing user testadmin
+Removing group testadmin
+
+TALLIED RESULTS
+
+  34 pass (100%)
+   0 fail (0%)
+   0 error (0%)
+------------------
+  34 total
+

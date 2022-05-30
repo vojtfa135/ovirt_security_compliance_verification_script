@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+#spawn virsh {*}[lrange $argv 1 end]
+spawn virsh $argv
+expect "authentication name:" { send "eal\n" }
+expect "password:" { send "Ooxee6ee\n" }
+interact

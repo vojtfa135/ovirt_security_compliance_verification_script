@@ -1,0 +1,30 @@
+###############################################################################
+# (c) Copyright Hewlett-Packard Development Company, L.P., 2007
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of version 2 the GNU General Public License as
+#   published by the Free Software Foundation.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
+
+#
+# If any of these change, the test_context_tools.bash will need
+# to change accordingly.
+
+# base directory
+/tmp/eal2_testing/(.*)?        system_u:object_r:lspp_test_file_t:s0
+
+# specific files
+/tmp/eal2_testing/s0_testfile	system_u:object_r:lspp_test_file_t:s0
+/tmp/eal2_testing/s2_testfile	system_u:object_r:lspp_test_file_t:s2
+/tmp/eal2_testing/s15_testfile	system_u:object_r:lspp_test_file_t:s15:c0.c1023
+/tmp/eal2_testing/s0_testdir	system_u:object_r:lspp_test_file_t:s0
+/tmp/eal2_testing/s2_testdir	system_u:object_r:lspp_test_file_t:s2
+/tmp/eal2_testing/s15_testdir	system_u:object_r:lspp_test_file_t:s15:c0.c1023

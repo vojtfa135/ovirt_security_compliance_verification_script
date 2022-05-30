@@ -1,2 +1,38 @@
 ---
 # vars file for disa_stig
+oscap_dependencies:
+  - openscap-scanner
+  - scap-security-guide
+
+stig_report_headline: DISA STIG COMPLIANCE REPORT
+stig_compliance_statement: Your infrastructure is compliant
+stig_non_compliance_statement: Your infrastructure is not compliant
+
+stig_oscap_ssg_content_dest: "/usr/share/xml/scap/ssg/content"
+stig_ds: "ssg-rhel8-ds.xml"
+stig_profile: "xccdf_org.ssgproject.content_profile_stig"
+stig_profile_id: "stig"
+stig_required_prod: Red Hat Virtualization Manager
+stig_required_distribution: RedHat
+stig_oscap_default_path: /tmp
+stig_oscap_report_name: oscap-report.html
+stig_oscap_results_dest: "{{ stig_oscap_default_path }}/oscap-results.xml"
+stig_oscap_report_dest: "{{ stig_oscap_default_path }}/{{ stig_oscap_report_name }}"
+stig_oscap_report_local_path: oscap-reports
+stig_required_oscap_rc: 0
+
+stig_rules:
+  product_type:
+    name: Product type must be Red Hat Virtualization
+    pass: false
+    hint: Since RHV is a layered product based on RHEL, only this type of product is sufficient
+  os_type:
+    name: Operating system must be RHEL
+    pass: false
+    hint: Since the STIG is developed for RHEL, this operating system must be used
+  scan_results:
+    name: Scan from the oscap tool must pass
+    pass: false
+    hint: Use the oscap tool with the generate fix argument to generate a remediation script,
+          for example oscap xccdf generate fix --profile xccdf_org.ssgproject.content_profile_stig
+          --fix-type ansible --output rem.yml

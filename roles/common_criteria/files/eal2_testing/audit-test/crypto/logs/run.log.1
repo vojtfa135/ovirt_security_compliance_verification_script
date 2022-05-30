@@ -1,0 +1,52 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[1] ssh_cipher_hmac                                                                                     ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
++ backup /etc/profile
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.XXXXXX
++ b=/etc/profile.UCtIL2
++ cp -a /etc/profile /etc/profile.UCtIL2
++ prepend_cleanup 'mv -f '\''/etc/profile.UCtIL2'\'' '\''/etc/profile'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/profile.UCtIL2'\'' '\''/etc/profile'\''
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+    }'
++ backup /etc/sysconfig/sshd
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/sysconfig/sshd.XXXXXX
++ b=/etc/sysconfig/sshd.LiiHJi
++ cp -a /etc/sysconfig/sshd /etc/sysconfig/sshd.LiiHJi
++ prepend_cleanup 'mv -f '\''/etc/sysconfig/sshd.LiiHJi'\'' '\''/etc/sysconfig/sshd'\'''
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	mv -f '\''/etc/sysconfig/sshd.LiiHJi'\'' '\''/etc/sysconfig/sshd'\''
+	    mv -f '\''/etc/profile.UCtIL2'\'' '\''/etc/profile'\'';
+    rm -f "$tmp1" "$tmp2" "$localtmp"
+    }'
++ backup /etc/profile.d/cc-configuration.sh
++ declare f b
++ for f in '"$@"'
+++ mktemp /etc/profile.d/cc-configuration.sh.XXXXXX
++ b=/etc/profile.d/cc-configuration.sh.bDhu9i
++ cp -a /etc/profile.d/cc-configuration.sh /etc/profile.d/cc-configuration.sh.bDhu9i
+cp: cannot stat '/etc/profile.d/cc-configuration.sh': No such file or directory
++ exit_error
++ declare status
++ [[ -n '' ]]
++ status=2
++ [[ -n '' ]]
++ exit 2
++ test_cleanup
++ mv -f /etc/sysconfig/sshd.LiiHJi /etc/sysconfig/sshd
++ mv -f /etc/profile.UCtIL2 /etc/profile
++ rm -f /tmp/tmp.uviUDQVbuS /tmp/tmp.fTFejVI4y1 /usr/local/eal4_testing/audit-test/tmp.OVXiBqu3An
++ exit
+--- end output -------------------------------------------------------------
+

@@ -1,0 +1,3 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[14] ausearch -x /bin/chmod                                                                    PASS 

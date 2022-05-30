@@ -1,0 +1,38 @@
+
+Started:                         Thu Jun 24 13:14:52 CEST 2021
+Kernel:                          3.10.0-1127.8.2.el7.x86_64
+Architecture:                    x86_64
+Mode:                            64
+Hostname:                        rhv.atsec.com
+Profile:                         capp
+selinux-policy version:          selinux-policy-3.13.1-266.el7.noarch
+
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31
+
+[0] sshd                                                                                                                  PASS 
+[1] sshd_fail                                                                                                             PASS 
+[2] su                                                                                                                    PASS 
+[3] su_fail                                                                                                               PASS 
+[4] sudo                                                                                                                  PASS 
+[5] ssh04                                                                                                                 PASS 
+[6] ssh04_fail                                                                                                            PASS 
+[7] pam_pwquality_fail                                                                                                    PASS 
+[8] pamfaillock_lock                                                                                                      PASS 
+[9] pamfaillock_unlock                                                                                                    PASS 
+[10] pam_pwquality_fail                                                                                        PASS 
+[11] pamfaillock_lock                                                                                      ERROR (2)
+[12] pamfaillock_unlock                                                                                    ERROR (2)
+
+  11 pass (84%)
+   0 fail (0%)
+   2 error (15%)
+------------------
+  13 total

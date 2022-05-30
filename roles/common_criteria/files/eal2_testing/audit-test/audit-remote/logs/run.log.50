@@ -1,0 +1,10 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[50] audisp-remote_remote_ending_action reconnect immediate                                             ERROR (2)
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+cp: cannot stat '/etc/audisp/audisp-remote.conf': No such file or directory
+Redirecting to /bin/systemctl start auditd.service
+start_auditd: Waiting for auditd to start
+--- end output -------------------------------------------------------------
+

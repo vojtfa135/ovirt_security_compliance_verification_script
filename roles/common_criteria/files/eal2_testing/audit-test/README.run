@@ -1,0 +1,499 @@
+| Quickstart
++-----------
+
+Dependencies
+------------
+
+The audit-test suite requires the following packages in order to run
+on RHEL7.9:
+
+binutils
+cpp
+flex
+make
+gcc
+gcc-c++
+glibc-devel
+libattr-devel
+libstdc++-devel
+libcap-devel
+
+audit-libs-devel
+expect
+libselinux-devel
+perl-devel
+perl-Expect
+perl-IO-Tty
+
+The perl-IO-Tty package is available for RHEL6 in the optional channel that
+is not available in the RHEL6 installation media. You should be able to download
+it via RHN.
+
+The perl-Expect is available via EPEL (Extra Packages for Enterprise Linux).
+You can install it after adding the EPEL repository:
+http://fedoraproject.org/wiki/EPEL#How_can_I_use_these_extra_packages.3F
+
+or download it directly from the koji build system:
+http://koji.fedoraproject.org/koji/packageinfo?packageID=2922
+
+All the other packages will be installed automatically if the
+certification kickstart file and certification rpm are used.
+
+For tips on installing the test suite on other distros,
+refer to the notes at the end of this README.
+
+Create the audit-test tar file
+------------------------------
+
+The audit-test suite is best installed from a tar file built from the
+git tree on sourceforge.  The tar file can be built on the target system or
+on a development system and then transferred to the target system.
+
+Clone the git tree:
+
+# git clone git://audit-test.git.sourceforge.net/gitroot/audit-test/audit-test audit-test.git
+
+To create a tar file with both the audit-test and ltp components,
+run 'make dist' from the top of the git tree:
+
+# cd audit-test.git
+# make dist
+
+The tar file will be audit-<commit>.tar.gz
+
+Alternatively, you can create a tar file for just the audit-test
+suite by running 'make dist' from the 'audit-test' directory at the top of
+the git tree:
+
+# cd audit-test.git/audit-test
+# make dist
+
+The tar file will be ../audit-test-<commit>.tar.gz
+
+Configure the target system
+---------------------------
+
+Portion of the audit-test suite (network, netfilter, netfitebt, audit-remote)
+require a network test server as well as the target system.
+Verify that the target system and the network test server have the same time,
+the best way is to use ntpd for such a synchronization.
+
+To greatly speed up networking-related test buckets, you can decrease
+the number of TCP retries, to make fail (timeout) verification faster.
+Assuming the testing machine is close to the network server (local network)
+and uses a mostly-reliable link layer (Ethernet), the following should
+be safe to do:
+
+# echo "net.ipv4.tcp_syn_retries = 2" >> /etc/sysctl.conf
+# sysctl -p
+
+Verify that each ext4 filesystem in /etc/fstab has the 'user_xattr' option.
+
+If you do not have an administrative eal user other than the root user, log
+in as root and add one with the following commands:
+
+# useradd -c "EAL Test User" -g wheel eal
+# passwd eal <root's password>
+
+If on an LSPP/MLS system perform the following additional step:
+# semanage login -a -s staff_u -r SystemLow-SystemHigh eal
+
+Log into the system as the eal user.
+
+Install the audit-test suite
+----------------------------
+
+If running on an LSPP/MLS system, change your role to "sysadm_r".
+# newrole -r sysadm_r
+
+Change to root.
+# /bin/su -
+
+Make the following directory for the tests.  You must use this directory name
+and location for the tests to run correctly.
+
+# mkdir /usr/local/eal2_testing
+# chmod 755 /usr/local/eal2_testing
+# cd /usr/local/eal2_testing
+
+Transfer the audit-test tar file to the target system if not using a
+git tree on the target.
+
+Untar the previously created tar file into the newly created
+/usr/local/eal2_testing directory.
+
+# tar xvf audit-<commit>.tar.gz
+or
+# tar xvf audit-test-<commit>.tar.gz
+
+Ensure that all files in the target directory have the correct ownership:
+
+# chown -R root:root /usr/local/eal2_testing
+# chmod a+rX /usr/local/eal2_testing
+
+Build the audit-test suite
+--------------------------
+
+# cd /usr/local/eal2_testing/audit-test
+
+If running on an LSPP/MLS system, install the test policy and change to the
+"lspp_test_r" role.
+
+# make policy
+# newrole -r lspp_test_r
+
+If running on a PPC system, set the ARCH environment variable:
+# export ARCH=PPC
+
+If running on a s390x system, set the ARCH environment variable:
+# export ARCH=s390x
+
+Build the tests.
+
+# make
+
+Or if re-building the tests to run the 32-bit tests on an x86_64 system do:
+
+# make clean
+# make MODE=32
+
+If running on an LSPP/MLS system, relabel test files.
+
+# make -C utils/selinux-policy relabel verify
+
+Configure the network test server
+---------------------------------
+
+Configure the network test server according to the instructions in the
+README.netwk_svr file.
+
+Confirm that the
+'/usr/local/eal2_testing/audit-test/network/system/client_list.txt' file on
+the network test server contains both the IPv4 and IPv6 addresses of the test
+machine.
+
+Configure the KVM tests
+-----------------------
+
+For the KVM tests to run you need to have RHEL7 iso image or DVD installation
+media handy. You also need to tell the tests where to search for the
+installation sources by modifying the config.bash file in the kvm subfolder.
+
+If you are using an iso installation image, please make sure it is accessible
+by the qemu user.  For example, /var/lib/libvirt may be used.
+
+Edit the file
+'/usr/local/eal2_testing/audit-test/kvm/config.bash'
+and set the variable 'install_media' to the path of the device of your optical
+drive or the iso image file.
+
+Edit the file 
+'/usr/local/eal2_testing/audit-test/kvm/run.conf' and set the variable 
+VIRSH_DEFAULT_CONNECT_URI to the hypervisor to connect to by default. For example
+"qemu+tls://rhv.example.com/system".
+
+Configure the KVM iommu tests
+-----------------------------
+
+Note: All PCI PT tests are disabled for RHEL6.2 - please skip PCI device
+configuration
+
+Edit the file
+'/usr/local/eal2_testing/audit-test/kvm-iommu/pci_device.conf'
+and select a PCI device to use for PCI passthrough testing.
+
+Edit the file
+'/usr/local/eal2_testing/audit-test/kvm-iommu/usb_device.conf'
+and select a USB device to use for USB passthrough testing.
+
+Note: The following network hardware was used for successful execution of
+kvm-iommu PCI passthrough tests:
+
+* NetXtreme BCM5720 Gigabit Ethernet PCIe (card) / tg3 (PCI device)
+* NetXtreme II BCM5706 Gigabit Ethernet / bnx2
+* Intel 82576 Gigabit Network Connection / igb
+
+Note: All devices on the bus with the tested PCI device should NOT be
+used by the host. The PCI tests will try to detach all other devices
+on the bus when using multifunction PCI device for testing.
+
+Configure the labeled networking tests
+--------------------------------------
+
+On the test machine:
+
+From the /usr/local/eal2_testing/audit-test directory, perform the following
+commands to setup the required configuration for the labeled networking tests:
+
+# export LOCAL_IPV4="<testing machine IPV4 address on the primary network>"
+# export LOCAL_IPV6="<testing machine IPV6 address on the primary network>"
+# export LBLNET_SVR_IPV4="<network server IPV4 address on the primary network>"
+# export LBLNET_SVR_IPV6="<network server IPV6 address on the primary network>"
+
+# make netconfig
+
+Configure the netfilter tests
+-----------------------------
+
+Follow the steps in README.netfilter. Make sure to have properly
+configured testing environment before proceeding.
+
+Reboot the test machine or restart network services
+---------------------------------------------------
+
+After configuring the labeled networking tests, it is necessary
+to restart all the system services that were configured for the
+network tests (xinetd, netlabel, ipsec, rc.local, mcstrans).
+The simpliest approach is to reboot the test machine.
+
+Prepare to run the tests
+------------------------
+
+Login to the system as the administrative user (eal) using ssh.
+
+The audit tests require you to login as a non-root user in order to verify the
+login UID in the audit records.  Some tests will fail if run from the system
+console.
+
+If running on an LSPP/MLS system, change your role to "lspp_test_r".
+
+# newrole -r lspp_test_r
+
+Change to root.
+
+# /bin/su -
+
+Change directory to the audit test suite.
+
+# cd /usr/local/eal2_testing/audit-test
+
+If the test suite was configured to run the netfilter
+tests, create a file with variables according to README.netfilter
+and source it.
+
+# . profile.bash
+
+Otherwise, make sure that the labeled networking tests have been configured
+according to the instructions in the previous section. Set the following
+environment variables:
+
+# export LBLNET_SVR_IPV4="<local network test server IPV4 address>"
+# export LBLNET_SVR_IPV6="<local network test server IPV6 address>"
+# export PASSWD=<root/admin user password>
+
+Verify that the time on the test system is synchronized with the time
+on the network test server.
+
+As an additional sanity check, you can run:
+
+# make envcheck
+or
+# make envcheck | less -R
+
+Run the tests
+-------------
+
+The audit tests can be run from the top level audit-test directory,
+which will cause all the test subsystems to be run, or in any test
+sub-directory:
+
+# make run
+
+If the test suite was buitl in 32-bit mode on a 64-bit platform, use
+the MODE=32 option when running the tests.
+
+# make MODE=32 run
+
+Note: The tests must be run from an interactive terminal; running the tests as
+a backgrounded task does not work, and will result in spurious test case
+failures.
+
+To run only tests that were not run, failed or for some other reason didn't
+PASS, you can use "rerun" instead of another "run":
+
+# make rerun
+
+Notes for FIPS enabled machines:
+1) When testing in FIPS mode all tests that use ipsec are expected to FAIL.
+Precisely these should be all the ipsec network tests and the ipsec* and
+ip_xfrm tests from trustedprograms.
+2) Aide has known issues with FIPS and should be disabled in trustedprograms
+run.conf. For details see https://bugzilla.redhat.com/show_bug.cgi?id=574770
+
+Run individual tests
+--------------------
+
+You can use run.bash to run a set of tests or a single test case. This must be
+done in a test sub-directory.  Before running individual tests please do
+all the preparation steps described earlier in this file.  In addition,
+some test directories require manually setting the MODE, DISTRO, and
+PPROFILE environment variables.
+
+To run all variations of a given testcase, e.g. to run all the ptrace() tests:
+# ./run.bash ptrace
+
+To list all testcases:
+# ./run.bash --list
+
+To run a single testcase by number:
+# ./run.bash <number>
+
+Workarounds and troubleshooting tips
+------------------------------------
+
+Workaround for network test failures
+------------------------------------
+
+Some test runs may experience network test failures in the labeled IPsec
+tests due to the current implementation of ipsec. Use the following
+workaround if you experience these failures.
+
+1. Reboot the test machine
+2. Login as eal
+3. Use 'newrole -r lspp_test_r' to change to root/lspp_test_r
+4. Use '/bin/su -' to change to root
+5. Run 'run_init /etc/rc.local' to re-initialize the IPsec subsystem
+6. Run the following commands:
+   # export PASSWD=<password>
+   # export PPROFILE=lspp
+   # export MODE=<whatever you want (64|32), but set it to something>
+   # export LBLNET_SVR_IPV4="<local network test server IPV4 address>"
+   # export LBLNET_SVR_IPV6="<local network test server IPV6 address>"
+7. Change to the '/usr/local/eal2_testing/audit-test/network' directory
+8. Type './run.bash host=remote*type=ipsec'. There may be a few failures;
+rerun the command until all of the tests pass. At most, this should be two
+passes.
+9. Logoff the system
+
+Re-login into the system and re-run the audit testsuite (or just networking
+tests) as following the directions in previous sections of this README.
+
+Each time you reboot the system and run the network tests, you
+must follow the steps above.  It is also possible, although unlikely, that if
+you wait an excessive period of time between step #8 above and running the
+test suite, the network tests may fail. For that reason, it is recommended that
+you do these steps only when you are ready to re-run the test suite.
+
+If you interrupt the network tests, the network test server may be
+left in a locked condition, preventing subsequent network tests
+from running.  To unlock the network test server:
+
+# cd /usr/local/eal2_testing/audit-test/network
+# make unlock
+
+Fail-safe tests
+---------------
+
+In the fail-safe tests, the 'admin_space_left email' and 'space_left email'
+tests may fail in CAPP mode if SELinux is enabled and in enforcing mode.  These
+tests are not run in LSPP/MLS mode.
+
+Trusted programs
+----------------
+
+In the trustedprograms tests, the 'aide_update' test may fail in LSPP/MLS mode.
+The aide program reports the changed file in the aide.log, but the return code
+does not reflect that there was a change.  This test is not run in CAPP mode.
+
+If the database tests fail, be sure that the perl-IO and perl-expect packages
+are installed.
+
+Audit-remote tests
+------------------
+
+1) TOE and Network Server (NS for short) are have different time set. This
+  causes audit-remote tests to fail when looking for an audit record after
+  set test start time. Tests usually fail with "Missing DAEMON_ACCEPT record".
+  FIX: Sync time on TOE and NS, e.g. by using ntp daemon.
+
+2) The tests ask for a password and behave "strangely".
+  FIX: On TOE make sure that LBLNET_SVR_IPV4 contains IPv4 address of NS and
+  that PASSWD contains root / eal / admin password. Moreover, check that
+  profile.bash on NS correctly exports PASSWD with root / eal / admin password
+  (see README.netwk_svr).
+
+3) Tests hang on a TOE during execution. This can be a side effect when running
+  with SELinux in permissive mode.
+  FIX: Make sure SELinux is running in enforcing mode.
+
+4) Make sure you have really have correct permissions, owners, and SELinux
+  labels.
+  FIX: Follow related steps in README.run or reinstall if nothing helps :)
+
+5) TOE or NS unable to reach each other when using virt guests. This is
+  probably due to incorrectly set LOCAL_IPV4 environment variable.
+  Use only unicast addresses of global scope (if there are more of them, try
+  them all iteratively).
+
+6) NS fails to run init script via run_init due to bad password.
+  FIX: Make sure you have correctly set password in profile.bash, which should
+  be available in top-level audit-test directory.
+
+7) TOE has issues running remote actions on NS.
+  FIX: Suggested is debug you test env with simple action "ns_connection_check"
+  # /usr/bin/nc -v $LBLNET_SVR_IPV4 4000 <<< \
+    "audit_remote_call:ns_connection_check,no_mode,<TOE IPv4 of global scope>;"
+
+8) Make sure all configuration files related to audit remote logging are in
+  a "default" state before executing tests.
+  FIX: Suggested is to backup and diff orig and current version of following
+  config files:
+    /etc/audit/auditd.conf
+    /etc/audisp/audisp-remote.conf
+    /etc/audisp/audispd.conf
+    /etc/audisp/plugins.d/au-remote.conf
+
+9) Please note that this is just a cosmetic issue and does not cause any
+   audit-remote tests to FAIL.
+  There are AVC denials on NS side when running the tests. They require
+  addition of following SELinux rule:
+    "allow auditctl_t inetd_t:tcp_socket { read write };".
+  This is a known issue due to leaked descriptors passed to a remote_call.bash
+  script when execute by lblnet_tst_server.
+  FIX: Uncomment net_hlp_socket_close(&sock) in file lblnet_test_server.c func
+  ctl_audit_remote_call() and rebuild the lblnet_server_binary. As a side-effect
+  you will loose verbosity in netcat on TOE side. Therefore it is not used by
+  default.
+
+Tips for running on non-RHEL distros
+------------------------------------
+
+Note that this has not been tested recently so while
+the following information was once true, this information
+may no longer be accurate or sufficient.
+
+On SuSE systems the follow packages are also required:
+
+audit-libs-python
+checkpolicy
+libcap
+libcap-devel
+libselinux
+libselinux-devel
+libsemanage1
+libsepol
+libsepol-devel
+mcstrans
+policycoreutils
+pwdutils-plugin-audit
+python-selinux
+vsftpd
+
+If not running RHEL6, make sure vsftpd is available on the system and
+configured to start in runlevel 3.  If it is not, configure vsftpd with
+the following commands:
+
+On a CAPP/base machine (except RHEL6):
+# chkconfig vsftpd on
+# service vsftpd start
+
+On an LSPP/MLS machine (except RHEL6):
+# chkconfig vsftpd on
+# run_init /etc/init.d/vsftpd start
+
+On a SuSE system:
+# echo audit >> /etc/pwdutils/logging
+
+#---------------------------------------------------------------
+# prevent shell-like incorrect vim syntax highlight of this file
+# vim: syntax=off :

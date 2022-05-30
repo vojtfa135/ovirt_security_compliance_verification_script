@@ -1,0 +1,17 @@
+Log file started Thu Jun 17 16:17:45 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                                      Result
+--------                                                                                                      ------
+[0] hwclock                                                                                                    PASS 
+--- begin output -----------------------------------------------------------
+rotate_audit_logs: Attempting to rotate using USR1
+Thu Jun 17 16:17:47 2021  -0.469964 seconds -- original hardware clock
+Sat Jan  1 00:00:02 2000  -0.500416 seconds -- altered hardware clock
+Thu Jun 17 16:17:51 2021  -0.500424 seconds -- restored hardware clock
+Argument "enabled 1\nfailure 1\npid 27318\nrate_limit 0\nbacklog_l..." isn't numeric in numeric eq (==) at /usr/local/eal4_testing/audit-test/utils/augrok line 1209.
+pass: augrok found 2 hwclock records
+--- end output -------------------------------------------------------------
+

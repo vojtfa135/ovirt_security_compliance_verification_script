@@ -1,0 +1,22 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[14] test_network_import_other_dest_ip.exp                                                     PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+spawn ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@192.168.129.129
+Warning: Permanently added '192.168.129.129' (ECDSA) to the list of known hosts.
+root@192.168.129.129's password: 
+Last login: Tue Jun 29 07:41:32 2021 from gateway
+]0;root@localhost:~[?1034h[root@localhost ~]# iptables -A INPUT -s 192.168.128.1 -p icmp --icmp-type echo-reply -j LOG --log-l evel=1 --log-prefix="20210629134513: "
+]0;root@localhost:~[root@localhost ~]# grep -c -E "20210629134513: .* SRC=$kvm_guest_1_addr" /var/log/messages
+0
+]0;root@localhost:~[root@localhost ~]# 
+--- end output -------------------------------------------------------------
+

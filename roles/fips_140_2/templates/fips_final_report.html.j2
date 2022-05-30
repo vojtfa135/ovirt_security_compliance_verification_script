@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ fips_report_headline }}</title>
+
+  <style type="text/css">
+  @import url(http://fonts.googleapis.com/css?family=Droid+Sans);
+
+  /* Take care of image borders and formatting */
+
+  img {
+    max-width: 600px;
+    outline: none;
+    text-decoration: none;
+    -ms-interpolation-mode: bicubic;
+  }
+
+  a {
+    text-decoration: none;
+    border: 0;
+    outline: none;
+    color: #bbbbbb;
+  }
+
+  a img {
+    border: none;
+  }
+
+  /* General styling */
+
+  td, h1, h2, h3  {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: 400;
+  }
+
+  td {
+    text-align: center;
+  }
+
+  body {
+    -webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:none;
+    width: 100%;
+    height: 100%;
+    color: #37302d;
+    background: #ffffff;
+    font-size: 16px;
+  }
+
+   table {
+    border-collapse: collapse !important;
+  }
+
+  .headline {
+    color: #ffffff;
+    font-size: 36px;
+  }
+
+ .force-full-width {
+  width: 100% !important;
+ }
+
+ .force-width-80 {
+  width: 80% !important;
+ }
+
+
+
+
+  </style>
+
+  <style type="text/css" media="screen">
+      @media screen {
+         /*Thanks Outlook 2013! http://goo.gl/XLxpyl*/
+        td, h1, h2, h3 {
+          font-family: 'Droid Sans', 'Helvetica Neue', 'Arial', 'sans-serif' !important;
+        }
+      }
+  </style>
+
+  <style type="text/css" media="only screen and (max-width: 480px)">
+    /* Mobile styles */
+    @media only screen and (max-width: 480px) {
+
+      table[class="w320"] {
+        width: 320px !important;
+      }
+
+      td[class="mobile-block"] {
+        width: 100% !important;
+        display: block !important;
+      }
+
+
+    }
+  </style>
+</head>
+<body class="body" style="padding:0; margin:0; display:block; background:#ffffff; -webkit-text-size-adjust:none" bgcolor="#ffffff">
+<table align="center" cellpadding="0" cellspacing="0" class="force-full-width" height="100%" >
+  <tr>
+    <td align="center" valign="top" bgcolor="#ffffff"  width="100%">
+      <center>
+        <table style="margin: 0 auto;" cellpadding="0" cellspacing="0" width="600" class="w320">
+          <tr>
+            <td align="center" valign="top">
+
+                <br><br><br><br>
+
+                <table style="margin: 0 auto;" cellpadding="0" cellspacing="0" class="force-full-width" bgcolor="#4dbfbf">
+                  <tr>
+                    <td class="headline">
+                      <br>
+                      {{ fips_report_headline }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+
+                      <center>
+                        <table style="margin: 0 auto;" cellpadding="0" cellspacing="0" width="60%">
+                          <tr>
+                            <td style="color:#187272;">
+                            <br>
+                            {% if fips_infra_compliant|bool %}
+                             {{ fips_compliance_statement }}
+                            {% else %}
+                             {{ fips_non_compliance_statement }}
+                            {% endif %}
+                            <br>
+                            <br>
+                            </td>
+                          </tr>
+                        </table>
+                      </center>
+
+                    </td>
+                  </tr>
+                </table>
+
+                <table style="margin: 0 auto;" cellpadding="0" cellspacing="0" class="force-full-width" bgcolor="#f5774e">
+                  <tr>
+                    <td style="background-color:#f5774e;">
+
+                    <center>
+                      {% for rule in fips_rules %}
+                      <table style="margin:0 auto;" cellspacing="0" cellpadding="0" class="force-width-80">
+                        <tr>
+                          <td  class="mobile-block" >
+                          <br>
+                          <br>
+
+                            <table cellspacing="0" cellpadding="0" class="force-full-width">
+                              <tr>
+                                <td style="color:#ffffff; background-color:#ac4d2f; padding: 10px 0px;">
+                                  rule: {{ fips_rules[rule].name }}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="color:#933f24; padding:10px 0px; background-color: #f7a084;">
+                                  pass: {{ fips_rules[rule].pass }}
+                                </td>
+                              </tr>
+                              {% if not fips_rules[rule].pass|bool %}
+                              <tr>
+                                <td style="color:#000000; padding:10px 0px; background-color: #ce5831;">
+                                  hint: {{ fips_rules[rule].hint }}
+                                </td>
+                              </tr>
+                              {% endif %}
+                            </table>
+
+                            <br>
+                          </td>
+                        </tr>
+                      </table>
+                      {% endfor %}
+                    </center>
+
+
+
+                    </td>
+                  </tr>
+
+
+                </table>
+
+                <table style="margin: 0 auto;" cellpadding="0" cellspacing="0" class="force-full-width" bgcolor="#414141" style="margin: 0 auto">
+                  <tr>
+                    <td style="color:#bbbbbb; font-size:12px;">
+                       <br>
+                       <br>
+                       Ansible generated report
+                       <br>
+                       <br>
+                       <br>
+                    </td>
+                  </tr>
+                </table>
+
+
+
+
+
+            </td>
+          </tr>
+        </table>
+    </center>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

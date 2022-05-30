@@ -1,0 +1,3 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[13] test_selinux_ipc_signals.bash                                                             PASS 

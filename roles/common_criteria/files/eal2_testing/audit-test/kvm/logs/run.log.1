@@ -1,0 +1,124 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[1] test_auditctl_rule_obj.bash                                                                PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
++ filename=/var/lib/libvirt/images/testresource.img
++ append_cleanup 'rm -f /var/lib/libvirt/images/testresource.img'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	rm -f /var/lib/libvirt/images/testresource.img
+    }'
++ rm -f /var/lib/libvirt/images/testresource.img
++ qemu-img create /var/lib/libvirt/images/testresource.img 8G
+Formatting '/var/lib/libvirt/images/testresource.img', fmt=raw size=8589934592
++ for context in '$contexts'
+++ echo system_u:object_r:svirt_image_t:s0:c150,c980
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c150,c980
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c150,c980'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f /var/lib/libvirt/images/testresource.img
+	auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c150,c980
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c150,c980'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f /var/lib/libvirt/images/testresource.img;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c150,c980
+	auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c150,c980
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c150,c980
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c150,c980
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c150,c980
++ auditctl -a exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c150,c980
++ chcon system_u:object_r:svirt_image_t:s0:c150,c980 /var/lib/libvirt/images/testresource.img
++ qemu-img info /var/lib/libvirt/images/testresource.img
+image: /var/lib/libvirt/images/testresource.img
+file format: raw
+virtual size: 8.0G (8589934592 bytes)
+disk size: 0
++ expression=obj==system_u:object_r:svirt_image_t:s0:c150,c980
+++ augrok -c --seek 28073 obj==system_u:object_r:svirt_image_t:s0:c150,c980
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_auditctl_rule_obj.bash: line 51: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ for context in '$contexts'
+++ echo system_u:object_r:svirt_image_t:s0:c628,c889
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c628,c889
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c628,c889'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f /var/lib/libvirt/images/testresource.img;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c150,c980;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c150,c980
+	auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c628,c889
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c628,c889'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f /var/lib/libvirt/images/testresource.img;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c150,c980;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c150,c980;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c628,c889
+	auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c628,c889
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c628,c889
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c628,c889
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c628,c889
++ auditctl -a exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c628,c889
++ chcon system_u:object_r:svirt_image_t:s0:c628,c889 /var/lib/libvirt/images/testresource.img
++ qemu-img info /var/lib/libvirt/images/testresource.img
+image: /var/lib/libvirt/images/testresource.img
+file format: raw
+virtual size: 8.0G (8589934592 bytes)
+disk size: 0
++ expression=obj==system_u:object_r:svirt_image_t:s0:c628,c889
+++ augrok -c --seek 28073 obj==system_u:object_r:svirt_image_t:s0:c628,c889
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_auditctl_rule_obj.bash: line 51: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.kVQLOqrCXA /tmp/tmp.PuUTelXFiZ /usr/local/eal2_testing/audit-test/tmp.WyJoExzEUU
++ rm -f /var/lib/libvirt/images/testresource.img
++ auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c150,c980
++ auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c150,c980
++ auditctl -d exit,always -F arch=b32 -S close -S open -F obj_lev_high=s0:c628,c889
++ auditctl -d exit,always -F arch=b64 -S close -S open -F obj_lev_high=s0:c628,c889
++ exit
+--- end output -------------------------------------------------------------
+

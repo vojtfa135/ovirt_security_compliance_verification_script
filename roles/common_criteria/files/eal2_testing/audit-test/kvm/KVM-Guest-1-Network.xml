@@ -1,0 +1,10 @@
+<network>
+    <name>KVM-Guest-1-Network</name>
+    <bridge name="virbr1" />
+  <forward/>
+  <ip address="192.168.128.1" netmask="255.255.255.0">
+    <dhcp>
+        <range start="192.168.128.2" end="192.168.128.254" />
+    </dhcp>
+  </ip>
+</network>

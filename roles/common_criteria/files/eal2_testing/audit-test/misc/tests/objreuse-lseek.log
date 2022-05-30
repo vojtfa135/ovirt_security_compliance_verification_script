@@ -1,0 +1,2 @@
+objreuse-lseek.c: PASS
+TEST PASSED =  1 , FAILED =  0

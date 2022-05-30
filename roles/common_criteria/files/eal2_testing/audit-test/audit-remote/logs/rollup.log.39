@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[39] audisp-remote_disk_error_action syslog forward                                                     ERROR (2)

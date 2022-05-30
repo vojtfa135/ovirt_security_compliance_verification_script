@@ -1,0 +1,3 @@
+Testcase                                                                                      Result
+--------                                                                                      ------
+[10] test_selinux_attr_virt_image_type.bash                                                    PASS 

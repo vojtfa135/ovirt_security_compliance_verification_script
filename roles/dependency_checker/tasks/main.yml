@@ -1,28 +1,67 @@
 ---
 # tasks file for dependency_checker
-- name: Resolve dependencies
-  block:
-    - name: Install oVirt repository
-      yum:
-        name: "{{ ovirt_repo }}"
-        state: present
+- name: Ensure dependencies for FIPS role are met
+  pip:
+    name: "{{ item }}"
+  loop: "{{ fips_dependencies }}"
+  become_user: "{{ dep_checker_priv_user }}"
+  become: yes
+  when: dep_checker_deps == "fips" and not dep_checker_remove_deps|default(false)
 
-    - name: Ensure that all dependencies are met in order to install {{ ovirt_sdk }}
+- name: Ensure dependencies for DISA STIG role are met
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ stig_dependencies }}"
+  become_user: "{{ dep_checker_priv_user }}"
+  become: yes
+  when: dep_checker_deps == "stig" and not dep_checker_remove_deps|default(false)
+
+- name: Ensure dependencies for Common Criteria role are met
+  block:
+    - name: Ensure normal dependencies for Common Criteria role are met
       yum:
         name: "{{ item }}"
         state: present
-      loop: "{{ local_machine_dependencies_rh }}"
+      loop: "{{ cc_dependencies }}"
+      become_user: "{{ dep_checker_priv_user }}"
+      become: yes
 
-    - name: Intall oVirt SDK
+    - name: Ensure special dependencies for Common Criteria role are met
+      shell: "yum groupinstall --nobest -y 'Development tools'"
+      become_user: "{{ dep_checker_priv_user }}"
+      become: yes
+  when: dep_checker_deps == "cc" and not dep_checker_remove_deps|default(false)
+
+- name: Ensure dependencies for FIPS role are absent
+  pip:
+    name: "{{ item }}"
+  loop: "{{ fips_dependencies }}"
+  become_user: "{{ dep_checker_priv_user }}"
+  become: yes
+  when: dep_checker_deps == "fips" and dep_checker_remove_deps|default(false)
+
+- name: Ensure dependencies for DISA STIG role are absent
+  yum:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ stig_dependencies }}"
+  become_user: "{{ dep_checker_priv_user }}"
+  become: yes
+  when: dep_checker_deps == "stig" and dep_checker_remove_deps|default(false)
+
+- name: Ensure dependencies for Common Criteria role are absent
+  block:
+    - name: Ensure normal dependencies for Common Criteria role are absent
       yum:
-        name: "{{ ovirt_sdk }}"
-        state: present
-  when: os_flavor == "RedHat"
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ cc_dependencies }}"
+      become_user: "{{ dep_checker_priv_user }}"
+      become: yes
 
-# - name: Install {{ pip_deps }} into the virtualenv
-#   pip:
-#     name: "{{ pip_deps }}"
-#     virtualenv: "{{ virtualenv_path }}"
-#   # TODO:
-#   # for now just ignore the errors
-#   ignore_errors: yes
+    - name: Ensure special dependencies for Common Criteria role are absent
+      shell: "yum --setopt=groupremove_leaf_only=1 groupremove 'Development Tools' -y"
+      become_user: "{{ dep_checker_priv_user }}"
+      become: yes
+  when: dep_checker_deps == "cc" and dep_checker_remove_deps|default(false)

@@ -1,0 +1,3 @@
+Testcase                                                                                                   Result
+--------                                                                                                   ------
+[66] audisp-remote_network_failure_action suspend immediate                                             ERROR (2)

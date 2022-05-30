@@ -1,0 +1,42 @@
+Test procedure
+------------------------------
+
+Step 1: Run the checksec.sh as root:
+
+./checksec.sh --dir /bin
+
+./checksec.sh --dir /sbin
+
+./checksec.sh --dir /usr/bin
+
+./checksec.sh --dir /usr/sbin
+
+./checksec.sh --dir /lib
+
+./checksec.sh --dir /usr/lib64
+
+./checksec.sh --kernel
+
+Step 2: Find all setuid programs:
+
+find / -perm -4000
+
+Step 3: Run the checksec.sh as root with the --fortify-file parameter for several setuid programs:
+
+./checksec.sh --fortify-file <file name>
+
+For example:
+
+./checksec.sh --fortify-file /usr/bin/sudo
+
+./checksec.sh --fortify-file /usr/bin/su
+
+./checksec.sh --fortify-file /usr/bin/mount
+
+Pass Criteria:
+------------------------------
+Step 4: All setuid programs obtained in "Step 2"  must have the stack protection enabled (Full RELRO and STACK Canary must be found as well as Position Independent Executables (PIE) enabled).
+
+Step 5: All setuid programs not having the stack protection enabeld should be mentioned in the ST.
+
+Step 6: All setuid programs checked in "Step 3" must be compiled with FORTIFY_SOURCE support (Binary compiled with FORTIFY_SOURCE support: Yes).

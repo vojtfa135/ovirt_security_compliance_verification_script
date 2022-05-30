@@ -1,0 +1,41 @@
+
+Started:                         Tue Jun 29 11:13:06 CEST 2021
+Kernel:                          3.10.0-1127.8.2.el7.x86_64
+Architecture:                    x86_64
+Mode:                            64
+Hostname:                        rhv.atsec.com
+Profile:                         capp
+selinux-policy version:          selinux-policy-3.13.1-266.el7.noarch
+
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31
+
+[0] auditd_restart                                                                             PASS 
+[1] auditd_start                                                                               PASS 
+[2] auditd_stop                                                                                PASS 
+[3] auditd_reload                                                                              PASS 
+[4] ausearch -a 6179                                                                           PASS 
+[5] ausearch -a 49969                                                                          PASS 
+[6] ausearch -c chmod                                                                          PASS 
+[7] ausearch -f .Xdefaults                                                                     PASS 
+[8] ausearch -ga 10208                                                                         PASS 
+[9] ausearch -p 25761                                                                          PASS 
+[10] ausearch -m ALL                                                                           PASS 
+[11] ausearch -m SYSCALL                                                                       PASS 
+[12] ausearch -sv yes                                                                          PASS 
+[13] ausearch -ua 10208                                                                        PASS 
+[14] ausearch -x /bin/chmod                                                                    PASS 
+[15] ausearch -hn remote.system.domain.com                                                     PASS 
+
+  16 pass (100%)
+   0 fail (0%)
+   0 error (0%)
+------------------
+  16 total

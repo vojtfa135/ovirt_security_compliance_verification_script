@@ -1,0 +1,319 @@
+Log file started Tue Jun 29 11:26:22 CEST 2021
+Adding group testuser
+Adding user testuser
+Adding group testadmin
+Adding user testadmin
+Testcase                                                                                      Result
+--------                                                                                      ------
+[0] test_auditctl_rule_subj.bash                                                               PASS 
+--- begin output -----------------------------------------------------------
+Domain KVM-Guest-1 destroyed
+
+Domain KVM-Guest-2 destroyed
+
+Domain KVM-Guest-1 started
+
+Domain KVM-Guest-2 started
+
+++ mktemp test_auditctl_rule_subj_trueXXXX
++ true_file=test_auditctl_rule_subj_trueTl9G
++ append_cleanup 'rm -f test_auditctl_rule_subj_trueTl9G'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp"
+	rm -f test_auditctl_rule_subj_trueTl9G
+    }'
++ rm -f test_auditctl_rule_subj_trueTl9G
++ cp -p /bin/true test_auditctl_rule_subj_trueTl9G
++ for label in '$labels'
+++ echo system_u:system_r:svirt_t:s0:c188,c441
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c188,c441
+++ awk 'BEGIN { FS = ":" } ; { print $4 }'
+++ echo system_u:system_r:svirt_t:s0:c188,c441
++ subj_sen=s0
+++ echo system_u:system_r:svirt_t:s0:c188,c441
+++ awk 'BEGIN { FS = ":" } ; { print $5 }'
++ subj_clr=c188,c441
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441'
+++ sed '1,3d;$d'
+++ type test_cleanup
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
++ runcon -l s0:c188,c441 ./test_auditctl_rule_subj_trueTl9G
+++ id -Z
+++ awk 'BEGIN { FS = ":" } ; { print $1 ":" $2 ":" $3 }'
++ subj=unconfined_u:unconfined_r:unconfined_t
++ subj=unconfined_u:unconfined_r:unconfined_t:s0:c188,c441
++ expression=subj==unconfined_u:unconfined_r:unconfined_t:s0:c188,c441
+++ augrok -c --seek 0 subj==unconfined_u:unconfined_r:unconfined_t:s0:c188,c441
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+1 -eq 0 ]]
+./test_auditctl_rule_subj.bash: line 61: [[: HHHHHHHHHHHHHHHHHHHH 
+1: syntax error in expression (error token is "1")
++ for label in '$labels'
+++ echo system_u:system_r:svirt_t:s0:c266,c358
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c266,c358
+++ echo system_u:system_r:svirt_t:s0:c266,c358
+++ awk 'BEGIN { FS = ":" } ; { print $4 }'
++ subj_sen=s0
+++ echo system_u:system_r:svirt_t:s0:c266,c358
+++ awk 'BEGIN { FS = ":" } ; { print $5 }'
++ subj_clr=c266,c358
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
++ runcon -l s0:c266,c358 ./test_auditctl_rule_subj_trueTl9G
+++ id -Z
+++ awk 'BEGIN { FS = ":" } ; { print $1 ":" $2 ":" $3 }'
++ subj=unconfined_u:unconfined_r:unconfined_t
++ subj=unconfined_u:unconfined_r:unconfined_t:s0:c266,c358
++ expression=subj==unconfined_u:unconfined_r:unconfined_t:s0:c266,c358
+++ augrok -c --seek 0 subj==unconfined_u:unconfined_r:unconfined_t:s0:c266,c358
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_auditctl_rule_subj.bash: line 61: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ for label in '$labels'
+++ echo unconfined_u:unconfined_r:svirt_t:s0:c802,c1022
+++ awk 'BEGIN { FS = ":" } ; { print $4 ":" $5 }'
++ levl=s0:c802,c1022
+++ awk 'BEGIN { FS = ":" } ; { print $4 }'
+++ echo unconfined_u:unconfined_r:svirt_t:s0:c802,c1022
++ subj_sen=s0
+++ echo unconfined_u:unconfined_r:svirt_t:s0:c802,c1022
+++ awk 'BEGIN { FS = ":" } ; { print $5 }'
++ subj_clr=c802,c1022
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
+	auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+    }'
++ append_cleanup 'auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022'
+++ type test_cleanup
+++ sed '1,3d;$d'
++ eval 'function test_cleanup {
+	    rm -f "$tmp1" "$tmp2" "$localtmp";
+    rm -f test_auditctl_rule_subj_trueTl9G;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022;
+    auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022;
+    auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+	auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+    }'
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+Error sending delete rule data request (No such file or directory)
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
+Error sending delete rule data request (No such file or directory)
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
++ auditctl -a exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
++ auditctl -a exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
++ runcon -l s0:c802,c1022 ./test_auditctl_rule_subj_trueTl9G
+++ id -Z
+++ awk 'BEGIN { FS = ":" } ; { print $1 ":" $2 ":" $3 }'
++ subj=unconfined_u:unconfined_r:unconfined_t
++ subj=unconfined_u:unconfined_r:unconfined_t:s0:c802,c1022
++ expression=subj==unconfined_u:unconfined_r:unconfined_t:s0:c802,c1022
+++ augrok -c --seek 0 subj==unconfined_u:unconfined_r:unconfined_t:s0:c802,c1022
+Use of uninitialized value $config in open at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Use of uninitialized value $config in concatenation (.) or string at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
+Can't open  at /usr/local/eal2_testing/audit-test/utils/augrok line 209.
++ [[ HHHHHHHHHHHHHHHHHHHH 
+0 -eq 0 ]]
+./test_auditctl_rule_subj.bash: line 61: [[: HHHHHHHHHHHHHHHHHHHH 
+0: syntax error in expression (error token is "0")
++ exit_pass
++ [[ -n '' ]]
++ exit 0
++ test_cleanup
++ rm -f /tmp/tmp.qU80v37KXe /tmp/tmp.Pg9RWbWJkL /usr/local/eal2_testing/audit-test/tmp.d1Lik9wpki
++ rm -f test_auditctl_rule_subj_trueTl9G
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c188,c441
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c188,c441
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c188,c441
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c266,c358
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c266,c358
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c266,c358
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_clr=s0:c802,c1022
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_clr=s0:c802,c1022
++ auditctl -d exit,always -F arch=b32 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
++ auditctl -d exit,always -F arch=b64 -S close -S open -F subj_sen=s0,subj_clr=c802,c1022
++ exit
+--- end output -------------------------------------------------------------
+
